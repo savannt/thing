@@ -1,0 +1,50 @@
+.ChatMessage {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    background-color: var(--hover-color);
+
+    padding: calc(2 * var(--margin-block));
+    border-radius: var(--border-radius-large);
+
+    gap: calc(2 * var(--gap));
+}
+
+.ChatMessage__Header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ChatMessage__Header__Start {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: var(--gap);
+}
+
+.ChatMessage__Header__End {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: var(--gap);
+}
+
+.ChatMessage__Header__Start > h1 {
+    font-size: 100%;
+
+    font-weight: 600;
+    color: var(--primary-text-color);
+}
+
+.ChatMessage__Header__Start > h2 {
+    font-size: 100%;
+
+    font-weight: 400;
+    color: var(--secondary-text-color);
+}

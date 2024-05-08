@@ -1,2 +1,2 @@
 # Thing
-This is a Thing
+This is a Thing.

@@ -1,0 +1,117 @@
+
+.Sidebar {
+    position: relative;
+
+    width: 20vw;
+    max-width: 25vw;
+    min-width: 15vw;
+    /* height: 100%; */
+
+    border-right: var(--border);
+
+    padding-inline: var(--margin-inline);
+    padding-block: var(--margin-block);
+
+    resize: horizontal;
+    overflow: visible;
+
+    z-index: 10000000000;
+}
+
+.Sidebar::after {
+    --sidebar-resize-width: 12px;
+    position: absolute;
+
+    top: 0;
+    right: calc(var(--sidebar-resize-width) / -2);
+    overflow: visible;
+
+
+    height: 100%;
+    width: var(--sidebar-resize-width);
+    cursor: ew-resize;   
+    
+    content: "";
+    /* background-color: red; */
+    /* opacity: 0.2; */
+
+    pointer-events: all;
+}
+
+/* on ::after :hover */
+.Sidebar:hover::after {
+    /* background-color: var(--tertiary-text-color); */
+    /* opacity: 0.2; */
+    /* z-index: 10000000; */
+}
+
+.Sidebar__Row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+
+    height: var(--min-height);
+    min-height: var(--min-height);
+
+    gap: var(--gap);
+
+
+    margin-top: var(--margin-block);
+}
+.Sidebar__Row:first-child { margin-top: 0; }
+
+
+.Sidebar__Results {
+    padding-top: var(--margin-block);
+
+    margin-inline: calc(-1 * var(--margin-inline))
+}
+
+.Sidebar__Result {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: var(--gap);
+    min-height: 70px;
+    height: 70px;
+
+    padding-inline: var(--margin-inline);
+}
+
+.Sidebar__Result:hover {
+    background-color: var(--hover-color);
+    cursor: pointer;
+}
+
+.Sidebar__Result:active {
+    background-color: var(--hover-active-color);
+}
+
+.Sidebar__Result___Active {
+    background-color: var(--hover-color);
+}
+
+.Sidebar__Result > div:first-child {
+    height: 25%;
+}
+
+.Sidebar__Result > div:last-child {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    /* gap: var(--gap); */
+}
+
+.Sidebar__Result > div:last-child h1 {
+    font-size: 133%;
+    color: var(--primary-text-color);
+}
+.Sidebar__Result > div:last-child p {
+    font-size: 100%;
+    color: var(--secondary-text-color);
+}

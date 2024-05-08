@@ -1,0 +1,68 @@
+.Chat {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+
+    margin-inline: calc(4 * var(--margin-inline));
+     margin-block: calc(2 * var(--margin-block));
+}
+
+.Chat__Main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+
+    gap: var(--gap);
+}
+
+.Chat__Bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    width: -webkit-fill-available;
+}
+
+.Chat__Bar__InputRow {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+
+    width: -webkit-fill-available;
+    min-height: var(--min-height);
+
+    gap: var(--gap);
+}
+
+.Chat__Bar__InputRow > button:last-child {
+    width: var(--min-height) !important;
+}
+
+.Chat__Bar__InputRow__Attachment {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: var(--min-height) !important;
+    height: var(--min-height) !important;
+    
+    margin-right: 3px;
+}
+
+.Chat__ToggleSidebar {
+    position: absolute;
+
+    left: var(--margin-inline);
+    top: var(--margin-block);
+
+    width: var(--min-height);
+    height: var(--min-height);
+}

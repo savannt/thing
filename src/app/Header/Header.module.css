@@ -1,0 +1,35 @@
+.Header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+
+    border-bottom: var(--border);
+
+    padding-inline: var(--margin-inline);
+    padding-block: var(--margin-block);
+
+
+    height: var(--min-height);
+    min-height: var(--min-height);
+}
+
+.Header__Start, .Header__End {
+    display: flex;
+
+    flex-direction: row;
+    align-items: center;
+
+    gap: var(--gap);
+
+
+    height: 100%;
+
+}
+
+.Header__Title {
+    font-family: '__Source_Code_Pro_ceb1b8';
+
+    font-size: 140%;
+}

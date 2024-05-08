@@ -1,0 +1,63 @@
+.NewChatContainer {
+    height: -webkit-fill-available;
+    width: -webkit-fill-available;
+
+    position: relative;
+}
+
+.NewChat {
+    position: relative;
+}
+
+.NewChat__DropdownButton {
+    position: absolute;
+    right: 0;
+
+    border-left: 1px solid var(--active-color-hidden);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.NewChat__DropdownButton:focus {
+    border-left: none;
+    border-radius: var(--border-radius);
+}
+
+
+.NewChat__Dropdown {
+    background-color: var(--background-color);
+
+    border: 1px solid var(--hover-active-color);
+    border-radius: var(--border-radius);
+
+
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    transform: translateY(100%);
+
+
+
+    width: 35vw;
+    max-width: 60vw;
+    height: fit-content !important;
+
+    box-shadow: var(--box-shadow);
+}
+
+
+.NewChat__Dropdown__Header {
+    min-height: var(--min-height);
+    height: var(--min-height);
+
+    width: -webkit-fill-available;
+
+    padding-inline: var(--margin-inline);
+    padding-block: var(--margin-block);
+
+    border-bottom: var(--border);
+}
+
+.NewChat__Dropdown__Results {
+    padding-inline: var(--margin-inline);
+    padding-block: var(--margin-block);
+}

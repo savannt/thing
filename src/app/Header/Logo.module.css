@@ -1,0 +1,17 @@
+.Logo {
+    display: inline-flex;
+    flex-direction: center;
+    align-items: flex-start;
+
+    gap: 6px;
+}
+
+.Logo h1 {
+    font-weight: 700;
+    font-size: 200%;
+}
+
+.Logo h2 {
+    font-weight: 200;
+    font-size: 160%;
+}

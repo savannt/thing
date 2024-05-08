@@ -1,0 +1,36 @@
+.Button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    
+    background-color: var(--secondary-color);
+    
+    height: 100%;
+    border-radius: var(--border-radius);
+
+    gap: calc(var(--gap) / 2);
+
+    z-index: 1000000;
+}
+
+.Button:hover {
+    opacity: 0.8;
+}
+
+.Button:active {
+    opacity: 0.6;
+}
+
+.Button img {
+    height: 40%;
+}
+
+.Button > div {
+    height: 40%;
+}
+
+.SquareButton {
+    aspect-ratio: 1/1;
+}
+
