@@ -14,7 +14,7 @@ import { useEffect, useState } from "react"
 import { SignedIn, SignedOut, SignIn, SignUp, useUser } from "@clerk/nextjs"
 
 export default function App () {
-    const FAKE_LOGIN = true;
+    const FAKE_LOGIN = false;
 
 
     const router = useRouter();

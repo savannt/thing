@@ -185,3 +185,9 @@ body > div > main {
 .cl-form {
   gap: var(--gap);
 }
+
+.cl-button {
+  background-color: var(--secondary-color);
+  border-radius: var(--border-radius);
+  box-shadow: none;
+}
