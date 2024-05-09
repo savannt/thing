@@ -11,16 +11,18 @@ import Logo from "@/app/Header/Logo"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
+import SquareButton from "@/components/Button/SquareButton"
+
 import { SignedIn, SignedOut, SignIn, SignUp, useUser } from "@clerk/nextjs"
 
 export default function App () {
     const FAKE_LOGIN = false;
 
-
     const router = useRouter();
     const { user, isSignedIn, isLoaded } = useUser();
     const [authLoaded, setAuthLoaded] = useState(false);
     const [authSignedIn, setAuthSignedIn] = useState(false);
+    const [isGuest, setIsGuest] = useState(false);
     useEffect(() => {
         if(isLoaded) {
             setAuthLoaded(true);
@@ -56,7 +58,6 @@ export default function App () {
     function ThingApp () {
         return (
             <>
-                
                 <Header group={group} onBack={onBack} />
                 <div id="main">
                     <Sidebar showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} />
@@ -71,17 +72,30 @@ export default function App () {
             <div style={{
                 width: "100vw",
                 height: "100vh",
-                display: FAKE_LOGIN ? "none" : "flex",
+                display: FAKE_LOGIN || isGuest ? "none" : "flex",
                 flexDirection: "column",
-                gap: "calc(var(--gap) * 3)",
                 justifyContent: "center",
-                alignItems: "center"
-
+                alignItems: "center",
+                gap: "12px"
             }}>
-                <Logo scale="1.7" />
+                <SquareButton id="login-theme" image="/images/icons/ic_theme.svg" onClick={() => {
+                    // toggle data-theme from light to dark
+                    document.documentElement.setAttribute("data-theme", document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light")
+                }}/>
+
+                <Logo scale="1.7" style={{
+                    marginBottom: "calc(var(--gap) * 3)"  
+                }} />
                 <SignedOut>
                     <SignIn path="/login"/>
                     <SignUp path="/register"/>
+                    <p style={{
+                        color: "var(--secondary-text-color)"
+                    }}>Continue as <a style={{
+                        opacity: 0.8
+                    }} onClick={() => {
+                        setIsGuest(true);
+                    }}>Guest</a></p>
                 </SignedOut>
 
                 {
@@ -94,7 +108,7 @@ export default function App () {
             </SignedIn>
 
             {
-                authLoaded && FAKE_LOGIN && <ThingApp />
+                authLoaded && (FAKE_LOGIN || isGuest) && <ThingApp />
             }
             
         </>

@@ -78,6 +78,11 @@ p {
   font-weight: 400;
 }
 
+a {
+  color: var(--action-color);
+  cursor: pointer;
+}
+
 h1, h2 {
   font-weight: 600;;
 }
@@ -133,6 +138,14 @@ body > div > main {
   height: -webkit-fill-available;
 }
 
+#login-theme {
+  position: absolute;
+  width: var(--min-height);
+  height: var(--min-height);
+  top: var(--margin-block);
+  right: var(--margin-inline);
+}
+
 
 .cl-cardBox {
   border-radius: var(--border-radius);
@@ -167,15 +180,48 @@ body > div > main {
 
 .cl-socialButtonsIconButton {
   background: var(--secondary-color);
-  border: 1px solid var(--tertiary-text-color) !important;
+  /* border: 1px solid var(--tertiary-text-color) !important; */
   aspect-ratio: 1/1;
 }
 
-.cl-input {
-  background: transparent;
+.cl-selectOptionsContainer {
+  font-family: '__Figtree_d680cf';
+  background: var(--secondary-color);
+  border: 1px solid var(--tertiary-text-color);
   color: var(--secondary-text-color);
-  border: 1px solid var(--tertiary-text-color) !important;
+
+  overflow: visible;
+}
+
+.cl-selectOptionsContainer > div:first-child {
+  border-bottom: 1px solid var(--tertiary-text-color);
+}
+
+.cl-selectSearchInput {
+  background: transparent !important;
+  /* font-family: '__Figtree_d680cf'; */
+}
+
+.cl-selectOption p {
+  color: var(--primary-text-color);
+}
+
+.cl-selectOption * {
+  font-family: '__Figtree_d680cf';
+}
+
+/* .cl-selectSearchInput:focus {
+  outline-offset: 2px;
+} */
+
+
+
+.cl-input {
+  background: transparent !important;
+  color: var(--secondary-text-color);
+  border: none !important;
   border-radius: var(--border-radius);
+  box-shadow: none;
 }
 
 .cl-footerActionText {
@@ -189,5 +235,67 @@ body > div > main {
 .cl-button {
   background-color: var(--secondary-color);
   border-radius: var(--border-radius);
+  border: none !important;
+  outline: none !important;
   box-shadow: none;
+}
+
+.cl-phoneInputBox > div > p {
+  color: var(--primary-text-color);
+}
+
+.cl-phoneInputBox {
+  gap: var(--gap);
+  border: 1px solid var(--tertiary-text-color);
+}
+
+.cl-selectButton {
+  background-color: transparent;
+  border: none !important;
+}
+
+.cl-selectButton * {
+  color: var(--secondary-text-color);
+}
+
+.cl-phoneInputBox .cl-formFieldInput {
+  border: 1px solid var(--tertiary-text-color);
+  background: var(--secondary-color);
+  border-radius: var(--border-radius);
+
+  margin-left: calc(var(--gap) / 2);
+}
+
+.cl-phoneInputBox:hover {
+  border: 1px solid var(--secondary-text-color);
+}
+
+
+.cl-phoneInputBox:focus-within {
+  border: 1px solid var(--action-color);
+}
+
+
+.cl-phoneInputBox input:focus {
+  outline: none;
+}
+
+/* last > div of .cl-footer if its not the only div */
+.cl-footer > div:last-child:not(:only-child) * {
+  color: var(--secondary-text-color);
+  opacity: 0.8;
+}
+
+.cl-footer > div:first-child:not(:only-child) {
+  /* border-radius: 0 0 var(--border-radius) var(--border-radius); */
+  border-bottom: 1px solid var(--hover-color);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center; 
+}
+
+.cl-footer > div:last-child:not(:only-child) {
+  /* border-top: 1px solid var(--hover-color); */
 }
