@@ -3,7 +3,7 @@
     flex-direction: center;
     align-items: flex-start;
 
-    gap: 6px;
+    gap: 3px;
     cursor: pointer !important;
     user-select: none;
 }

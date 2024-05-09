@@ -94,7 +94,9 @@ p, h1, h2, h3 {
       /* opacity: 0; Start fading out */
   }
   100% {
-      display: none; /* Element completely disappears */
+    width: 0%; /* Reduce width to 0 */
+
+      /* display: none; Element completely disappears */
       /* opacity: 0; */
   }
 }
@@ -128,7 +130,7 @@ p, h1, h2, h3 {
   }
   100% {
     min-width: 18vw;
-    display: block; /* Element completely disappears */
+    /* display: block; Element completely disappears */
     /* opacity: 1; */
   }
 }

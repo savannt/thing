@@ -64,7 +64,7 @@ export default function Sidebar ({ group, chat, showSidebar, onToggleSidebar, on
         }}>
             <h3 style={{
                 position: "absolute",
-                left: !showSidebar ? "calc(100% + var(--margin-inline) * 9)" : "calc(100% + var(--margin-inline) * 3)",
+                left: !showSidebar ? "calc(max(var(--margin-inline) * 9, 0px))" : "calc(max(100% + var(--margin-inline) * 3, 11vw))",
                 bottom: "calc(100% + (var(--min-height) / 2 + 3px))",
                 width: "500px",
                 opacity: "1"
