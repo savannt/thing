@@ -162,6 +162,19 @@ body > div > main {
   box-shadow: none;
 }
 
+#error-password {
+  color: var(--red);
+}
+
+#error-password * {
+  color: var(--red) !important;
+}
+
+
+.cl-cardBox .cl-signIn-start {
+  border: var(--border);
+}
+
 .cl-footer {
   background: var(--secondary-color);
 }
@@ -579,6 +592,10 @@ body > div > main {
 .cl-footer > div:last-child:not(:only-child) * {
   color: var(--secondary-text-color);
   opacity: 0.8;
+}
+
+.cl-phoneInputBox .cl-input {
+  border: none !important;
 }
 
 .cl-footer > div:first-child:not(:only-child) {
