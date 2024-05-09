@@ -10,10 +10,10 @@ export default function Profile () {
 
     return (
         <>
-            <div className={styles.Profile}>
-                <OrganizationSwitcher />
-            </div>
-            <div className={styles.Profile}>
+            <OrganizationSwitcher />
+            <div className={styles.Profile} onClick={() => {
+                document.querySelector(".cl-userButton-root").click();
+            }}>
                 <UserButton />
                 <div>
                     <h1>{displayName}</h1>
