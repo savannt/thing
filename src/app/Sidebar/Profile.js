@@ -2,7 +2,7 @@ import styles from "@/app/Sidebar/Profile.module.css";
 
 import { useUser, UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 
-export default function Profile () {
+export default function Profile ({ onLogout }) {
     const { user } = useUser();
 
     const displayName = "Guest";
@@ -12,7 +12,8 @@ export default function Profile () {
         <>
             <OrganizationSwitcher />
             <div className={styles.Profile} onClick={() => {
-                document.querySelector(".cl-userButton-root").click();
+                if(document.querySelector(".cl-userButton-root")) document.querySelector(".cl-userButton-root").click();
+                else onLogout();
             }}>
                 <UserButton />
                 <div>

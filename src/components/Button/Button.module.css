@@ -6,6 +6,7 @@
     
     background-color: var(--secondary-color);
     
+    min-width: min-content;
     height: 100%;
     border-radius: var(--border-radius);
 
@@ -13,6 +14,7 @@
 
     z-index: 1000000;
 
+    overflow: hidden;
 
     pointer-events: all;
 }
@@ -34,6 +36,8 @@
 }
 
 .SquareButton {
-    aspect-ratio: 1/1;
+    aspect-ratio: 1/1 !important;
+    height: var(--min-height) !important;
+    width: var(--min-height) !important;
 }
 

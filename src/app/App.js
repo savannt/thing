@@ -41,13 +41,26 @@ export default function App ({ page }) {
     const [chat, setChat] = useState(false);
 
 
-    function onToggleSidebar () {
-        setShowSidebar(!showSidebar);
+    function onToggleSidebar (val) {
+        setShowSidebar(typeof val === "boolean" ? val : !showSidebar);
     }
 
     function onBack () {
         setGroup(false);
         setChat(false);
+    }
+
+    function onHome () {
+        if(!showSidebar) {
+            setShowSidebar(true);
+        } else {
+            if(!group && !chat) {
+                setShowSidebar(false);
+            } else {
+                setGroup(false);
+                setChat(false);
+            }
+        }
     }
 
     function onLogout () {
@@ -58,9 +71,9 @@ export default function App ({ page }) {
     function ThingApp () {
         return (
             <>
-                <Header group={group} onBack={onBack} onLogout={onLogout} />
+                <Header group={group} onBack={onBack} onHome={onHome} onLogout={onLogout} />
                 <div id="main">
-                    <Sidebar showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} />
+                    <Sidebar showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} onLogout={onLogout} />
                     <Chat    showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} />
                 </div>
             </>

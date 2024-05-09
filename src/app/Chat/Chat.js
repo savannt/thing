@@ -48,9 +48,7 @@ export default function Chat ({ group, chat, showSidebar, onToggleSidebar }) {
                 position: showSidebar ? "relative" : "absolute",
                 marginInline: showSidebar ? "calc(var(--margin-inline) * 3)" : "calc(var(--margin-inline) * 9)",
             }}>
-
-
-                <div className={styles.Chat__Main}>
+                <div id="chat-main" className={styles.Chat__Main}>
 
 
                     {chatMessages.map((messageObject, index) => {

@@ -74,9 +74,97 @@ button, input, select, textarea {
   border: none;
 }
 
-p, h1, h2 {
+p, h1, h2, h3 {
   color: var(--primary-text-color);
 }
+
+@keyframes shrinkDisappear {
+  0% {
+      /* width:  Start with the current width */
+      /* width: unset; */
+      min-width: 0;
+      /* opacity: 1; */
+  }
+  70% {
+    /* opacity: 0; */
+  }
+  90% {
+      width: 0%; /* Reduce width to 0 */
+      min-width: 0;
+      /* opacity: 0; Start fading out */
+  }
+  100% {
+      display: none; /* Element completely disappears */
+      /* opacity: 0; */
+  }
+}
+
+@keyframes opacityDisappear {
+  0% {
+      opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
+      opacity: 0;
+  }
+}
+
+@keyframes growAppear {
+  0% {
+      width: 0; /* Start with the current width */
+      min-width: 0;
+      /* opacity: 0; */
+  }
+  30% {
+    /* opacity: 0.2; */
+  }
+  70% {
+    /* opacity: 1; */
+  }
+  100% {
+    min-width: 18vw;
+    display: block; /* Element completely disappears */
+    /* opacity: 1; */
+  }
+}
+
+@keyframes opacityAppear {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.2;
+  }
+  70% {
+    opacity: 1
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.opacityFadeOut {
+  animation: opacityDisappear 0.5s forwards;
+}
+
+.opacityFadeIn {
+  animation: opacityAppear 0.5s forwards;
+}
+
+.fadeOutLeft {
+  animation: shrinkDisappear 0.5s forwards;
+}
+
+.fadeInRight {
+  animation: growAppear 0.5s forwards;
+}
+
+
 
 p {
   font-weight: 400;
