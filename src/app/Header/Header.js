@@ -6,7 +6,7 @@ import SquareButton from "@/components/Button/SquareButton";
 
 export default function Header ({ group, chat, onBack }) {
     return (
-        <div id="header" className={styles.Header}>
+        <div id="header" className={`${styles.Header} animate__animated animate__fadeIn`}>
             <div className={styles.Header__Start}>
                 {
                     group ? <>

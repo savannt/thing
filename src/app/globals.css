@@ -88,6 +88,7 @@ body, html {
 
 
 body {
+  overflow: hidden;
   height: 100vh;
   max-height: 100vh;
 }
@@ -107,7 +108,7 @@ body > div > main {
 
   background-color: var(--background-color);
 }
-/*:root[data-mode="app"]*/ body > div > main {
+:root[data-mode="app"] body > div > main {
   border: 3px solid var(--tertiary-text-color);
   border-radius: 3px;
 }
@@ -130,4 +131,57 @@ body > div > main {
   align-items: stretch;
 
   height: -webkit-fill-available;
+}
+
+
+.cl-cardBox {
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.cl-card {
+  background: var(--background-color);
+  border: var(--border);
+  box-shadow: none;
+}
+
+.cl-footer {
+  background: var(--secondary-color);
+}
+
+.cl-headerTitle {
+  color: var(--primary-text-color);
+}
+
+.cl-headerSubtitle, .cl-dividerText {
+  color: var(--secondary-text-color);
+}
+
+.cl-formFieldLabel {
+  color: var(--primary-text-color);
+}
+
+.cl-formFieldAction, .cl-footerActionLink {
+  color: var(--action-color)
+}
+
+.cl-socialButtonsIconButton {
+  background: var(--secondary-color);
+  border: 1px solid var(--tertiary-text-color) !important;
+  aspect-ratio: 1/1;
+}
+
+.cl-input {
+  background: transparent;
+  color: var(--secondary-text-color);
+  border: 1px solid var(--tertiary-text-color) !important;
+  border-radius: var(--border-radius);
+}
+
+.cl-footerActionText {
+  color: var(--secondary-text-color);
+}
+
+.cl-form {
+  gap: var(--gap);
 }

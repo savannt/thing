@@ -46,7 +46,8 @@
     height: 100%;
 
     padding-inline: var(--gap);
-    padding-block: var(--margin-block);
+    padding-block: calc(var(--min-height) / 4 + 2px);
+    line-height: calc(var(--min-height) / 2) !important;
     margin-block: -1px;
     margin-inline: -1px;
     

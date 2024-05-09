@@ -9,10 +9,14 @@ const comfortaa = Comfortaa({ subsets: ["latin"] });
 
 
 
+import { ClerkProvider } from "@clerk/nextjs";
+
 export default function App ({ Component, pageProps }) {
     return (
-        <main className={`${comfortaa.className} ${sourceCodePro.className} ${figtree.className}`}>
-            <Component {...pageProps} />
-        </main>
+        <ClerkProvider>
+            <main className={`${comfortaa.className} ${sourceCodePro.className} ${figtree.className}`}>
+                <Component {...pageProps} />
+            </main>
+        </ClerkProvider>
     )
 }

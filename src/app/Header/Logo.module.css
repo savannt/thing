@@ -4,7 +4,10 @@
     align-items: flex-start;
 
     gap: 6px;
+    cursor: pointer !important;
+    user-select: none;
 }
+
 
 .Logo h1 {
     font-weight: 700;

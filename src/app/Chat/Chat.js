@@ -7,7 +7,7 @@ import ChatMessage from "@/app/Chat/ChatMessage"
 
 import { useState } from "react"
 
-export default function Chat ({ showSidebar, onToggleSidebar }) {
+export default function Chat ({ group, chat, showSidebar, onToggleSidebar }) {
 
     const [chatMessages, setChatMessages] = useState([
         {
