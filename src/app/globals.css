@@ -158,7 +158,7 @@ body > div > main {
 
 .cl-card {
   background: var(--background-color);
-  border: var(--border);
+  border-bottom: var(--border);
   box-shadow: none;
 }
 
@@ -179,7 +179,17 @@ body > div > main {
 }
 
 .cl-formFieldAction, .cl-footerActionLink {
-  color: var(--action-color)
+  color: var(--action-color);
+}
+
+.cl-formFieldAction:hover, .cl-footerActionLink:hover {
+  color: var(--action-color);
+  opacity: 0.8;
+}
+
+.cl-formFieldAction:active, .cl-footerActionLink:active {
+  color: var(--action-color);
+  opacity: 0.6;
 }
 
 .cl-socialButtonsIconButton {
@@ -232,7 +242,199 @@ body > div > main {
   outline-offset: 2px;
 } */
 
+.cl-organizationSwitcher-root {
+  width: 100%;
+  background: transparent !important;
+}
 
+.cl-userButtonTrigger {
+  background: transparent !important;
+}
+
+.cl-userPreview {
+  color: var(--secondary-text-color)
+}
+
+.cl-userButtonPopoverActionButtonIconBox {
+  color: var(--secondary-text-color);
+}
+
+.cl-userButtonPopoverActionButton {
+  /* background: var(--secondary-color); */
+  color: var(--secondary-text-color);
+}
+
+.cl-userButtonPopoverActionButton:hover {
+  color: var(--primary-text-color);
+}
+.cl-menuList {
+  font-family: '__Figtree_d680cf';
+
+  border-radius: var(--border-radius);
+}
+
+.cl-menuItem {
+  border-radius: var(--border-radius);
+}
+
+.cl-actionCard, .cl-menuList {
+  background: var(--secondary-color);
+  border: 1px solid var(--hover-color);
+  box-shadow: var(--box-shadow);
+}
+
+.cl-formButtonReset:hover, .cl-profileSectionPrimaryButton:hover, .cl-profileSectionItemList .cl-button:hover {
+  color: var(--secondary-text-color);
+}
+
+.cl-modalContent .cl-cardBox {
+  border: 3px solid var(--tertiary-text-color);
+  border-radius: var(--border-radius);
+}
+.cl-userButtonPopoverActionButton:active {
+  background-color: var(--hover-active-color);
+  color: var(--primary-text-color);
+}
+.cl-cardBox * {
+  color: var(--secondary-text-color);
+}
+.cl-cardBox h1 {
+  color: var(--primary-text-color);
+}
+.cl-navbar {
+  background: var(--secondary-color);
+}
+.cl-navbar * {
+  color: var(--secondary-text-color);
+}
+.cl-navbar h1 {
+  color: var(--primary-text-color);
+}
+
+.cl-scrollBox {
+  background-color: var(--background-color);
+  border-left: 1px solid var(--hover-color);
+}
+
+.cl-rootBox {
+  font-family: '__Figtree_d680cf';
+
+}
+
+.cl-organizationSwitcherPopoverCard {
+  font-family: '__Figtree_d680cf';
+  z-index: 1000000000000;
+  /* background-color: var(--secondary-color); */
+  border-radius: var(--border-radius);
+  color: var(--primary-text-color);
+}
+
+.cl-organizationSwitcherPopoverActionButton {
+  color: var(--secondary-text-color);
+}
+
+.cl-organizationSwitcherPopoverActionButton:hover {
+  color: var(--primary-text-color);
+}
+
+.cl-organizationSwitcherPopoverActionButton:active {
+  background-color: var(--hover-active-color);
+  color: var(--primary-text-color);
+}
+
+.cl-userButtonPopoverCard {
+  font-family: '__Figtree_d680cf';
+  z-index: 1000000000000;
+  transform: translate(-12px, -8px) !important;
+  /* background-color: var(--secondary-color); */
+  border-radius: var(--border-radius);
+  color: var(--primary-text-color);
+}
+
+.cl-userButtonPopoverMain, .cl-organizationSwitcherPopoverMain {
+  font-family: '__Figtree_d680cf';
+  background-color: var(--secondary-color);
+  border: 1px solid var(--hover-color);
+  border-radius: var(--border-radius);
+  color: var(--primary-text-color);
+}
+
+.cl-userPreview {
+  color: var(--primary-text-color);
+}
+
+.cl-userButtonPopoverFooter, .cl-organizationSwitcherPopoverFooter {
+  display: none;
+  background: var(--tertiary-text-color) !important;
+}
+
+.cl-userButtonPopoverFooter * {
+  color: var(--secondary-text-color);
+}
+
+.cl-avatarBox {
+  background: transparent !important;
+}
+
+.cl-organizationSwitcherTrigger svg {
+  margin-left: auto;
+  color: var(--secondary-text-color);
+}
+
+/* span with no .cl-userPreviewAvatarBox class */
+
+.cl-userPreviewAvatarBox img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBel"] {
+  /* set src attribute */
+  content: url("/images/avatar.png");
+}
+
+.cl-userButtonPopoverActionButton:hover {
+  background-color: var(--hover-color) !important;
+}
+.cl-userButtonPopoverActionButton:active {
+  background-color: var(--hover-active-color) !important;
+}
+
+.cl-userButtonAvatarBox > img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBel"] {
+  display: none;
+}
+
+.cl-organizationSwitcherTrigger:hover {
+  background: var(--hover-color) !important;
+  border: 1px solid var(--hover-color) !important;
+}
+
+.cl-organizationSwitcherTrigger:active {
+  background: var(--hover-active-color) !important;
+  border: 1px solid var(--hover-active-color) !important;
+}
+
+.cl-organizationPreviewMainIdentifier {
+  color: var(--secondary-text-color);
+  font-weight: 700;
+}
+
+.cl-modalContent:focus {
+  outline: none !important;
+}
+
+.cl-modalContent:focus .cl-cardBox {
+  outline-offset: 2px;
+  outline: 2px solid var(--action-color);
+}
+
+.cl-tagInputContainer {
+  background: var(--secondary-color);
+  color: var(--secondary-text-color);
+}
+
+.cl-tagInputContainer input {
+  color: var(--secondary-text-color) !important;
+}
+
+.cl-createOrganization-root .cl-headerTitle {
+  font-size: 160%;
+}
 
 .cl-input {
   background: transparent !important;
@@ -241,7 +443,9 @@ body > div > main {
   border-radius: var(--border-radius);
   box-shadow: none;
 }
-
+.cl-formFieldInput__deleteConfirmation, .cl-formFieldInput {
+  border: 1px solid var(--hover-color) !important;
+}
 .cl-footerActionText {
   color: var(--secondary-text-color);
 }
@@ -256,6 +460,25 @@ body > div > main {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+}
+
+.cl-tabButton {
+  padding-inline: var(--gap);
+}
+
+.cl-tabButton:hover {
+  color: var(--secondary-text-color);
+}
+
+.cl-organizationSwitcherTrigger {
+  background: transparent !important;
+  border: 1px solid var(--hover-color) !important;
+
+  align-items: flex-start;
+
+  padding: calc(var(--margin-block) * 1) !important;
+
+  width: -webkit-fill-available;
 }
 
 .cl-button:hover {
@@ -294,6 +517,29 @@ body > div > main {
   background-color: var(--hover-active-color);
 }
 
+.cl-identityPreviewText {
+  color: var(--primary-text-color);
+}
+
+.cl-identityPreviewEditButton {
+  background: transparent;
+  color: var(--hover-color);
+}
+
+.cl-formFieldInputShowPasswordButton {
+  color: var(--secondary-text-color);
+}
+
+.cl-identityPreviewEditButton:hover {
+  background: transparent;
+  color: var(--hover-active-color);
+}
+
+.cl-identityPreviewEditButton:active {
+  background: transparent;
+  color: var(--action-color);
+}
+
 .cl-phoneInputBox .cl-formFieldInput {
   border: 1px solid var(--tertiary-text-color);
   background: var(--secondary-color);
@@ -306,6 +552,19 @@ body > div > main {
   border: 1px solid var(--hover-active-color);
 }
 
+.cl-formResendCodeLink {
+  background: transparent !important;
+  color: var(--action-color);
+}
+
+.cl-formFieldInput__password {
+  border: 1px solid var(--tertiary-text-color) !important;
+}
+
+.cl-otpCodeFieldInput {
+  background-color: var(--secondary-color) !important;
+  border: none !important;
+}
 
 .cl-phoneInputBox:has(input:focus) {
   border: 1px solid var(--action-color);

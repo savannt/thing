@@ -13,12 +13,13 @@ import { useEffect, useState } from "react"
 
 import SquareButton from "@/components/Button/SquareButton"
 
-import { SignedIn, SignedOut, SignIn, SignUp, useUser } from "@clerk/nextjs"
+import { SignedIn, SignedOut, SignIn, SignUp, useUser, useClerk } from "@clerk/nextjs"
 
-export default function App () {
+export default function App ({ page }) {
     const FAKE_LOGIN = false;
 
     const router = useRouter();
+    const { signOut } = useClerk();
     const { user, isSignedIn, isLoaded } = useUser();
     const [authLoaded, setAuthLoaded] = useState(false);
     const [authSignedIn, setAuthSignedIn] = useState(false);
@@ -33,12 +34,6 @@ export default function App () {
             setAuthSignedIn(false);
         }
     }, [isLoaded, isSignedIn]);
-
-    useEffect(() => {
-        if(authLoaded && !authSignedIn && (!router.asPath.includes("/login") || !router.asPath.includes("/register"))) {
-            router.push("/login");
-        }
-    }, [router.asPath, authLoaded, authSignedIn]);
 
 
     const [showSidebar, setShowSidebar] = useState(true);
@@ -57,7 +52,7 @@ export default function App () {
 
     function onLogout () {
         setIsGuest(false);
-        router.push("/login");
+        signOut(() => router.push("/"));
     }
 
     function ThingApp () {
@@ -77,7 +72,7 @@ export default function App () {
             <div style={{
                 width: "100vw",
                 height: "100vh",
-                display: FAKE_LOGIN || isGuest ? "none" : "flex",
+                display: authLoaded && !isGuest && !isSignedIn ? "flex" : "none",
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
@@ -87,13 +82,16 @@ export default function App () {
                     // toggle data-theme from light to dark
                     document.documentElement.setAttribute("data-theme", document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light")
                 }}/>
-
                 <Logo scale="1.7" style={{
                     marginBottom: "calc(var(--gap) * 3)"  
                 }} />
+
+
+
+
                 <SignedOut>
-                    <SignIn path="/login"/>
-                    <SignUp path="/register"/>
+                    {page === "register" ? <SignUp routing="hash"/> : <SignIn routing="hash"/>}
+                    
                     { authLoaded && !authSignedIn && <p style={{
                         color: "var(--secondary-text-color)",
                         scale: "0.83"
@@ -110,7 +108,7 @@ export default function App () {
             </div>
 
             <SignedIn>
-                { authLoaded && !FAKE_LOGIN && <ThingApp />}
+                { authLoaded && !FAKE_LOGIN && !isGuest && <ThingApp />}
             </SignedIn>
 
             {

@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import App from "@/app/App";
 
-export default function Root() {
+export default function Root({ page }) {
     return (
         <>
             <Head>
@@ -16,7 +16,7 @@ export default function Root() {
                 <link rel="icon" href="/icon.png" type="image/png" sizes="256x256" />
                 <link rel="apple-touch-icon" href="/icon.png" type="image/png" sizes="256x256" />
             </Head>
-            <App />
+            <App page={page} />
         </>
     )
 }
