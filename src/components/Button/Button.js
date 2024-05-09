@@ -2,7 +2,7 @@ import styles from "@/components/Button/Button.module.css";
 
 import ColorImage from "@/components/ColorImage/ColorImage";
 
-export default function Button ({ ref, aspectRatio, aria = false, id, disabled = false, text, image, background = "var(--secondary-color)", color = "var(--primary-text-color)", width, className, children, onClick, paddingRight }) {
+export default function Button ({ overflow = "hidden", ref, aspectRatio, aria = false, id, disabled = false, text, image, background = "var(--secondary-color)", color = "var(--primary-text-color)", width, className, children, onClick, paddingRight }) {
     return (
         aria ? <div id={id} tabIndex={0} role="button" aria-pressed={false} disabled={disabled} className={`${className} ${styles.Button}`} onClick={(...e) => {
             if(disabled) return;
@@ -14,7 +14,8 @@ export default function Button ({ ref, aspectRatio, aria = false, id, disabled =
             cursor: disabled ? "not-allowed" : "pointer",
             opacity: disabled ? 0.5 : 1,
             paddingRight: paddingRight,
-            aspectRatio: aspectRatio ? aspectRatio : "unset"
+            aspectRatio: aspectRatio ? aspectRatio : "unset",
+            overflow
         }}>
             { image && <ColorImage aspectRatio="1/1" image={image} color={color} />}
             { text && <p style={{
@@ -34,7 +35,8 @@ export default function Button ({ ref, aspectRatio, aria = false, id, disabled =
             cursor: disabled ? "not-allowed" : "pointer",
             opacity: disabled ? 0.5 : 1,
             paddingRight: paddingRight,
-            aspectRatio: aspectRatio ? aspectRatio : "unset"
+            aspectRatio: aspectRatio ? aspectRatio : "unset",
+            overflow
         }}>
             { image && <ColorImage aspectRatio="1/1" image={image} color={color} />}
             { text && <p style={{

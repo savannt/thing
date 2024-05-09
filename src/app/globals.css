@@ -596,7 +596,8 @@ body > div > main {
 
 .cl-phoneInputBox {
   gap: var(--gap);
-  border: 1px solid var(--tertiary-text-color);
+  /* box-shadow: none !important; */
+  border: 1px solid var(--hover-color);
 }
 
 .cl-selectButton {

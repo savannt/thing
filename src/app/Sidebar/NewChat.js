@@ -28,7 +28,7 @@ export default function NewChat ({ group }) {
     }, []);
 
     return (
-        <Button id="newChat" aria={true} className={styles.NewChat} image="/images/icons/plus.svg" text={group ? "New Chat" : "New Chat Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"}>
+        <Button id="newChat" overflow="visible" aria={true} className={styles.NewChat} image="/images/icons/plus.svg" text={group ? "New Chat" : "New Chat Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"}>
             {
                 showDropdown && <>
                     <SquareButton id="newChatDropdown" onClick={(e) => {
