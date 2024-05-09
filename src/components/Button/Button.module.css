@@ -12,14 +12,17 @@
     gap: calc(var(--gap) / 2);
 
     z-index: 1000000;
+
+
+    pointer-events: all;
 }
 
 .Button:hover {
-    opacity: 0.8;
+    opacity: 0.8 !important;
 }
 
 .Button:active {
-    opacity: 0.6;
+    opacity: 0.6 !important;
 }
 
 .Button img {

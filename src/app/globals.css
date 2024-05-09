@@ -10,6 +10,8 @@
   --action-color-hidden: #6486ff2d;
 
 
+  --red: rgba(255, 101, 101, 0.668);
+
   --disabled-color: #59595922;
 
   --hover-color: #90909050;
@@ -26,6 +28,8 @@
   --border: 2px solid var(--hover-color);
   --border-radius: 9px;
   --border-radius-large: 13px;
+
+
 }
 
 /* data-theme dark, or if not set */
@@ -184,6 +188,20 @@ body > div > main {
   aspect-ratio: 1/1;
 }
 
+.cl-socialButtonsIconButton:hover {
+  background: var(--hover-color);
+  box-shadow: none;
+}
+
+.cl-socialButtonsIconButton:active {
+  background: var(--hover-active-color);
+  box-shadow: none;
+}
+
+.cl-socialButtonsIconButton:focus {
+  box-shadow: none !important;
+}
+
 .cl-selectOptionsContainer {
   font-family: '__Figtree_d680cf';
   background: var(--secondary-color);
@@ -237,7 +255,15 @@ body > div > main {
   border-radius: var(--border-radius);
   border: none !important;
   outline: none !important;
-  box-shadow: none;
+  box-shadow: none !important;
+}
+
+.cl-button:hover {
+  background-color: var(--hover-color);
+}
+
+.cl-button:active {
+  background-color: var(--hover-active-color);
 }
 
 .cl-phoneInputBox > div > p {
@@ -258,6 +284,16 @@ body > div > main {
   color: var(--secondary-text-color);
 }
 
+
+.cl-selectButton:hover {
+  background-color: var(--hover-color);
+}
+
+.cl-selectButton:focus {
+  /* outline: initial !important; */
+  background-color: var(--hover-active-color);
+}
+
 .cl-phoneInputBox .cl-formFieldInput {
   border: 1px solid var(--tertiary-text-color);
   background: var(--secondary-color);
@@ -267,17 +303,17 @@ body > div > main {
 }
 
 .cl-phoneInputBox:hover {
-  border: 1px solid var(--secondary-text-color);
+  border: 1px solid var(--hover-active-color);
 }
 
 
-.cl-phoneInputBox:focus-within {
+.cl-phoneInputBox:has(input:focus) {
   border: 1px solid var(--action-color);
 }
 
 
 .cl-phoneInputBox input:focus {
-  outline: none;
+  outline: none !important;
 }
 
 /* last > div of .cl-footer if its not the only div */

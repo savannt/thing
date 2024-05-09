@@ -1,0 +1,65 @@
+.Profile {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    border: 1px solid var(--hover-color);
+    border-radius: var(--border-radius-large);
+
+    gap: var(--gap);
+
+    padding: calc(var(--margin-block) * 0.8);
+    /* padding-inline: var(--margin-inline); */
+
+    cursor: pointer;
+}
+
+.Profile:hover {
+    border: 1px solid var(--hover-color);
+    background-color: var(--hover-color);
+}
+
+.Profile:active {
+    border: 1px solid var(--hover-active-color);
+    background-color: var(--hover-active-color);
+}
+
+
+/* .Profile:first-child and has only an empty div */
+.Profile:first-child:has(div:empty:only-child) {
+    display: none;
+}
+
+.Profile:last-child > div:first-child {
+    width: calc(var(--min-height) * 0.8);
+    height: calc(var(--min-height) * 0.8);
+    border-radius: 100%;
+
+    background-image: url("/images/avatar.png");
+    background-size: 100%;
+    background-position: center;
+
+    /* background-color: var(--secondary-color); */
+}
+
+.Profile > div:last-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    gap: 0;
+}
+
+.Profile > div:last-child > h1 {
+    color: var(--secondary-text-color);
+    font-size: 100%;
+    font-weight: 800;
+}
+
+.Profile > div:last-child > p {
+    color: var(--secondary-text-color);
+    font-size: 80%;
+    font-weight: 400;
+}

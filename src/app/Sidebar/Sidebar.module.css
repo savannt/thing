@@ -2,6 +2,12 @@
 .Sidebar {
     position: relative;
 
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+
+
     width: 20vw;
     max-width: 25vw;
     min-width: 15vw;
@@ -65,7 +71,9 @@
 .Sidebar__Results {
     padding-top: var(--margin-block);
 
-    margin-inline: calc(-1 * var(--margin-inline))
+    margin-inline: calc(-1 * var(--margin-inline));
+
+    height: -webkit-fill-available;
 }
 
 .Sidebar__Result {
@@ -114,4 +122,13 @@
 .Sidebar__Result > div:last-child p {
     font-size: 100%;
     color: var(--secondary-text-color);
+}
+
+.Sidebar__Footer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+
+    gap: var(--gap);
 }

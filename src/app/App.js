@@ -55,10 +55,15 @@ export default function App () {
         setChat(false);
     }
 
+    function onLogout () {
+        setIsGuest(false);
+        router.push("/login");
+    }
+
     function ThingApp () {
         return (
             <>
-                <Header group={group} onBack={onBack} />
+                <Header group={group} onBack={onBack} onLogout={onLogout} />
                 <div id="main">
                     <Sidebar showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} />
                     <Chat    showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} />
@@ -89,13 +94,14 @@ export default function App () {
                 <SignedOut>
                     <SignIn path="/login"/>
                     <SignUp path="/register"/>
-                    <p style={{
-                        color: "var(--secondary-text-color)"
+                    { authLoaded && !authSignedIn && <p style={{
+                        color: "var(--secondary-text-color)",
+                        scale: "0.83"
                     }}>Continue as <a style={{
                         opacity: 0.8
                     }} onClick={() => {
                         setIsGuest(true);
-                    }}>Guest</a></p>
+                    }}>Guest</a></p> }
                 </SignedOut>
 
                 {

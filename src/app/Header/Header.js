@@ -4,7 +4,7 @@ import Logo from "@/app/Header/Logo";
 import SquareButton from "@/components/Button/SquareButton";
 
 
-export default function Header ({ group, chat, onBack }) {
+export default function Header ({ group, chat, onBack, onLogout }) {
     return (
         <div id="header" className={styles.Header}>
             <div className={styles.Header__Start}>
@@ -22,6 +22,7 @@ export default function Header ({ group, chat, onBack }) {
                     // toggle data-theme from light to dark
                     document.documentElement.setAttribute("data-theme", document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light")
                 }}/>
+                <SquareButton image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/>
             </div>
         </div>
     )

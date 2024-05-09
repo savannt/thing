@@ -6,6 +6,7 @@ import ColorImage from "@/components/ColorImage/ColorImage"
 import Input from "@/components/Input/Input"
 
 import NewChat from "@/app/Sidebar/NewChat"
+import Profile from "@/app/Sidebar/Profile"
 
 import { createRef, useState, useEffect } from "react"
 
@@ -69,6 +70,10 @@ export default function Sidebar ({ group, chat, showSidebar, onToggleSidebar }) 
                         <p>Some text here</p>
                     </div>
                 </div> */}
+            </div>
+
+            <div className={styles.Sidebar__Footer}>
+                <Profile />
             </div>
         </div>
     )
