@@ -15,6 +15,10 @@
     cursor: pointer;
 }
 
+.Profile * {
+    user-select: none !important;
+}
+
   
 .Profile:hover {
     border: 1px solid var(--hover-color);

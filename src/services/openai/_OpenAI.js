@@ -1,6 +1,4 @@
 import OpenAI from "openai";
-import dotenv from "dotenv";
-process.env = dotenv.config({ path: ".env.local" }).parsed;
 
 export const OPENAI_MODEL = "gpt-4-0125-preview";
 

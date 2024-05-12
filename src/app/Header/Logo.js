@@ -1,8 +1,8 @@
 import styles from "@/app/Header/Logo.module.css";
 
-export default function Logo({ scale = "1", onClick, style = {} }) {
+export default function Logo({ className, scale = "1", onClick, style = {} }) {
     return (
-        <div className={styles.Logo} onClick={onClick} style={{
+        <div className={`${styles.Logo} ${className}`} onClick={onClick} style={{
             scale,
             ...style
         }}>

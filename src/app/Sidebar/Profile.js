@@ -12,7 +12,8 @@ export default function Profile ({ onLogout }) {
         <>
             <OrganizationSwitcher />
             <div className={styles.Profile} onClick={() => {
-                if(document.querySelector(".cl-userButton-root")) document.querySelector(".cl-userButton-root").click();
+                if(document.querySelector(".cl-userButton-popover")) document.querySelector("body").click();
+                else if(document.querySelector(".cl-userButtonTrigger")) document.querySelector(".cl-userButtonTrigger").click()
                 else onLogout();
             }}>
                 <UserButton />

@@ -50,3 +50,14 @@
     font-weight: 400;
     color: var(--secondary-text-color);
 }
+
+
+@media (max-width: 400px) {
+    .ChatMessage__Header__Start > h1 {
+        font-size: 80%;
+    }
+
+    .ChatMessage__Header__Start > h2 {
+        font-size: 80%;
+    }
+}

@@ -19,10 +19,10 @@ export default function Button ({ overflow = "hidden", ref, aspectRatio, aria = 
         }}>
             { image && <ColorImage aspectRatio="1/1" image={image} color={color} />}
             { text && <p style={{
-                fontSize: "105%",
+                fontSize: "85%",
                 fontWeight: "500",
                 color,
-                whiteSpace: "pre"
+                whiteSpace: "normal"
             }}>{text}</p>}
             { children }
         </div> : <button id={id} disabled={disabled} className={`${className} ${styles.Button}`} onClick={(...e) => {
@@ -40,10 +40,10 @@ export default function Button ({ overflow = "hidden", ref, aspectRatio, aria = 
         }}>
             { image && <ColorImage aspectRatio="1/1" image={image} color={color} />}
             { text && <p style={{
-                fontSize: "105%",
+                fontSize: "85%",
                 fontWeight: "500",
                 color,
-                whiteSpace: "pre"
+                whiteSpace: "normal"
             }}>{text}</p>}
             { children }
         </button>

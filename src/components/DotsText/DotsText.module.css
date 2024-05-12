@@ -1,0 +1,17 @@
+.Dots {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    gap: 0px;
+
+    height: -webkit-fill-available;
+}
+
+.Dot {
+    width: 25px;
+    height: 25px;
+
+    margin-top: 5px;
+    margin-left: -2px;
+}

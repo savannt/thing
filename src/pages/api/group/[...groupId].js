@@ -1,5 +1,5 @@
 import mongo  from "@/services/mongodb";
-import openai, { createAssistant } from "@/services/openai";
+import { Assistant } from "@/services/openai/OpenAI.js";
 import { generateGroupId } from "@/services/generator";
 
 import authenticate from "@/services/authenticateRequest";
@@ -24,8 +24,10 @@ export default async function handler(req, res) {
     if(groupId === "new") {
         const title = req.query.title || "New Untitled Group " + /* random large number */ Math.floor(Math.random() * 1000000);
         
-        const assistantId = await createAssistant();
-        
+        const assistant = await Assistant.create("An AI Assistant", "Act as extremely rude and arrogant AI Assistant");
+        if(!assistant) return res.status(500).json({ message: "Failed to create AI Assistant" });
+        const assistantId = assistant.id;
+
         const data = {
             userId,
             title,

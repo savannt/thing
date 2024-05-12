@@ -1,0 +1,61 @@
+.NotificationsLayer {
+    position: absolute;
+
+    left: 0px;
+    top: 0px;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+
+    gap: var(--gap);
+
+    margin-inline: calc(-2 * var(--margin-inline));
+    margin-block: calc(-2 * var(--margin-inline));
+
+    overflow: visible;
+
+
+    pointer-events: none;
+}
+
+.NotificationCard {
+    background-color: var(--secondary-color);
+    color: var(--primary-text-color);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding-block: var(--margin-block);
+    padding-inline: var(--margin-inline);
+
+    border: 1px solid var(--hover-color);
+    border-radius: var(--border-radius);
+
+    gap: var(--gap);
+}
+
+.NotificationCard > .NotificationCard__Image {
+    width: 50px;
+    height: 50px;
+    /* border-radius: 50%; */
+}
+
+.NotificationCard__Content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    gap: var(--gap);
+}
+

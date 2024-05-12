@@ -6,8 +6,12 @@ import SquareButton from "@/components/Button/SquareButton";
 
 
 import { useState, useEffect } from "react";
+import ColorImage from "@/components/ColorImage/ColorImage";
 
-export default function NewChat ({ group }) {
+
+import { groupNew } from "@/client/group";
+
+export default function NewChat ({ enterpriseId, group, setGroup, disabledGroups, groups, setGroups, onDeleteGroup }) {
     let showDropdown = !!!group;
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -27,8 +31,50 @@ export default function NewChat ({ group }) {
         }
     }, []);
 
+
+    const [lockoutDropdown, setDropdownLockout] = useState(false);
+
+    const results = groups.filter(group => group.title.toLowerCase().includes(inputText.toLowerCase()));
+    const hasMatches = results.length > 0;
+    const hasText = inputText && inputText.length > 0;
+
+    function Row ({ disabled = false, id, image, text, onClick, showDelete = false, onDelete }) {
+        return (
+            <div id={id} className={styles.NewChat__Dropdown__Row} onClick={(...e) => {
+                if(disabled) return;
+                if(onClick) onClick(...e);
+            }} tabIndex={1} role="button" aria-pressed={false} style={{
+                cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.5 : 1
+            }}>
+                { image && <ColorImage image={image} color="var(--secondary-text-color)" /> }
+                <p>{text}</p>
+
+                { showDelete && <SquareButton className={styles.NewChat__Dropdown__Row__Delete} onClick={(e) => {
+                    if(onDelete) onDelete();
+                    e.stopPropagation();
+                }} image="/images/icons/trash.svg" color="var(--red)" background={false} /> }
+            </div>
+        )
+    }
+
     return (
-        <Button id="newChat" overflow="visible" aria={true} className={styles.NewChat} image="/images/icons/plus.svg" text={group ? "New Chat" : "New Chat Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"}>
+        <Button disabled={lockoutDropdown} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/new_chat.svg"} text={group ? `New Chat with ${group?.title}` : "New Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
+            // if we are not in the dropdown
+            if(e.target.id !== "newChatDropdownMenu" && e.target.closest("#newChatDropdownMenu") === null) {
+                console.log(e.target);
+                console.log(e.target.closest("#newChatDropdown"))
+                if(group) {
+    
+                } else {
+                    setDropdownOpen((prev) => {
+                        return !prev;
+                    });
+                }
+
+            }
+            
+        }}>
             {
                 showDropdown && <>
                     <SquareButton id="newChatDropdown" onClick={(e) => {
@@ -37,21 +83,66 @@ export default function NewChat ({ group }) {
                         });
                         e.stopPropagation();
                     }} className={styles.NewChat__DropdownButton} background={false} image="/images/icons/caret/caret_down.svg" color="var(--active-color)" />
-                    { dropdownOpen && <div className={styles.NewChat__Dropdown}>
+                    { dropdownOpen && <div id="newChatDropdownMenu" className={styles.NewChat__Dropdown}>
                         <div className={styles.NewChat__Dropdown__Header}>
                             <Input placeholder="Search or create a group" value={inputText} onChange={(e) => {
                                 setInputText(e.target.value);
+                            }} onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    const button = document.getElementById("newGroup") || document.getElementById("firstGroupResult");
+                                    if (button) {
+                                        button.focus();  // Focus on the button
+                                        button.dispatchEvent(new MouseEvent("mousedown", {bubbles: true}));
+                                        setTimeout(() => {
+                                            button.dispatchEvent(new MouseEvent("mouseup", {bubbles: true}));
+                                            button.click(); // Fallback to ensure click is performed
+                                        }, 100); // Delay to simulate user pressing and releasing
+                                    }
+                                }
                             }} />
                         </div>
-                        <div className={styles.NewChat__Dropdown__Results}>
-                            <p style={{
-                                width: "-webkit-fill-available",
-                                textAlign: "center",
-                                color: "var(--tertiary-text-color)"
-                            }}>no results</p>
-        
-                            
-                        </div>
+                        {
+                            !hasMatches && <>
+                                
+                                { hasText && <Row id={"newGroup"} background="var(--active-color-hidden)" image="/images/icons/new_chat.svg" text={`Create a new "${inputText}" group`} onClick={() => {
+                                    setDropdownLockout(true);
+                                    groupNew(enterpriseId, inputText).then((newGroup) => {
+                                        setGroups((prev) => {
+                                            return [...prev, newGroup];
+                                        });
+                                        setInputText("");
+                                        setGroup(newGroup);
+                                        setDropdownLockout(false);
+                                    })
+                                    
+                                }} /> }
+
+                                <div className={styles.NewChat__Dropdown__Results}>
+                                    <p style={{
+                                        width: "-webkit-fill-available",
+                                        textAlign: "center",
+                                        color: "var(--tertiary-text-color)"
+                                    }}>no results</p>
+                                </div>
+                            </>
+                        }
+
+                        {
+                            hasMatches && results.map((group, index) => {
+                                let id = index === 0 ? "firstGroupResult" : "";
+
+                                const isDisabled = disabledGroups.includes(group.groupId);
+
+                                return <Row disabled={isDisabled} id={id} key={group.groupId} image="/images/icons/thing.png" text={group.title} onClick={() => {
+                                    setGroup(group);
+                                    setDropdownOpen(false);
+                                }} showDelete={true} onDelete={() => {
+                                    onDeleteGroup(group);
+                                    // setDropdownOpen(false);
+                                }} />
+                            })
+                        }
+
                     </div>}
                 </>
             }

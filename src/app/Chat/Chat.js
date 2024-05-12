@@ -7,7 +7,12 @@ import ChatMessage from "@/app/Chat/ChatMessage"
 
 import { useState } from "react"
 
-export default function Chat ({ group, chat, showSidebar, onToggleSidebar }) {
+export default function Chat ({ group, chat, showSidebar }) {
+    function onToggleSidebar () {
+        if(!document.getElementById("toggle-sidebar")) return alert("A Fatal Error Has Occured:\n\nuhh, jeepers this ain't good chief-\nI can't find the sidebar toggle button");
+        document.getElementById("toggle-sidebar").click();
+    }
+
 
     const [chatMessages, setChatMessages] = useState([
         {
@@ -43,11 +48,9 @@ export default function Chat ({ group, chat, showSidebar, onToggleSidebar }) {
 
     return (
         <>
-            { !showSidebar && <SquareButton className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => onToggleSidebar() }/> }
-            <div className={`${styles.Chat} animate__animated animate__fadeIn`} style={{
-                position: showSidebar ? "relative" : "absolute",
-                marginInline: showSidebar ? "calc(var(--margin-inline) * 3)" : "calc(var(--margin-inline) * 9)",
-            }}>
+            <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => onToggleSidebar() }/>
+            
+            <div id="chat" className={`${styles.Chat} animate__animated animate__fadeIn`}>
                 <div id="chat-main" className={styles.Chat__Main}>
 
 

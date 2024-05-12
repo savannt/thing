@@ -25,7 +25,12 @@
 
 
     height: 100%;
+}
 
+.Header__Start h2 {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .Header__Title {

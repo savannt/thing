@@ -66,3 +66,43 @@
     width: var(--min-height);
     height: var(--min-height);
 }
+
+@media (max-width: 400px) {
+    .Chat__Bar__InputRow {
+        /* gap: 0px; */
+        gap: 6px;
+    }
+
+    .Chat__Bar__InputRow > div:first-child {
+        /* border-top-right-radius: 0px; */
+        /* border-bottom-right-radius: 0px; */
+        /* border-right: 0px; */
+    }
+
+    .Chat__Bar__InputRow > *:last-child {
+        height: 36px !important;
+
+        border: 1px solid var(--hover-active-color);
+        border-left: none;
+    }
+
+
+    /* if InputRow > div > input [ has only 1 row ] then style InputRow > div */
+    .Chat__Bar__InputRow > div:first-child:has(textarea[rows="1"]) {
+        border-right: none;
+        
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+
+    .Chat__Bar__InputRow:has(textarea[rows="1"]) {
+        gap: 0px !important;
+    }
+
+    .Chat__Bar__InputRow:has(textarea[rows="1"]) > *:last-child {
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
+
+}

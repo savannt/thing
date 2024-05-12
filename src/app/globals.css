@@ -30,6 +30,19 @@
   --border-radius-large: 13px;
 
 
+  --margin-chat: 6vw;
+}
+
+/* below 400 px */
+@media (max-width: 400px) {
+  :root {
+    --margin-inline: 12px;
+    --margin-block: 6px;
+    --min-height: 32px;
+    /* --gap: 6px; */
+
+    --margin-chat: 1vw;
+  }
 }
 
 /* data-theme dark, or if not set */
@@ -94,7 +107,9 @@ p, h1, h2, h3 {
       /* opacity: 0; Start fading out */
   }
   100% {
-    width: 0%; /* Reduce width to 0 */
+    width: 0px; /* Reduce width to 0 */
+    max-width: 0px;
+    min-width: 0px;
 
       /* display: none; Element completely disappears */
       /* opacity: 0; */
@@ -129,9 +144,32 @@ p, h1, h2, h3 {
     /* opacity: 1; */
   }
   100% {
-    min-width: 18vw;
+    min-width: 275px;
     /* display: block; Element completely disappears */
     /* opacity: 1; */
+  }
+}
+
+/* width smaller then 400 */
+@media (max-width: 400px) {
+  @keyframes growAppear {
+    0% {
+      width: 0; /* Start with the current width */
+      min-width: 0;
+      /* opacity: 0; */
+    }
+    30% {
+      /* opacity: 0.2; */
+    }
+    70% {
+      /* opacity: 1; */
+    }
+    100% {
+      width: 100%;
+      min-width: 100%;
+      /* display: block; Element completely disappears */
+      /* opacity: 1; */
+    }
   }
 }
 
@@ -390,6 +428,14 @@ body > div > main {
   color: var(--secondary-text-color);
 }
 
+
+.cl-organizationSwitcherPreviewButton svg {
+  color: var(--secondary-text-color);
+}
+
+.cl-modalContent:has(.cl-organizationProfile-root), .cl-modalContent:has(.cl-userProfile-root) {
+  background-color: var(--background-color);
+}
 .cl-modalContent .cl-cardBox {
   border: 3px solid var(--tertiary-text-color);
   border-radius: var(--border-radius);
@@ -471,6 +517,8 @@ body > div > main {
   background: var(--tertiary-text-color) !important;
 }
 
+
+
 .cl-userButtonPopoverFooter * {
   color: var(--secondary-text-color);
 }
@@ -529,6 +577,44 @@ body > div > main {
 .cl-tagInputContainer {
   background: var(--secondary-color);
   color: var(--secondary-text-color);
+  border: 1px solid var(--hover-color);
+  box-shadow: none !important;
+}
+
+.cl-tagPillContainer {
+  border: 1px solid var(--hover-color);
+}
+
+.cl-tagPillContainer:hover {
+  background-color: var(--hover-color);
+  border: 1px solid var(--hover-color);
+}
+
+.cl-input::placeholder {
+  color: var(--secondary-text-color);
+  opacity: 0.7;
+}
+
+.cl-tagPillContainer:active {
+  background-color: var(--hover-active-color);
+  border: 1px solid var(--hover-active-color);
+}
+
+.cl-tagInputContainer:hover {
+  border: 1px solid var(--hover-active-color);
+}
+
+.cl-tagInputContainer:active {
+  border: 1px solid var(--secondary-text-color);
+}
+
+.cl-tagInputContainer:has(input:focus) {
+  outline: 2px solid var(--action-color);
+  outline-offset: 2px;
+}
+
+.cl-tagInputContainer input:focus {
+  outline: none;
 }
 
 .cl-tagInputContainer input {
@@ -563,6 +649,59 @@ body > div > main {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+}
+
+.cl-tabPanel:focus {
+  outline: none !important;
+}
+
+.cl-tabListContainer button {
+  background-color: transparent;
+}
+
+.cl-tabListContainer {
+  border-bottom: 1px solid var(--hover-color);
+}
+
+.cl-navbarButton.cl-button:not(.cl-active) {
+  background-color: transparent;
+}
+
+.cl-navbarButton.cl-button:not(.cl-active):hover {
+  background-color: var(--hover-color);
+}
+.cl-navbarButton.cl-button:not(.cl-active):active {
+  background-color: var(--hover-active-color);
+}
+
+.cl-menuList {
+  background-color: var(--background-color);
+}
+
+.cl-modalContent {
+  border-radius: var(--border-radius);
+}
+
+.cl-modalContent:focus {
+  outline: none !important;
+}
+
+.cl-navbarButton.cl-button:focus, .cl-tabListContainer button:focus {
+  outline: 2px solid var(--action-color) !important;
+  outline-offset: 2px !important;
+}
+
+/* div with role = "menu" */
+.cl-organizationSwitcherPopoverActions div[role="menu"] > button {
+  border-radius: 100% !important;
+}
+
+.cl-organizationSwitcherPopoverActions .cl-button, .cl-userButtonPopoverActions .cl-button {
+  border-radius: 0px !important;
+}
+
+.cl-userButtonPopoverCard, .cl-organizationSwitcherPopoverCard {
+  background-color: var(--background-color);
 }
 
 .cl-tabButton {
@@ -602,9 +741,13 @@ body > div > main {
   border: 1px solid var(--hover-color);
 }
 
+.cl-socialButtons {
+  display: flex;
+}
+
 .cl-selectButton {
   background-color: transparent;
-  border: none !important;
+  /* border: 1px solid var(--hover-color) !important; */
 }
 
 .cl-selectButton * {
@@ -701,4 +844,40 @@ body > div > main {
 
 .cl-footer > div:last-child:not(:only-child) {
   /* border-top: 1px solid var(--hover-color); */
+}
+
+#mobile-toggle-sidebar {
+  display: none;
+}
+
+/* if under 400 width */
+@media (max-width: 400px) {
+  .cl-card.cl-signIn-start {
+    padding-block: 25px;
+    padding-inline: 18px;
+  } 
+
+  #login-theme {
+    top: var(--gap);
+    right: var(--gap);
+    width: calc(var(--min-height) * 0.7) !important;
+    height: calc(var(--min-height) * 0.7) !important;
+  }
+
+  #chat-collapse-sidebar {
+    display: none !important;
+  }
+
+  #mobile-toggle-sidebar {
+    display: flex;
+  }
+
+  #toggle-theme {
+    display: none;
+  }
+
+  #logout {
+    display: none;
+  }
+  
 }

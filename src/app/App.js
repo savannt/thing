@@ -8,12 +8,18 @@ import Chat from "@/app/Chat/Chat"
 
 import Logo from "@/app/Header/Logo"
 
-import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
 
 import SquareButton from "@/components/Button/SquareButton"
 
-import { SignedIn, SignedOut, SignIn, SignUp, useUser, useClerk } from "@clerk/nextjs"
+import Notifications from "@/app/Notifications/Notifications"
+
+import getUserId from "@/client/userId"
+
+import fetchGroups from "@/client/groups"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
+import { SignedIn, SignedOut, SignIn, SignUp, useUser, useOrganization, useClerk } from "@clerk/nextjs"
 
 export default function App ({ page }) {
     const FAKE_LOGIN = false;
@@ -21,29 +27,47 @@ export default function App ({ page }) {
     const router = useRouter();
     const { signOut } = useClerk();
     const { user, isSignedIn, isLoaded } = useUser();
+    const { organization } = useOrganization();
+
+    const [userId, setUserId] = useState(false);
+    const enterpriseId = organization?.id || false;
+
     const [authLoaded, setAuthLoaded] = useState(false);
     const [authSignedIn, setAuthSignedIn] = useState(false);
     const [isGuest, setIsGuest] = useState(false);
     useEffect(() => {
         if(isLoaded) {
             setAuthLoaded(true);
-            if(isSignedIn) setAuthSignedIn(true);
-            else           setAuthSignedIn(false);
+            if(isSignedIn) {
+                getUserId().then(userId => {
+                    if(userId) {
+                        setUserId(userId);
+                        setAuthSignedIn(true);
+                    } else {
+                        setAuthSignedIn(false);
+                    }
+                });
+            }
+            else setAuthSignedIn(false);
         } else {
             setAuthLoaded(false);
             setAuthSignedIn(false);
         }
     }, [isLoaded, isSignedIn]);
 
-
-    const [showSidebar, setShowSidebar] = useState(true);
     const [group, setGroup] = useState(false);
     const [chat, setChat] = useState(false);
 
+    const [groups, setGroups] = useState([]);
+    
+    useEffect(() => {        
+        if(enterpriseId) {
+            fetchGroups(enterpriseId).then(_groups => {
+                setGroups(_groups);
+            });
+        }
+    }, [enterpriseId]);
 
-    function onToggleSidebar (val) {
-        setShowSidebar(typeof val === "boolean" ? val : !showSidebar);
-    }
 
     function onBack () {
         setGroup(false);
@@ -51,16 +75,7 @@ export default function App ({ page }) {
     }
 
     function onHome () {
-        if(!showSidebar) {
-            setShowSidebar(true);
-        } else {
-            if(!group && !chat) {
-                setShowSidebar(false);
-            } else {
-                setGroup(false);
-                setChat(false);
-            }
-        }
+        document.getElementById("chat-collapse-sidebar").click();
     }
 
     function onLogout () {
@@ -71,10 +86,10 @@ export default function App ({ page }) {
     function ThingApp () {
         return (
             <>
-                <Header group={group} onBack={onBack} onHome={onHome} onLogout={onLogout} />
+                <Header      userId={userId}                                                             group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} />
                 <div id="main">
-                    <Sidebar showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} onLogout={onLogout} />
-                    <Chat    showSidebar={showSidebar} onToggleSidebar={onToggleSidebar} group={group} chat={chat} />
+                    <Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} onLogout={onLogout} />
+                    <Chat    userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} />
                 </div>
             </>
         )
@@ -105,14 +120,14 @@ export default function App ({ page }) {
                 <SignedOut>
                     {page === "register" ? <SignUp routing="hash"/> : <SignIn routing="hash"/>}
                     
-                    { authLoaded && !authSignedIn && <p style={{
+                    {/* { authLoaded && !authSignedIn && <p style={{
                         color: "var(--secondary-text-color)",
                         scale: "0.83"
                     }}>Continue as <a style={{
                         opacity: 0.8
                     }} onClick={() => {
                         setIsGuest(true);
-                    }}>Guest</a></p> }
+                    }}>Guest</a></p> } */}
                 </SignedOut>
 
                 {
@@ -121,12 +136,14 @@ export default function App ({ page }) {
             </div>
 
             <SignedIn>
-                { authLoaded && !FAKE_LOGIN && !isGuest && <ThingApp />}
+                { authLoaded && isSignedIn && userId && <ThingApp />}
             </SignedIn>
 
-            {
+            {/* {
                 authLoaded && (FAKE_LOGIN || isGuest) && <ThingApp />
-            }
+            } */}
+
+            <Notifications />
             
         </>
     )
