@@ -11,9 +11,7 @@
     border-radius: var(--border-radius);
 
     gap: calc(var(--gap) / 2);
-
-    z-index: 1000000;
-
+    
     overflow: hidden;
 
     pointer-events: all;

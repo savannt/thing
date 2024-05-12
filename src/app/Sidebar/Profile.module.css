@@ -39,11 +39,18 @@
 .Profile:last-child > div:first-child {
     width: calc(var(--min-height) * 0.8);
     height: calc(var(--min-height) * 0.8);
-    border-radius: 100%;
+    /* border-radius: 100%; */
 
-    background-image: url("/images/avatar.png");
-    background-size: 100%;
-    background-position: center;
+    /* background-image: url("/images/avatar.png"); */
+    /* background-size: 100%; */
+    /* background-position: center; */
+
+    /* -webkit-mask-image: url("/images/avatar.png");
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--active-color-hidden); */
+
 
     /* background-color: var(--secondary-color); */
 }

@@ -3,13 +3,30 @@ import { createContext, useState, useEffect, useContext } from "react";
 export const SidebarCollapsedContext = createContext(0);
 
 export default function SidebarCollapsedProvider ({ children }) {
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState({
+        collapsed: false,
+        collapsing: false
+    });
 
     useEffect(() => {
         const handleStorageChange = () => {
             if(window.localStorage.getItem("sidebar_collapsed")) {
                 const value = window.localStorage.getItem("sidebar_collapsed");
-                setIsSidebarCollapsed(value === "true");
+                setIsSidebarCollapsed((prev) => {
+                    return {
+                        ...prev,
+                        collapsed: value === "true"
+                    }
+                });
+            }
+            if(window.localStorage.getItem("sidebar_collapsing")) {
+                const value = window.localStorage.getItem("sidebar_collapsing");
+                setIsSidebarCollapsed((prev) => {
+                    return {
+                        ...prev,
+                        collapsing: value === "true"
+                    }
+                });
             }
         };
     

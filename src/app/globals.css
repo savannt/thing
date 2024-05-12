@@ -36,10 +36,10 @@
 /* below 400 px */
 @media (max-width: 400px) {
   :root {
-    --margin-inline: 12px;
-    --margin-block: 6px;
+    --margin-inline: 18px;
+    --margin-block: 9px;
     --min-height: 32px;
-    /* --gap: 6px; */
+    --gap: 9px;
 
     --margin-chat: 1vw;
   }
@@ -278,6 +278,19 @@ body > div > main {
   right: var(--margin-inline);
 }
 
+.cl-navbarMobileMenuButton:focus {
+  outline: 2px solid var(--action-color);
+  outline-offset: 2px;
+}
+
+.cl-navbar:focus {
+  outline: none !important;
+}
+
+.cl-navbarMobileMenuRow {
+  color: var(--primary-text-color) !important;
+  background: var(--background-color) !important;
+}
 
 .cl-cardBox {
   border-radius: var(--border-radius);
@@ -532,12 +545,6 @@ body > div > main {
   color: var(--secondary-text-color);
 }
 
-/* span with no .cl-userPreviewAvatarBox class */
-
-.cl-userPreviewAvatarBox img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBel"] {
-  /* set src attribute */
-  content: url("/images/avatar.png");
-}
 
 .cl-userButtonPopoverActionButton:hover {
   background-color: var(--hover-color) !important;
@@ -546,8 +553,37 @@ body > div > main {
   background-color: var(--hover-active-color) !important;
 }
 
-.cl-userButtonAvatarBox > img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBel"] {
+.cl-avatarBox > img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBel"] {
   display: none;
+}
+
+.cl-avatarBox:not(.cl-organizationPreviewAvatarBox) {
+  -webkit-mask-image: url("/images/avatar.png");
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--active-color-hidden) !important;
+}
+
+.cl-organizationPreviewAvatarBox > img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6"] {
+  display: none;
+}
+
+.cl-organizationSwitcherPopoverActions > div {
+  border-bottom: 1px solid var(--hover-color);
+}
+
+.cl-userButtonPopoverMain > span {
+  border-bottom: 1px solid var(--hover-color);
+}
+
+
+.cl-organizationPreviewAvatarContainer {
+  -webkit-mask-image: url("/images/organization.png");
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--active-color-hidden);
 }
 
 .cl-organizationSwitcherTrigger:hover {
@@ -571,7 +607,7 @@ body > div > main {
 
 .cl-modalContent:focus .cl-cardBox {
   outline-offset: 2px;
-  outline: 2px solid var(--action-color);
+  outline: 2px solid var(--action-color-hidden);
 }
 
 .cl-tagInputContainer {
@@ -680,9 +716,17 @@ body > div > main {
 
 .cl-modalContent {
   border-radius: var(--border-radius);
+  margin: 0px !important;
 }
 
+.cl-cardBox:focus {
+  outline: none !important;
+}
 .cl-modalContent:focus {
+  outline: none !important;
+  /* outline: 2px solid var(--action-color-hdiden) !important; */
+}
+.cl-rootBox:focus {
   outline: none !important;
 }
 
@@ -846,8 +890,18 @@ body > div > main {
   /* border-top: 1px solid var(--hover-color); */
 }
 
+.cl-userButtonPopoverActionButton__signOut {
+  color: var(--red) !important;
+}
+
+.cl-userButtonPopoverActionButton__signOut svg {
+  color: var(--red) !important;
+  opacity: 1;
+}
+
 #mobile-toggle-sidebar {
   display: none;
+  z-index: 1;
 }
 
 /* if under 400 width */
@@ -856,6 +910,10 @@ body > div > main {
     padding-block: 25px;
     padding-inline: 18px;
   } 
+
+  .cl-modalContent {
+    height: initial;
+  }
 
   #login-theme {
     top: var(--gap);
@@ -872,12 +930,12 @@ body > div > main {
     display: flex;
   }
 
-  #toggle-theme {
+  /* #toggle-theme {
     display: none;
   }
 
   #logout {
     display: none;
-  }
+  } */
   
 }

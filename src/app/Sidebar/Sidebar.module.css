@@ -219,3 +219,15 @@
 .Sidebar__Result div p {
     font-size: 100%;
 }
+
+@media (max-width: 400px) {
+    .Sidebar {
+        background-color: var(--background-color);
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: -webkit-fill-available;
+        z-index: 1;
+    }
+}

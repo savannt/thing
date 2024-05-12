@@ -27,6 +27,14 @@
     height: 100%;
 }
 
+.Header__End > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: var(--gap);
+}
+
 .Header__Start h2 {
     white-space: nowrap;
     text-overflow: ellipsis;

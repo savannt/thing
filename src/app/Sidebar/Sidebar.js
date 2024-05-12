@@ -108,6 +108,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     const isMobile = useMobile();
 
     if(localStorage) {
+        localStorage.setItem("sidebar_collapsing", collapsed);
         localStorage.setItem("sidebar_collapsed", isCollapsed);
         // dispatch update event
         window.dispatchEvent(new Event("storage"));
@@ -118,7 +119,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     if(chatCollapseSidebarButton) chatCollapseSidebarButton.style.display = collapsed ? "flex" : "none";
     if(chatElement) {
         chatElement.style.position = isCollapsed ? "absolute" : "relative";
-        chatElement.style.marginInline = collapsed ? "calc(var(--margin-chat) * 3)" : "calc(var(--margin-chat) * 1)";
+        chatElement.style.marginInline = (collapsed || isMobile) ? "calc(var(--margin-chat) * 3)" : "calc(var(--margin-chat) * 1)";
     }
     // console.log("isCollapsed", isCollapsed);
     
@@ -174,8 +175,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             setAnimation("");
             setCollapsedFinished(true);
         }} ref={ref} onMouseDown={(e) => (e.target === ref.current || e.target.parentElement === ref.current) && setIsResizing(true) } style={{
-            width: isCollapsed ? "0px" : "",
-            minWidth: isCollapsed ? "0px" : "",
+            // width: isCollapsed ? "0px" : "",
+            // minWidth: isCollapsed ? "0px" : "",
+            display: isMobile && isCollapsed ? "none" : "flex",
             // maxWidth: collapsed ? "0px" : "",
         }}>
             <input value={isCollapsed} id="toggle-sidebar" style={{
@@ -184,15 +186,20 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 _onToggleSidebar();
             }} readOnly></input>
 
-            <h3 style={{
-                position: "absolute",
-                left: isCollapsed ? "calc(max(var(--margin-chat) * 3, 0px))" : "calc(max(100% + var(--margin-chat) * 1, 11vw))",
-                bottom: "calc(100% + (var(--min-height) / 2.8))",
-                width: "max-content",
-                opacity: "1",
-                color: "var(--secondary-text-color)",
-                fontWeight: "400"
-            }}>{chat?.title || <DotsText color="var(--secondary-text-color)" ></DotsText>}</h3>
+            {
+                !isMobile && <h3 className={`animate__animate animate__fadeIn`} style={{
+                    position: "absolute",
+                    left: isCollapsed ? "calc(max(var(--margin-chat) * 3, 0px))" : "calc(max(100% + var(--margin-chat) * 1, 11vw))",
+                    bottom: "calc(100% + (var(--min-height) / 2.8))",
+                    width: "max-content",
+                    opacity: "1",
+                    color: "var(--secondary-text-color)",
+                    fontWeight: "400",
+    
+                    // opacity: "0",
+                    // animationDelay: "2s",
+                }}>{chat?.title || <DotsText color="var(--secondary-text-color)" ></DotsText>}</h3>
+            }
 
             <div className={`${styles.Sidebar__Sidebar} ${secondaryAnimation}`} style={{
                 display: isCollapsed ? "none" : "flex",
@@ -200,7 +207,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 setSecondaryAnimation("");
             }} >
                 <div className={styles.Sidebar__Row}>
-                    <SquareButton image="/images/icons/sidebar.png" onClick={() => onToggleSidebar() }/>
+                    { group && <SquareButton id="chat-back" image="/images/icons/caret/caret_left.svg" onClick={() => {
+                        setGroup(false);
+                    } }/> }
                     <NewChat enterpriseId={enterpriseId} group={group} setGroup={setGroup} onDeleteGroup={onDeleteGroup} disabledGroups={disabledGroups} groups={groupsArray} setGroups={setGroups} />
                 </div>
                 {
