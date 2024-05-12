@@ -210,6 +210,9 @@
     color: var(--secondary-text-color);
 }
 
+.Sidebar__Collapsing {
+    /* background: linear-gradient(270deg, var(--background-color), var(--hover-color)); */
+}
 
 
 .Sidebar__Result div h1 {

@@ -22,7 +22,12 @@ export default function Button ({ overflow = "hidden", ref, aspectRatio, aria = 
                 fontSize: "85%",
                 fontWeight: "500",
                 color,
-                whiteSpace: "normal"
+                whiteSpace: "normal",
+                overflow: "hidden",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
             }}>{text}</p>}
             { children }
         </div> : <button id={id} disabled={disabled} className={`${className} ${styles.Button}`} onClick={(...e) => {
@@ -43,7 +48,12 @@ export default function Button ({ overflow = "hidden", ref, aspectRatio, aria = 
                 fontSize: "85%",
                 fontWeight: "500",
                 color,
-                whiteSpace: "normal"
+                whiteSpace: "normal",
+                overflow: "hidden",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
             }}>{text}</p>}
             { children }
         </button>

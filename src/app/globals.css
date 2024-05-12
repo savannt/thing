@@ -183,8 +183,13 @@ p, h1, h2, h3 {
   70% {
     opacity: 1
   }
+  70% {
+    /* background: linear-gradient(90deg, var(--background-color), var(--secondary-color)); */
+  }
   100% {
     opacity: 1;
+
+    background: transparent;
   }
 }
 
@@ -204,6 +209,13 @@ p, h1, h2, h3 {
   animation: growAppear 0.5s forwards;
 }
 
+.colorFadeOut {
+  animation: colorDisappear 0.5s forwards;
+}
+
+.colorFadeIn {
+  animation: colorAppear 0.5s forwards;
+}
 
 
 p {

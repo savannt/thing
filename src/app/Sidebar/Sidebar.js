@@ -90,19 +90,11 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     let noResultsMessage = group ? `No chats found` : `No chat groups found`;
 
 
-    // const [hidden, _setHidden] = useState(false);
-    // function setHidden (val) {
-        //     console.log("setHidden", val)
-        //     _setHidden(val);
-        // }
-    // useEffect(() => {
-        //     setAnimation(showSidebar ? "fadeInRight" : "fadeOutLeft");
-        // }, [showSidebar])
     const [animation, setAnimation] = useState("");
     const [secondaryAnimation, setSecondaryAnimation] = useState("");
 
     const [collapsed, setCollapsed] = useState(false);
-    const [collapsedFinished, setCollapsedFinished] = useState(false);
+    const [collapsedFinished, setCollapsedFinished] = useState(true);
     let isCollapsed = collapsed && collapsedFinished;
 
     const isMobile = useMobile();
@@ -135,6 +127,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             }
             return !prev;
         });
+        setCollapsedFinished(false);
     }
 
     function onDeleteGroup(_group) {
@@ -168,7 +161,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
     return (
         // on drag of styles.Sidebar::after resize sidebar
-        <div id="sidebar" className={`${styles.Sidebar} ${animation}`} onAnimationEnd={() => {
+        <div id="sidebar" className={`${styles.Sidebar} ${animation}`} onAnimationStart={() => {
+            setCollapsedFinished(false);
+        }} onAnimationEnd={() => {
             // if(animation === "fadeOutLeft") setHidden(true);
             // if(animation === "fadeInRight") setHidden(false);
             // console.log("done animating", animation);

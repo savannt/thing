@@ -18,10 +18,11 @@ export default function Header ({ group, chat, onBack, onHome, onLogout }) {
 
 
     let doShowLogo = true;
-    if(isMobile && isSidebarCollapsed) doShowLogo = false;
+    if(isMobile && (isSidebarCollapsed || isSidebarCollapsing) ) doShowLogo = false;
 
     let showActions = !(isMobile && isSidebarCollapsing);
     const [previousShowActions, setPreviousShowActions] = useState(showActions);
+    const [logoAnimation, setLogoAnimation] = useState("");
     const [hideActions, setHideActions] = useState(false);
     const [actionsAnimation, setActionsAnimation] = useState("");
     useEffect(() => {
@@ -31,14 +32,17 @@ export default function Header ({ group, chat, onBack, onHome, onLogout }) {
             if(showActions) {
                 setHideActions(false);
                 setActionsAnimation("animate__fadeInLeft");
+                setLogoAnimation("animate__fadeInLeft");
                 setPreviousShowActions(showActions);
             } else {
                 setActionsAnimation("animate__fadeOutLeft");
+                setLogoAnimation("animate__fadeOutLeft");
                 setPreviousShowActions(showActions);
             }
         }
         console.log("showActions", showActions, "prev" + previousShowActions);
     }, [showActions]);
+
 
     return (
         <div id="header" className={styles.Header}>
@@ -48,7 +52,9 @@ export default function Header ({ group, chat, onBack, onHome, onLogout }) {
                     <h2>{group.title}</h2>
                 </> } */}
 
-                { doShowLogo && <Logo className={``} onClick={() => onHome()}/> }
+                { doShowLogo ? <Logo className={`animate__animate ${logoAnimation}`} onClick={() => onHome()} onAnimationEnd={() => {
+                    setLogoAnimation("");
+                }} /> : <h3 className={`animate__animated animate__fadeInRight`} onClick={() => onHome()}>Chat</h3> }
             </div>
             <div className={styles.Header__End}>
                 <div className={`animate__animated ${actionsAnimation}`} onAnimationEnd={() => {
