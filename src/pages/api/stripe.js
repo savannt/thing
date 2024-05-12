@@ -2,7 +2,8 @@ import stripe from "@/services/stripe";
 
 import { buffer } from "micro";
 
-import { users } from "@clerk/nextjs/api"; 
+// import { users } from "@clerk/nextjs/api";
+const users = () => {};
 
 export const config = {
     api: {

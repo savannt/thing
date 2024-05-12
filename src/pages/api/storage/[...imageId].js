@@ -4,9 +4,9 @@ import { MongoClient } from "mongodb";
 import multer from "multer";
 import { GridFSBucket } from "mongodb";
 import authenticate from "@/services/authenticateRequest";
-import openai from "@/services/openai";
-import { createReadStream } from "fs";
-import { promisify } from "util";
+// import openai from "@/services/openai";
+// import { createReadStream } from "fs";
+// import { promisify } from "util";
 
 // Database connection
 const client = new MongoClient(process.env.MONGODB_URI);

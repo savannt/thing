@@ -1,7 +1,11 @@
 import mongo  from "@/services/mongodb";
 import { generateChatId } from "@/services/generator";
 
-import update, { userSentMessage, onChatCreated } from "@/services/ai/ai";
+// import update, { userSentMessage, onChatCreated } from "@/services/ai/ai";
+
+const update = () => {};
+const userSentMessage = () => {};
+const onChatCreated = () => {};
 
 import authenticate from "@/services/authenticateRequest";
 
