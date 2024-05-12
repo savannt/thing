@@ -8,7 +8,11 @@
     height: -webkit-fill-available;
 
     margin-inline: calc(4 * var(--margin-inline));
-     margin-block: calc(2 * var(--margin-block));
+    margin-block: calc(2 * var(--margin-block));
+
+    gap: var(--gap);
+
+    /* overflow: hidden; */
 }
 
 .Chat__Main {
@@ -18,9 +22,11 @@
     align-items: flex-start;
 
     width: -webkit-fill-available;
-    height: -webkit-fill-available;
+    height: 100%;
 
     gap: var(--gap);
+
+    overflow: hidden;
 }
 
 .Chat__Bar {
@@ -30,6 +36,8 @@
     align-items: center;
 
     width: -webkit-fill-available;
+    
+    overflow: visible;
 }
 
 .Chat__Bar__InputRow {
@@ -128,7 +136,11 @@
     .Chat {
         position: absolute !important;
         width: -webkit-fill-available !important;
+        /* height: calc(*100%; */
+        height: calc(100% - var(--min-height));
 
+
+        overflow: visible;
         margin-bottom: var(--margin-block) !important;
     }
 

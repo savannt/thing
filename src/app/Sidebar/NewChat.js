@@ -85,7 +85,7 @@ export default function NewChat ({ enterpriseId, group, setGroup, disabledGroups
                     }} className={styles.NewChat__DropdownButton} background={false} image="/images/icons/caret/caret_down.svg" color="var(--active-color)" />
                     { dropdownOpen && <div id="newChatDropdownMenu" className={styles.NewChat__Dropdown}>
                         <div className={styles.NewChat__Dropdown__Header}>
-                            <Input placeholder="Search or create a group" value={inputText} onChange={(e) => {
+                            <Input doAutoFocus={true} placeholder="Search or create a group" value={inputText} onChange={(e) => {
                                 setInputText(e.target.value);
                             }} onKeyDown={(e) => {
                                 if (e.key === "Enter") {

@@ -70,7 +70,12 @@ export default function Header ({ group, chat, onBack, onHome, onLogout }) {
                     <SquareButton id="logout" image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/>
                     <SquareButton id="toggle-theme" image="/images/icons/ic_theme.svg" onClick={() => {
                         // toggle data-theme from light to dark
-                        document.documentElement.setAttribute("data-theme", document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light")
+
+                        let newTheme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+                        document.documentElement.setAttribute("data-theme", newTheme);
+
+                        // update theme-color content
+                        document.querySelector("meta[name=theme-color]").setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--background-color"));
                     }}/>
                 </div>
 

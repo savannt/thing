@@ -14,10 +14,13 @@ export default function Root({ page }) {
             <Head>
                 <title>𝘁𝗵𝗶𝗻𝗴𝑘𝑖𝑛𝑔</title>
                 <meta name="description" content={motd[0]} />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="mobile-web-app-capable" content="yes" />
-                                
+
+                <meta name="theme-color" media="(prefers-color-scheme: light)" content="#e9e9e9" />
+                <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0b1111" />
+
                 <link rel="icon" href="/favicon.ico" />
                 <link rel="icon" href="/icon.png" type="image/png" sizes="256x256" />
                 <link rel="apple-touch-icon" href="/icon.png" type="image/png" sizes="256x256" />

@@ -233,19 +233,29 @@ h1, h2 {
 
 body, html {
   background: transparent;
+
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 
 body {
   overflow: hidden;
-  height: 100vh;
-  max-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
 }
 
 body > div {
-  height: 100vh;
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
 }
+
+/* main, body, html {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+} */
 
 body > div > main {
   display: flex;
@@ -253,7 +263,7 @@ body > div > main {
   justify-content: stretch;
   align-items: stretch;
 
-  height: -webkit-fill-available;
+  height: 100dvh !important;
 
   background-color: var(--background-color);
 }
@@ -503,6 +513,13 @@ body > div > main {
   color: var(--primary-text-color);
 }
 
+.cl-organizationSwitcherPopoverCard:focus {
+  outline: 2px solid var(--action-color-hidden);
+}
+.cl-userButtonPopoverCard:focus {
+  outline: 2px solid var(--action-color-hidden);
+}
+
 .cl-organizationSwitcherPopoverActionButton {
   color: var(--secondary-text-color);
 }
@@ -672,6 +689,8 @@ body > div > main {
 .cl-createOrganization-root .cl-headerTitle {
   font-size: 160%;
 }
+
+
 
 .cl-input {
   background: transparent !important;
@@ -873,6 +892,11 @@ body > div > main {
   border: 1px solid var(--action-color);
 }
 
+.cl-phoneInputBox:has(input[value=""]:focus) {
+  border: 1px solid var(--action-color-hidden);
+}
+
+
 
 .cl-phoneInputBox input:focus {
   outline: none !important;
@@ -909,6 +933,24 @@ body > div > main {
 .cl-userButtonPopoverActionButton__signOut svg {
   color: var(--red) !important;
   opacity: 1;
+}
+
+/* .cl-input:focus {
+  outline: 2px solid var(--action-color);
+  outline-offset: 2px;
+} */
+
+
+
+.cl-input:focus {
+  outline: 2px solid var(--action-color);
+  outline-offset: 2px;
+}
+
+/* if .cl-input with no text value */
+.cl-input[value=""]:focus {
+  outline: 2px solid var(--action-color-hidden);
+  outline-offset: 2px;
 }
 
 #mobile-toggle-sidebar {

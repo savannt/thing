@@ -36,7 +36,7 @@ export default function MobileSupport () {
 
         style.position = "absolute";
         style.width = "100vw";
-        style.height = "100vh";
+        style.height = "100dvh";
         style.zIndex = "10000";
 
 

@@ -2,7 +2,7 @@ import styles from "@/components/Input/Input.module.css";
 
 import ColorImage from "@/components/ColorImage/ColorImage"
 
-export default function Input ({ hiddenFocus = false, textarea = false, image, className, placeholder, value, onChange, onKeyPress, onKeyDown, onKeyUp, onClick, rows, children }) {
+export default function Input ({ doAutoFocus = false, hiddenFocus = false, textarea = false, image, className, placeholder, value, onChange, onKeyPress, onKeyDown, onKeyUp, onClick, rows, children }) {
     if((!value || value.length === 0) && !hiddenFocus) hiddenFocus = true;
     
     return (
@@ -21,7 +21,7 @@ export default function Input ({ hiddenFocus = false, textarea = false, image, c
                     onKeyDown={onKeyDown}
                     onKeyUp={onKeyUp}
 
-                    autoFocus
+                    autoFocus={doAutoFocus}
                 /> : 
                 <input
                     placeholder={placeholder}
@@ -34,7 +34,7 @@ export default function Input ({ hiddenFocus = false, textarea = false, image, c
                     onKeyDown={onKeyDown}
                     onKeyUp={onKeyUp}
 
-                    autoFocus
+                    autoFocus={doAutoFocus}
                 />
             }
             { children }

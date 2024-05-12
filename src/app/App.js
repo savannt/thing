@@ -83,11 +83,28 @@ export default function App ({ page }) {
         signOut(() => router.push("/"));
     }
 
+    const [viewportHeight, setViewportHeight] = useState(0);
+    useEffect(() => {
+        function handleResize () {
+            window.scrollTo(0, 1);
+            setViewportHeight(window.visualViewport.height);
+        }
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        }
+    }, []);
+
     function ThingApp () {
         return (
             <>
                 <Header      userId={userId}                                                             group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} />
-                <div id="main">
+                <div id="main" style={{
+                    overflow: "hidden",
+                }}>
                     <Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} onLogout={onLogout} />
                     <Chat    userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} />
                 </div>
@@ -99,7 +116,7 @@ export default function App ({ page }) {
         <>
             <div style={{
                 width: "100vw",
-                height: "100vh",
+                height: viewportHeight + "px",
                 display: authLoaded && !isGuest && !isSignedIn ? "flex" : "none",
                 flexDirection: "column",
                 justifyContent: "center",

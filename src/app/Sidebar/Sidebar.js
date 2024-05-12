@@ -173,7 +173,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             // width: isCollapsed ? "0px" : "",
             // minWidth: isCollapsed ? "0px" : "",
             display: isMobile && isCollapsed ? "none" : "flex",
-            // maxWidth: collapsed ? "0px" : "",
+            height: "100%",
+            maxHeight: "100%",
+            overflow: "hidden",
         }}>
             <input value={isCollapsed} id="toggle-sidebar" style={{
                 display: "none"
@@ -198,6 +200,11 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
             <div className={`${styles.Sidebar__Sidebar} ${secondaryAnimation}`} style={{
                 display: isCollapsed ? "none" : "flex",
+                borderRight: isMobile && !collapsed && collapsedFinished ? "none" : "",
+                // height: `calc(100% - var(--min-height))`,
+                height: "-webkit-fill-available",
+
+                overflow: "hidden"
             }} onAnimationEnd={() => {
                 setSecondaryAnimation("");
             }} >
