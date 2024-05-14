@@ -12,7 +12,7 @@ export default function Root({ page }) {
     return (
         <>
             <Head>
-                <title>𝘁𝗵𝗶𝗻𝗴𝑘𝑖𝑛𝑔</title>
+                <title>𝘁𝗵𝗶𝗻𝗴 𝑘𝑖𝑛𝑔</title>
                 <meta name="description" content={motd[0]} />
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />

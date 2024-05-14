@@ -43,7 +43,7 @@ function SidebarResult ({ id, active = false, disabled = false, image, color, ti
     )
 }
 
-export default function Sidebar ({ userId, enterpriseId, groups, setGroups, group, setGroup, chat, setChat, chats, setChats, showSidebar, onLogout }) {
+export default function Sidebar ({ userId, enterpriseId, groups, setGroups, group, setGroup, chat, setChat, chats, setChats, onLogout }) {
     let groupsArray = groups;
     
     const ref = createRef(null);
@@ -87,12 +87,12 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         }
     }, [isResizing, ref]);
 
-    useEffect(() => {
-        const width = localStorage.getItem("sidebar_width");
-        if(width && ref.current) {
-            ref.current.style.width = `${width}px`;
-        }
-    }, [ref]);
+    // useEffect(() => {
+    //     const width = localStorage.getItem("sidebar_width");
+    //     if(width && ref.current) {
+    //         ref.current.style.width = `${width}px`;
+    //     }
+    // }, [ref]);
 
 
     let results = group ? chats : groups;
@@ -109,6 +109,8 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     const [collapsedFinished, setCollapsedFinished] = useState(true);
     let isCollapsed = collapsed && collapsedFinished;
     let isCollapsing = collapsed;
+
+    console.log("iscollapsed", isCollapsed)
 
     const isMobile = useMobile();
 
@@ -231,7 +233,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             <input value={isCollapsed} id="toggle-sidebar" style={{
                 display: "none"
             }} onClick={() => {
-                _onToggleSidebar();
+                // _onToggleSidebar();R
             }} readOnly></input>
 
             {

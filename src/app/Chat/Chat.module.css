@@ -82,7 +82,7 @@
 }
 
 .Chat__Main__NoChat {
-    color: var(--tertiary-text-color);
+    color: var(--primary-text-color);
 
     margin: auto;
     user-select: none;
