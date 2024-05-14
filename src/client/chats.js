@@ -1,4 +1,4 @@
-export default async function chats(enterpriseId = false, limit = 10, groupId = null) {
+export default async function chats(enterpriseId = false, limit = 50, groupId = null) {
     let url = "/api/chats";
     if(enterpriseId) {
         url += "?enterpriseId=" + enterpriseId;

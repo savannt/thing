@@ -12,11 +12,16 @@ import DotsText from "@/components/DotsText/DotsText";
 
 
 import { groupDelete } from "@/client/group";
+import fetchChats from "@/client/chats";
+import { chatDelete } from "@/client/chat";
+
 import error from "@/client/error";
 import notification from "@/client/notification";
 
 import { createRef, useState, useEffect } from "react"
 import useMobile from "@/providers/Mobile/useMobile";
+
+import toggleSidebar from "@/client/toggleSidebar";
 
 
 function SidebarResult ({ disabled = false, image, color, title, description, onClick, showDelete, onDelete }) {
@@ -38,11 +43,7 @@ function SidebarResult ({ disabled = false, image, color, title, description, on
     )
 }
 
-export default function Sidebar ({ userId, enterpriseId, groups, setGroups, group, setGroup, chat, showSidebar, onLogout }) {
-    function onToggleSidebar () {
-        if(!document.getElementById("toggle-sidebar")) return alert("A Fatal Error Has Occured:\n\nuhh, jeepers this ain't good chief-\nI can't find the sidebar toggle button");
-        document.getElementById("toggle-sidebar").click();
-    }
+export default function Sidebar ({ userId, enterpriseId, groups, setGroups, group, setGroup, chat, setChat, chats, setChats, showSidebar, onLogout }) {
     let groupsArray = groups;
     
     const ref = createRef(null);
@@ -85,9 +86,10 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     }, [isResizing, ref]);
 
 
-    let results = group ? [] : groups;
+    let results = group ? chats : groups;
     let noResults = !results || results.length === 0;
     let noResultsMessage = group ? `No chats found` : `No chat groups found`;
+    let loadingResults = group ? typeof chats === "boolean" && !chats : typeof groups === "boolean" && !groups;
 
 
     const [animation, setAnimation] = useState("");
@@ -130,6 +132,37 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         setCollapsedFinished(false);
     }
 
+    function onDeleteChat (_chat) {
+        if(chat && chat.id === _chat.id) {
+            setChat(false);
+        }
+
+        setDisabledChats(prev => {
+            return [...prev, _chat.chatId];
+        });
+
+        chatDelete(_chat.chatId).then((status) => {
+            if(status) {
+                // remove _chat from chats
+                console.log("Deleting chat", _chat, chats);
+                
+                if(group && group.groupId === _chat.groupId) {
+                    setChats((prev) => {
+                        return prev.filter(__chat => __chat.chatId !== _chat.chatId);
+                    });
+                }
+                notification(`Chat "${_chat.title}" deleted`);
+                
+                // remove _chat from disabledChats
+                setDisabledChats(prev => {
+                    return prev.filter(chatId => chatId !== _chat.chatId);
+                });
+            } else {
+                error("Failed to delete chat");
+            }
+        });
+    }
+
     function onDeleteGroup(_group) {
         if(group && group.id === _group.id) {
             setGroup(false);
@@ -154,9 +187,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 error("Failed to delete group");
             }
         });        
-
     }
-
 
 
     return (
@@ -173,9 +204,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             // width: isCollapsed ? "0px" : "",
             // minWidth: isCollapsed ? "0px" : "",
             display: isMobile && isCollapsed ? "none" : "flex",
-            height: "100%",
-            maxHeight: "100%",
-            overflow: "hidden",
+            // height: "100%",
+            // maxHeight: "100%",
+            // overflow: "hidden",
         }}>
             <input value={isCollapsed} id="toggle-sidebar" style={{
                 display: "none"
@@ -187,7 +218,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 !isMobile && <h3 className={`animate__animate animate__fadeIn`} style={{
                     position: "absolute",
                     left: isCollapsed ? "calc(max(var(--margin-chat) * 3, 0px))" : "calc(max(100% + var(--margin-chat) * 1, 11vw))",
-                    bottom: "calc(100% + (var(--min-height) / 2.8))",
+                    bottom: "calc(100% + (var(--min-height) / 1.9))",
                     width: "max-content",
                     opacity: "1",
                     color: "var(--secondary-text-color)",
@@ -204,15 +235,18 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 // height: `calc(100% - var(--min-height))`,
                 height: "-webkit-fill-available",
 
-                overflow: "hidden"
+                // overflow: "hidden"
             }} onAnimationEnd={() => {
                 setSecondaryAnimation("");
             }} >
                 <div className={styles.Sidebar__Row}>
-                    { group && <SquareButton id="chat-back" image="/images/icons/caret/caret_left.svg" onClick={() => {
+                    { !isMobile && <SquareButton image="/images/icons/sidebar.png" onClick={() => {
+                        toggleSidebar();
+                    }} /> }
+                    { isMobile && group && <SquareButton id="chat-back" image="/images/icons/caret/caret_left.svg" onClick={() => {
                         setGroup(false);
                     } }/> }
-                    <NewChat enterpriseId={enterpriseId} group={group} setGroup={setGroup} onDeleteGroup={onDeleteGroup} disabledGroups={disabledGroups} groups={groupsArray} setGroups={setGroups} />
+                    <NewChat enterpriseId={enterpriseId} chat={chat} setChat={setChat} group={group} setGroup={setGroup} onDeleteGroup={onDeleteGroup} disabledGroups={disabledGroups} groups={groupsArray} setGroups={setGroups} />
                 </div>
                 {
                     !!group && <div className={styles.Sidebar__Row}>
@@ -223,7 +257,11 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
                 <div className={styles.Sidebar__Results}>
                     {
-                        noResults && <p style={{
+                        loadingResults && <ColorImage className={styles.Sidebar__Loading} image="/gifs/loading.gif" />
+                    }
+                    
+                    {
+                        !loadingResults && noResults && <p style={{
                             width: "-webkit-fill-available",
                             textAlign: "center",
                             color: "var(--secondary-text-color)",
@@ -260,13 +298,13 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                                     if(isGroup) {
                                         setGroup(item);
                                     } else {
-                                        error("not implemented");
+                                        setChat(item);
                                     }
                                 }} showDelete={true} onDelete={() => {
                                     if(isGroup) {
                                         onDeleteGroup(item);
                                     } else {
-                                        error("not implemented");
+                                        onDeleteChat(item);
                                     }
                                 }} />
                             )

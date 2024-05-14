@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const { userId } = await authenticate(req, res);
     if(!userId) return;
 
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 50;
     const title = req.query.title || null;
     const enterpriseId = req.query.enterpriseId || false;
 

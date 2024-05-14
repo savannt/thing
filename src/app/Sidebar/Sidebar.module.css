@@ -20,8 +20,22 @@
     max-width: 25vw;
     min-width: 275px;
 
+    /* height: calc(100% - var(--header-height)); */
+    /* max-height: calc(100% - var(--header-height)); */
 
-    z-index: 10000000000;
+
+    z-index: 100;
+}
+
+.Sidebar__Loading {
+    width: 30% !important;
+    aspect-ratio: 1/1 !important;
+    height: auto;
+    margin-inline: auto;
+    margin-top: var(--margin-inline);
+    margin-bottom: auto;
+
+    opacity: 0.4;
 }
 
 @media (max-width: 400px) {
@@ -29,6 +43,16 @@
         width: 100vw;
         max-width: 100vw;
         min-width: 100vw;
+
+        height: var(--body-height) !important;
+        min-height: var(--body-height) !important;
+        max-height: var(--body-height) !important;
+    }
+
+    .Sidebar__Sidebar {
+        height: calc(var(--body-height) - (2 * var(--margin-block))) !important;
+        min-height:calc(var(--body-height) - (2 * var(--margin-block))) !important;
+        max-height: calc(var(--body-height) - (2 * var(--margin-block))) !important;
     }
 }
 
@@ -94,9 +118,15 @@
 
 
 .Sidebar__Results {
+    margin-top: calc(var(--margin-block) - var(--gap));
+
     /* padding-top: var(--margin-block); */
     margin-inline: calc(-1 * var(--margin-inline));
+    margin-right:  calc(-1 * var(--margin-inline));
 
+    overflow-y: overlay;
+
+    /* height: 10%; */
     height: -webkit-fill-available;
 }
 
@@ -216,11 +246,13 @@
 
 
 .Sidebar__Result div h1 {
-    font-size: 125%;
+    font-size: 100%;
+    font-weight: 500;
 }
 
 .Sidebar__Result div p {
     font-size: 100%;
+    color: var(--secondary-text-color);
 }
 
 @media (max-width: 400px) {
@@ -232,5 +264,9 @@
         width: 100vw;
         height: -webkit-fill-available;
         z-index: 1;
+    }
+
+    .Sidebar__Footer {
+        padding-block: var(--gap);
     }
 }

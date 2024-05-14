@@ -10,12 +10,18 @@ import ColorImage from "@/components/ColorImage/ColorImage";
 
 
 import { groupNew } from "@/client/group";
+import { chatNew } from "@/client/chat";
+import useMobile from "@/providers/Mobile/useMobile";
+import toggleSidebar from "@/client/toggleSidebar";
 
-export default function NewChat ({ enterpriseId, group, setGroup, disabledGroups, groups, setGroups, onDeleteGroup }) {
+
+export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup, disabledGroups, groups, setGroups, onDeleteGroup }) {
     let showDropdown = !!!group;
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [inputText, setInputText] = useState("");
+
+    const isMobile = useMobile();
 
     useEffect(() => {
         function handleDocumentClick (e) {
@@ -65,7 +71,15 @@ export default function NewChat ({ enterpriseId, group, setGroup, disabledGroups
                 console.log(e.target);
                 console.log(e.target.closest("#newChatDropdown"))
                 if(group) {
-    
+                    setDropdownLockout(true);
+                    chatNew(enterpriseId, group?.groupId || false).then((newChat) => {
+                        if(newChat) {
+                            setChat(newChat);
+                        } else {
+                            error("Failed to create chat");
+                        }
+                        setDropdownLockout(false);
+                    });
                 } else {
                     setDropdownOpen((prev) => {
                         return !prev;
@@ -73,7 +87,6 @@ export default function NewChat ({ enterpriseId, group, setGroup, disabledGroups
                 }
 
             }
-            
         }}>
             {
                 showDropdown && <>

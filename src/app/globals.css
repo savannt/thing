@@ -37,17 +37,17 @@
 }
 
 /* disable hover on max-width: 400px */
-@media ()
+
 
 /* below 400 px */
 @media (max-width: 400px) {
   :root {
     --margin-inline: 18px;
-    --margin-block: 9px;
+    /* --margin-block: 9px; */
     --min-height: 32px;
-    --gap: 9px;
+    --gap: 6px;
 
-    --header-height: 48px;
+    --header-height: 55px;
 
     --margin-chat: 1vw;
   }
@@ -318,6 +318,8 @@ body > div > main {
   padding: 0;
 
   animation-duration: 0.5s !important;
+
+  overscroll-behavior: none !important;
 }
 
 

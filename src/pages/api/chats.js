@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const { userId } = await authenticate(req, res);
     if(!userId) return;
 
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 50;
     const groupId = req.query.groupId || null;
     const { client, db } = await mongo();
 
@@ -18,8 +18,8 @@ export default async function handler(req, res) {
     const query = { userId, enterpriseId, deleted: false };
     if(groupId) query.groupId = groupId;
 
-    const GROUP_LIMIT = 10;
-    const CHAT_LIMIT = 10;
+    const GROUP_LIMIT = 50;
+    const CHAT_LIMIT = 50;
    
 
     if(groupId) {

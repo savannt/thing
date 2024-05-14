@@ -18,3 +18,13 @@
     font-weight: 200;
     font-size: 150%;
 }
+
+@media (max-width: 400px) {
+    .Logo h1 {
+        font-size: 160%;
+    }
+
+    .Logo h2 {
+        font-size: 130%;
+    }
+}

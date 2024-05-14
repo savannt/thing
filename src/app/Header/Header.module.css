@@ -8,12 +8,13 @@
     border-bottom: var(--border);
 
     padding-inline: var(--margin-inline);
-    padding-block: var(--margin-block);
+    /* padding-block: var(--margin-block); */
 
 
-    height: var(--min-height);
-    min-height: var(--min-height);
+    height: var(--header-height);
+    min-height: var(--header-height);
 }
+
 
 .Header__Start, .Header__End {
     display: flex;
@@ -45,4 +46,20 @@
     font-family: '__Source_Code_Pro_ceb1b8';
 
     font-size: 140%;
+}
+
+@media (max-width: 400px) {
+    .Header__Start {
+        width: -webkit-fill-available !important;
+        max-width: -webkit-fill-available !important;
+    }
+
+    .Header__Start h3 {
+        overflow: visible;
+        color: var(--primary-text-color);
+        opacity: 0.8;
+
+        font-weight: 400;
+        font-size: 90%;
+    }
 }

@@ -15,19 +15,26 @@ import Notifications from "@/app/Notifications/Notifications"
 
 import getUserId from "@/client/userId"
 
+import fetchChats from "@/client/chats"
 import fetchGroups from "@/client/groups"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import { SignedIn, SignedOut, SignIn, SignUp, useUser, useOrganization, useClerk } from "@clerk/nextjs"
+import notification from "@/client/notification"
+
+import toggleSidebar from "@/client/toggleSidebar"
+import useMobile from "@/providers/Mobile/useMobile"
 
 export default function App ({ page }) {
     const FAKE_LOGIN = false;
+    const isMobile = useMobile();
 
     const router = useRouter();
     const { signOut } = useClerk();
     const { user, isSignedIn, isLoaded } = useUser();
     const { organization } = useOrganization();
+
 
     const [userId, setUserId] = useState(false);
     const enterpriseId = organization?.id || false;
@@ -55,11 +62,21 @@ export default function App ({ page }) {
         }
     }, [isLoaded, isSignedIn]);
 
+    const [chat, _setChat] = useState(false);
+    const [chats, setChats] = useState(false);
     const [group, setGroup] = useState(false);
-    const [chat, setChat] = useState(false);
-
     const [groups, setGroups] = useState([]);
     
+    function setChat (chat) {
+        const value = _setChat(chat);
+        if(isMobile) {
+            setTimeout(() => {
+                toggleSidebar();
+            }, 250);
+        }
+        return value;
+    }
+
     useEffect(() => {        
         if(enterpriseId) {
             fetchGroups(enterpriseId).then(_groups => {
@@ -83,6 +100,10 @@ export default function App ({ page }) {
         signOut(() => router.push("/"));
     }
 
+    function onChatDelete () {
+        
+    }
+
     const [viewportHeight, setViewportHeight] = useState(0);
     useEffect(() => {
         function handleResize () {
@@ -101,16 +122,63 @@ export default function App ({ page }) {
     function ThingApp () {
         return (
             <>
-                <Header      userId={userId}                                                             group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} />
+                <button id="update-chats" style={{
+                    display: "none"
+                }} onClick={() => {
+                    const updateChats = () => {
+                        return new Promise(resolve => {
+                            fetchChats(enterpriseId, 20, group?.groupId || false).then(chats => {
+                                let _chats = [];
+                    
+                                if(Array.isArray(chats)) {
+                                    _chats = chats;
+                                } else {
+                                    if(group && group.groupId) {
+                                        if(chats[group.groupId]) {
+                                            _chats = chats[group.groupId];
+                                        } else {
+                                            error("Failed to fetch chats, group not found");
+                                            console.log("HERE!", chats, group);
+                                        }
+                                    } else {
+                                        if(chats["ungrouped"]) {
+                                            _chats = chats["ungrouped"];
+                                        } else {
+                                            error("Failed to fetch chats, ungrouped not found");
+                                        }
+                                    }
+                                }
+                
+                                // setChats(_chats);
+                                resolve(_chats);
+                            });
+                        });
+                    }
+
+                    updateChats().then(_chats => {
+                        setChats(_chats);
+                    });
+                }} />
+
+                <Header      userId={userId}                                                             group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} onChatDelete={onChatDelete} />
                 <div id="main" style={{
-                    overflow: "hidden",
+                    // overflow: "hidden",
                 }}>
-                    <Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} onLogout={onLogout} />
-                    <Chat    userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} />
+                    <Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
+                    <Chat    userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} />
                 </div>
             </>
         )
     }
+
+
+    useEffect(() => {
+        if(authLoaded && isSignedIn) {
+            setTimeout(() => {
+                document.getElementById("update-chats").click();
+            }, 250);
+        }
+    }, [group, authLoaded && isSignedIn]);
 
     return (
         <>

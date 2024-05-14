@@ -76,17 +76,25 @@
     height: var(--min-height);
 }
 
+.Chat__Main__NoMessages {
+    color: var(--secondary-text-color);
+
+    margin: auto;
+    user-select: none;
+
+    opacity: 0.5;
+}
+
+.Chat__Bar__InputRow textarea {
+    padding-left: var(--margin-inline);
+}
+
 @media (max-width: 400px) {
     .Chat__Bar__InputRow {
         /* gap: 0px; */
         gap: 6px;
     }
 
-    .Chat__Bar__InputRow > div:first-child {
-        /* border-top-right-radius: 0px; */
-        /* border-bottom-right-radius: 0px; */
-        /* border-right: 0px; */
-    }
 
     .Chat__Bar__InputRow > *:last-child {
         height: 36px !important;
@@ -134,10 +142,18 @@
     }
 
     .Chat {
-        position: absolute !important;
+        /* position: absolute !important; */
         width: -webkit-fill-available !important;
         /* height: calc(*100%; */
-        height: calc(100% - var(--min-height));
+        /* height: calc(100dvh - var(--header-height)) !important; */
+        /* max-height: calc(100dvh - var(--header-height)) !important; */
+
+
+        height: calc(var(--body-height) - (3 * var(--margin-block))) !important;
+        max-height: calc(var(--body-height) - (3 * var(--margin-block))) !important;
+        min-height: calc(var(--body-height) - (3 * var(--margin-block))) !important;
+
+
 
 
         overflow: visible;

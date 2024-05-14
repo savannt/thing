@@ -5,29 +5,16 @@ import Input from "@/components/Input/Input"
 
 import ChatMessage from "@/app/Chat/ChatMessage"
 
+
+import { chat, chatMessage } from "@/client/chat"
+
 import { useState } from "react"
 
+import toggleSidebar from "@/client/toggleSidebar"
+
 export default function Chat ({ group, chat, showSidebar }) {
-    function onToggleSidebar () {
-        if(!document.getElementById("toggle-sidebar")) return alert("A Fatal Error Has Occured:\n\nuhh, jeepers this ain't good chief-\nI can't find the sidebar toggle button");
-        document.getElementById("toggle-sidebar").click();
-    }
 
-
-    const [chatMessages, setChatMessages] = useState([
-        {
-            userId: "3345632145643",
-            message: "Hello, how are you?",
-            files: [],
-            timestamp: new Date()
-        },
-        {
-            userId: "some guy",
-            message: "Hello, how are you?",
-            files: [],
-            timestamp: new Date()
-        }
-    ])
+    const [chatMessages, setChatMessages] = useState(chat?.messages || []);
 
     const [allowSend, setAllowSend] = useState(false);
     const [inputFiles, setInputFiles] = useState([]);
@@ -43,16 +30,30 @@ export default function Chat ({ group, chat, showSidebar }) {
             setInputText("");
             setInputFiles([]);
             setInputRows(1);
+
+
+            chatMessage(chat.chatId, enterpriseId, _inputText, _inputFiles).then(data => {
+                if(data) {
+                    
+                } else {
+                    error("Failed to send message");
+                }
+            });
         }
     }
 
+    let showNoMessages = chatMessages.length === 0;
+
     return (
         <>
-            <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => onToggleSidebar() }/>
+            <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
             <div id="chat" className={`${styles.Chat} animate__animated animate__fadeIn`}>
                 <div id="chat-main" className={styles.Chat__Main}>
 
+                    {
+                        showNoMessages && <p className={styles.Chat__Main__NoMessages}>No messages to show</p>
+                    }
 
                     {chatMessages.map((messageObject, index) => {
                         const {

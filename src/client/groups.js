@@ -1,4 +1,4 @@
-export default async function groups(enterpriseId = false, limit = 10, title = null) {
+export default async function groups(enterpriseId = false, limit =510, title = null) {
     let url = "/api/groups";
     if(enterpriseId) {
         url += "?enterpriseId=" + enterpriseId;
