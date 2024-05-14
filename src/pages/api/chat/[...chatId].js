@@ -1,12 +1,7 @@
 import mongo  from "@/services/mongodb";
 import { generateChatId } from "@/services/generator";
 
-// import update, { userSentMessage, onChatCreated } from "@/services/ai/ai";
-
-const update = () => {};
-const userSentMessage = () => {};
-const onChatCreated = () => {};
-
+import update, { userSentMessage, onChatCreated } from "@/services/ai";
 import authenticate from "@/services/authenticateRequest";
 
 export default async function handler(req, res) {

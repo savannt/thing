@@ -24,18 +24,19 @@ import useMobile from "@/providers/Mobile/useMobile";
 import toggleSidebar from "@/client/toggleSidebar";
 
 
-function SidebarResult ({ disabled = false, image, color, title, description, onClick, showDelete, onDelete }) {
+function SidebarResult ({ id, active = false, disabled = false, image, color, title, description, prefix = "", onClick, showDelete, onDelete }) {
     return (
-        <div className={styles.Sidebar__Result} onClick={onClick} style={{
+        <div id={id} className={styles.Sidebar__Result} onClick={onClick} style={{
             cursor: disabled ? "not-allowed" : "pointer",
-            opacity: disabled ? 0.5 : 1
+            opacity: disabled ? 0.5 : (active ? 0.8 : 1),
+            background: active ? "var(--hover-active-color)" : ""
         }}>
             <ColorImage color={color} image={image} aspectRatio="1/1" />
             <div>
                 <h1>{title}</h1>
-                <p>{description}</p>
+                <p><b>{prefix}</b>{description}</p>
             </div>
-            { showDelete && <SquareButton className={styles.Sidebar__Result__Delete} image="/images/icons/trash.svg" onClick={(...e) => {
+            { showDelete && <SquareButton id={`${id}-delete`} className={styles.Sidebar__Result__Delete} image="/images/icons/trash.svg" onClick={(...e) => {
                 e[0].stopPropagation();
                 if(onDelete) onDelete(...e);
             }} color="var(--red)" background={false} />}
@@ -49,6 +50,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     const ref = createRef(null);
 
     const [disabledGroups, setDisabledGroups] = useState([]); // [groupId, groupId, groupId]
+    const [disabledChats, setDisabledChats] = useState([]); // [chatId, chatId, chatId]
 
     const [isResizing, setIsResizing] = useState(false)
     useEffect(() => {
@@ -58,6 +60,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 // send resize event
                 ref.current.dispatchEvent(new Event("resize"));
 
+                localStorage.setItem("sidebar_width", e.clientX);
 
                 updateTitleSize();
             }
@@ -85,6 +88,13 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         }
     }, [isResizing, ref]);
 
+    useEffect(() => {
+        const width = localStorage.getItem("sidebar_width");
+        if(width && ref.current) {
+            ref.current.style.width = `${width}px`;
+        }
+    }, [ref]);
+
 
     let results = group ? chats : groups;
     let noResults = !results || results.length === 0;
@@ -94,16 +104,18 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
     const [animation, setAnimation] = useState("");
     const [secondaryAnimation, setSecondaryAnimation] = useState("");
+    const [titleAnimation, setTitleAnimation] = useState("");
 
     const [collapsed, setCollapsed] = useState(false);
     const [collapsedFinished, setCollapsedFinished] = useState(true);
     let isCollapsed = collapsed && collapsedFinished;
+    let isCollapsing = collapsed;
 
     const isMobile = useMobile();
 
     if(localStorage) {
-        localStorage.setItem("sidebar_collapsing", collapsed);
         localStorage.setItem("sidebar_collapsed", isCollapsed);
+        localStorage.setItem("sidebar_collapsing", isCollapsing);
         // dispatch update event
         window.dispatchEvent(new Event("storage"));
     }
@@ -113,7 +125,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     if(chatCollapseSidebarButton) chatCollapseSidebarButton.style.display = collapsed ? "flex" : "none";
     if(chatElement) {
         chatElement.style.position = isCollapsed ? "absolute" : "relative";
-        chatElement.style.marginInline = (collapsed || isMobile) ? "calc(var(--margin-chat) * 3)" : "calc(var(--margin-chat) * 1)";
+        chatElement.style.paddingInline = (collapsed || isMobile) ? "calc(var(--margin-chat) * 3)" : "calc(var(--margin-chat) * 1)";
     }
     // console.log("isCollapsed", isCollapsed);
     
@@ -131,6 +143,15 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         });
         setCollapsedFinished(false);
     }
+
+    // const [lastTitle, setLastTitle] = useState(false);
+    // useEffect(() => {
+    //     if(chat?.title !== lastTitle) {
+    //         setLastTitle(chat?.title);
+    //         console.log(chat, "Title: " + chat.title, "Last Title: " + lastTitle);
+    //         setTitleAnimation("animate__flipInX");
+    //     }
+    // }, [chat]);
 
     function onDeleteChat (_chat) {
         if(chat && chat.id === _chat.id) {
@@ -215,9 +236,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             }} readOnly></input>
 
             {
-                !isMobile && <h3 className={`animate__animate animate__fadeIn`} style={{
+                !isMobile && <h3 className={`animate__animate ${titleAnimation}`} style={{
                     position: "absolute",
-                    left: isCollapsed ? "calc(max(var(--margin-chat) * 3, 0px))" : "calc(max(100% + var(--margin-chat) * 1, 11vw))",
+                    left: isCollapsed || isCollapsing ? "calc(max(var(--margin-chat) * 3, 0px))" : "calc(max(100% + var(--margin-chat) * 1, 11vw))",
                     bottom: "calc(100% + (var(--min-height) / 1.9))",
                     width: "max-content",
                     opacity: "1",
@@ -226,7 +247,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     
                     // opacity: "0",
                     // animationDelay: "2s",
-                }}>{chat?.title || <DotsText color="var(--secondary-text-color)" ></DotsText>}</h3>
+                }} onAnimationEnd={() => {
+                    setTitleAnimation("");
+                }} >{chat ? (chat?.title || <DotsText color="var(--secondary-text-color)" ></DotsText>) : ""}</h3>
             }
 
             <div className={`${styles.Sidebar__Sidebar} ${secondaryAnimation}`} style={{
@@ -274,7 +297,8 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                             const title = item.title;
                             const isGroup = !!!group;
 
-                            
+
+                            let prefix;
                             let description;
                             let icon = "/images/icons/chat.png";
                             if(isGroup) {
@@ -285,16 +309,23 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                                 icon = "/images/icons/chat.png"
                                 
                                 if(item.messages && item.messages.length > 0) {
-                                    description = item.messages[item.messages.length - 1].text;
+                                    let lastMessage = item.messages[item.messages.length - 1];
+
+                                    let lastMessageText = lastMessage.message;
+                                    let lastMessageUser = lastMessage.userId;
+
+                                    description = lastMessageText;
+                                    prefix = lastMessageUser === userId ? "me: " : "";
                                 } else {
-                                    description = "No messages";
+                                    description = "blank chat";
                                 }
                             }
 
-                            const isDisabled = disabledGroups.includes(item.groupId);
+                            const isDisabled = item.chatId ? disabledChats.includes(item.chatId) : disabledGroups.includes(item.groupId);
+                            const isActive = chat && item.chatId && chat.chatId === item.chatId;
 
                             return (
-                                <SidebarResult disabled={isDisabled} key={index} image={icon} title={title} description={description} onClick={() => {
+                                <SidebarResult id={`${item.chatId ? `chat-${item.chatId}` : `group-${item.groupId}`}`} active={isActive} disabled={isDisabled} key={index} image={icon} title={title} description={description} prefix={prefix} onClick={() => {
                                     if(isGroup) {
                                         setGroup(item);
                                     } else {

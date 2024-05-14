@@ -67,12 +67,21 @@ export default function App ({ page }) {
     const [group, setGroup] = useState(false);
     const [groups, setGroups] = useState([]);
     
-    function setChat (chat) {
+    function setChat (chat, doPushIsNew = false) {
         const value = _setChat(chat);
         if(isMobile) {
             setTimeout(() => {
                 toggleSidebar();
             }, 250);
+        }
+        if(doPushIsNew) {
+            setChats((prev) => {
+                if(prev) {
+                    return [chat, ...prev];
+                } else {
+                    return [chat];
+                }
+            });
         }
         return value;
     }
@@ -88,7 +97,7 @@ export default function App ({ page }) {
 
     function onBack () {
         setGroup(false);
-        setChat(false);
+        // setChat(false);
     }
 
     function onHome () {
@@ -101,7 +110,9 @@ export default function App ({ page }) {
     }
 
     function onChatDelete () {
-        
+        const element = document.getElementById(`chat-${chat.chatId}-delete`);
+        if(!element) error("Failed to delete chat, element not found");
+        else element.click();
     }
 
     const [viewportHeight, setViewportHeight] = useState(0);

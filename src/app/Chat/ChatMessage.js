@@ -10,7 +10,7 @@ import rehypeStringify from "rehype-stringify";
 
 import { useEffect, useState } from "react";
 
-export default function ChatMessage ({ message }) {
+export default function ChatMessage ({ userId: myUserId, message }) {
     const {
         userId,
         message: messageStr,
@@ -48,11 +48,15 @@ export default function ChatMessage ({ message }) {
             })
     }, [messageStr]);
 
+
+    let parsedUserId = userId === myUserId ? "You" : userId;
+
+
     return (
         <div className={styles.ChatMessage}>
             <div className={styles.ChatMessage__Header}>
                 <div className={styles.ChatMessage__Header__Start}>
-                    <h1>{userId || ""}</h1>
+                    <h1>{parsedUserId || ""}</h1>
                     <h2 suppressHydrationWarning>{_formattedTimestamp || ""}</h2>
                 </div>
                 <div className={styles.ChatMessage__Header__End}>

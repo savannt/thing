@@ -7,8 +7,8 @@
     width: -webkit-fill-available;
     height: -webkit-fill-available;
 
-    margin-inline: calc(4 * var(--margin-inline));
-    margin-block: calc(2 * var(--margin-block));
+    padding-inline: calc(4 * var(--margin-inline));
+    padding-block: calc(2 * var(--margin-block));
 
     gap: var(--gap);
 

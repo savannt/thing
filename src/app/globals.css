@@ -34,6 +34,8 @@
 
 
   --margin-chat: 6vw;
+
+  --scale-to: 0.975;
 }
 
 /* disable hover on max-width: 400px */
@@ -323,6 +325,34 @@ body > div > main {
 }
 
 
+
+.animate__heartBeat {
+  animation: heartBeatCustom 1.5s !important;
+}
+
+@keyframes heartBeatCustom {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+
+  14% {
+    -webkit-transform: scale(var(--scale-to));
+    transform: scale(var(--scale-to));
+  }
+
+  28% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+
 #main {
   position: relative;
 
@@ -571,6 +601,10 @@ body > div > main {
 }
 .cl-navbar h1 {
   color: var(--primary-text-color);
+}
+
+.cl-navbar > div > div:first-child {
+  z-index: 1000;
 }
 
 .cl-scrollBox {

@@ -22,6 +22,10 @@ export default class Assistant {
         this.response_format = response_format;
     }
 
+    async setTools (tools) {
+        return await this.update({ tools });
+    }
+
     async update (data) {
         const assistant = await openai.beta.assistants.update(this.id, { ...data });
         if(!assistant) throw new Error("Assistant not found");

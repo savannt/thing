@@ -88,7 +88,7 @@ export default function Header ({ group, chat, onBack, onHome, onLogout, onChatD
                 </div>
 
                 {
-                    (isSidebarCollapsed || isSidebarCollapsing) && <div className={`animate__animated ${invertedActionsAnimation}`} onAnimationEnd={() => {
+                    (isMobile ? (isSidebarCollapsed || isSidebarCollapsing) : true) && <div className={`animate__animated ${invertedActionsAnimation}`} onAnimationEnd={() => {
                         setInvertedActionsAnimation("");
                     }}>
                         { chat && (isMobile ? (isSidebarCollapsed || isSidebarCollapsing) : true) && <SquareButton id="chat-delete" image="/images/icons/trash.svg" color="var(--red)" onClick={() => {
@@ -97,7 +97,7 @@ export default function Header ({ group, chat, onBack, onHome, onLogout, onChatD
                     </div>
                 }
 
-                <SquareButton id="mobile-toggle-sidebar" image="/images/icons/sidebar.png" onClick={() => {
+                <SquareButton disabled={isMobile && !chat} id="mobile-toggle-sidebar" image="/images/icons/sidebar.png" onClick={() => {
                     document.getElementById("toggle-sidebar").click();
                 }} />
             </div>

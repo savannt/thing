@@ -12,7 +12,8 @@ import { useState } from "react"
 
 import toggleSidebar from "@/client/toggleSidebar"
 
-export default function Chat ({ group, chat, showSidebar }) {
+export default function Chat ({ userId, enterpriseId, group, chat, showSidebar }) {
+
 
     const [chatMessages, setChatMessages] = useState(chat?.messages || []);
 
@@ -42,17 +43,28 @@ export default function Chat ({ group, chat, showSidebar }) {
         }
     }
 
+
+    const [chatAnimation, setChatAnimation] = useState("");
+    // useEffect(() => {
+
+    // }, [chat]);
+
     let showNoMessages = chatMessages.length === 0;
 
     return (
         <>
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
-            <div id="chat" className={`${styles.Chat} animate__animated animate__fadeIn`}>
+            <div id="chat" className={`${styles.Chat} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
+                // setChatAnimation("");
+            }} style={{
+                background: !chat && "var(--secondary-color)",
+                opacity: !chat && 0.6
+            }}>
                 <div id="chat-main" className={styles.Chat__Main}>
 
                     {
-                        showNoMessages && <p className={styles.Chat__Main__NoMessages}>No messages to show</p>
+                        showNoMessages && <p className={styles.Chat__Main__NoMessages}>{!chat ? "No chat selected" : "No messages to show" }</p>
                     }
 
                     {chatMessages.map((messageObject, index) => {
@@ -64,14 +76,16 @@ export default function Chat ({ group, chat, showSidebar }) {
                         } = messageObject;
 
                         return (
-                            <ChatMessage key={index} message={messageObject} />
+                            <ChatMessage key={index} userId={userId} message={messageObject} />
                         )
                     })}
 
 
 
                 </div>
-                <div className={styles.Chat__Bar}>
+                <div className={styles.Chat__Bar} style={{
+                    display: chat ? "flex" : "none"
+                }}>
                     <div className={styles.Chat__Bar__InputRow}>
                         <Input hiddenFocus={!allowSend} textarea={true} placeholder="Send a message" value={inputText} rows={inputRows} onChange={(e) => {
                             setInputText(e.target.value);
