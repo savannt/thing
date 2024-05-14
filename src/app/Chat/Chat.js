@@ -1,26 +1,57 @@
 import styles from "@/app/Chat/Chat.module.css"
 
+import ChatMessage from "@/app/Chat/ChatMessage"
+
 import SquareButton from "@/components/Button/SquareButton"
 import Input from "@/components/Input/Input"
 
-import ChatMessage from "@/app/Chat/ChatMessage"
-
+import { useChannel } from "ably/react";
+import { useState, useEffect } from "react"
 
 import { chat, chatMessage } from "@/client/chat"
-
-import { useState } from "react"
-
 import toggleSidebar from "@/client/toggleSidebar"
+import notification from "@/client/notification";
 
-export default function Chat ({ userId, enterpriseId, group, chat, showSidebar }) {
+export default function Chat ({ userId, enterpriseId, chat }) {
+    const hasChat = !!chat && chat?.chatId;
 
-
+    // Chat Properties
     const [chatMessages, setChatMessages] = useState(chat?.messages || []);
-
+    
+    // Chat Input Bar
     const [allowSend, setAllowSend] = useState(false);
     const [inputFiles, setInputFiles] = useState([]);
     const [inputRows, setInputRows]   = useState(1);
     const [inputText, setInputText]   = useState("");
+
+    // Animation
+    // const [chatAnimation, setChatAnimation] = useState("");
+
+    // useEffect(() => {
+    //     if(chat && chat.chatId && chat.chatId !== chatId) {
+    //         setChatId(chat.chatId);
+    //         setChatMessages(chat.messages || []);
+    //         setChatAnimation("animate__heartBeat");
+    //     }
+    // }, [chat]);
+
+    function onMessageStart (message) {
+        setChatMessages(prev => {
+            if(!prev) prev = [];
+            prev.push(message);
+            return prev;
+        });
+    }
+
+    function onMessageDelta ({ id, message }) {
+        setChatMessages(prev => {
+            if(!prev) throw new Error("onMessageDelta: no messages in chat- yet we are trying to update one");
+            let index = prev.findIndex(m => m.id === id);
+            if(index === -1) throw new Error("onMessageDelta: message not found in chat- yet we are trying to update it");
+            prev[index].message = message;
+            return prev;
+        });
+    }
 
     function send () {
         if(allowSend) {
@@ -43,8 +74,6 @@ export default function Chat ({ userId, enterpriseId, group, chat, showSidebar }
         }
     }
 
-
-    const [chatAnimation, setChatAnimation] = useState("");
     // useEffect(() => {
 
     // }, [chat]);
@@ -55,7 +84,7 @@ export default function Chat ({ userId, enterpriseId, group, chat, showSidebar }
         <>
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
-            <div id="chat" className={`${styles.Chat} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
+            <div id="chat" className={`${styles.Chat} animate__animated`} onAnimationEnd={() => {
                 // setChatAnimation("");
             }} style={{
                 background: !chat && "var(--secondary-color)",

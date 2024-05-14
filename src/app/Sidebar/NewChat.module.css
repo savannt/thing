@@ -93,6 +93,10 @@
     background-color: var(--hover-color);
 }
 
+.NewChat__Dropdown__Row:last-child:hover {
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
 .NewChat__Dropdown__Row:active {
     background-color: var(--hover-active-color);
 }

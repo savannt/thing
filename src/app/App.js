@@ -1,10 +1,12 @@
 import "@/app/globals.css"
+import styles from "@/app/Chat/Chat.module.css"
 
 import Header from "@/app/Header/Header"
 
 import Button from "@/components/Button/Button"
 import Sidebar from "@/app/Sidebar/Sidebar"
 import Chat from "@/app/Chat/Chat"
+import NoChat from "@/app/Chat/NoChat"
 
 import Logo from "@/app/Header/Logo"
 
@@ -22,9 +24,12 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import { SignedIn, SignedOut, SignIn, SignUp, useUser, useOrganization, useClerk } from "@clerk/nextjs"
 import notification from "@/client/notification"
+import { useChannel } from "ably/react"
 
 import toggleSidebar from "@/client/toggleSidebar"
 import useMobile from "@/providers/Mobile/useMobile"
+import tryUntilSuccess from "@/client/tryUntilSuccess"
+import toggleTheme from "@/client/toggleTheme"
 
 export default function App ({ page }) {
     const FAKE_LOGIN = false;
@@ -67,6 +72,46 @@ export default function App ({ page }) {
     const [group, setGroup] = useState(false);
     const [groups, setGroups] = useState([]);
     
+    const [title, setTitle] = useState(false);
+
+
+
+    function onTitleUpdate ({ title }) {
+        notification("Chat title updated", title, "#00FF00");
+        setTitle(title);
+    }
+
+
+    // useChannel(`chat-test`, "title", (msg) => {
+    //     if(!msg || !msg.data) { console.error("Invalid title message", msg); return; }
+    //     const { data } = msg;
+
+    //     if(!data.title) throw new Error("No title sent in title update message");
+    //     const { title } = data;
+
+    //     onTitleUpdate({ title });
+    // });
+
+
+    // useEffect(() => {
+    //     if(chat && chat.chatId) {
+    //         const chatId = chat.chatId;
+
+    //         const { channel: titleUpdateChannel } = useChannel(`chat-${chatId}`, "title", (msg) => {
+    //             if(!msg || !msg.data) { console.error("Invalid title message", msg); return; }
+    //             const { data } = msg;
+        
+    //             if(!data.title) throw new Error("No title sent in title update message");
+    //             const { title } = data;
+        
+    //             onTitleUpdate({ title });
+    //         });
+
+    //         setTitle(chat.title);
+    //     }
+    // }, [chat]);
+
+
     function setChat (chat, doPushIsNew = false) {
         const value = _setChat(chat);
         if(isMobile) {
@@ -83,6 +128,13 @@ export default function App ({ page }) {
                 }
             });
         }
+
+        // add "animate__heartBeat" to #chat
+        setTimeout(() => {
+            const chatElement = document.getElementById("chat");
+            if(chatElement) chatElement.classList.add("animate__heartBeat");
+        }, 50);
+
         return value;
     }
 
@@ -149,7 +201,6 @@ export default function App ({ page }) {
                                             _chats = chats[group.groupId];
                                         } else {
                                             error("Failed to fetch chats, group not found");
-                                            console.log("HERE!", chats, group);
                                         }
                                     } else {
                                         if(chats["ungrouped"]) {
@@ -176,7 +227,9 @@ export default function App ({ page }) {
                     // overflow: "hidden",
                 }}>
                     <Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
-                    <Chat    userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} />
+                    <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
+                    { chat && chat?.chatId && <Chat    userId={userId} enterpriseId={enterpriseId} chat={chat} setChat={setChat} /> }
+                    { !chat && !chat?.chatId && <NoChat /> }
                 </div>
             </>
         )
@@ -185,12 +238,16 @@ export default function App ({ page }) {
 
     useEffect(() => {
         if(authLoaded && isSignedIn) {
-            setTimeout(() => {
+            tryUntilSuccess(() => {
                 document.getElementById("update-chats").click();
-            }, 250);
+            });
         }
     }, [group, authLoaded && isSignedIn]);
 
+
+
+
+    if(chat && title) chat.title = title;
     return (
         <>
             <div style={{
@@ -202,10 +259,7 @@ export default function App ({ page }) {
                 alignItems: "center",
                 gap: "12px"
             }}>
-                <SquareButton id="login-theme" image="/images/icons/ic_theme.svg" onClick={() => {
-                    // toggle data-theme from light to dark
-                    document.documentElement.setAttribute("data-theme", document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light")
-                }}/>
+                <SquareButton id="login-theme" image="/images/icons/ic_theme.svg" onClick={() => toggleTheme() }/>
                 <Logo scale="1.7" style={{
                     marginBottom: "calc(var(--gap) * 3)"  
                 }} />

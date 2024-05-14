@@ -68,8 +68,6 @@ export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup,
         <Button disabled={lockoutDropdown} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/new_chat.svg"} text={group ? `New Chat with ${group?.title}` : "New Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
             // if we are not in the dropdown
             if(e.target.id !== "newChatDropdownMenu" && e.target.closest("#newChatDropdownMenu") === null) {
-                console.log(e.target);
-                console.log(e.target.closest("#newChatDropdown"))
                 if(group) {
                     setDropdownLockout(true);
                     chatNew(enterpriseId, group?.groupId || false).then((newChat) => {

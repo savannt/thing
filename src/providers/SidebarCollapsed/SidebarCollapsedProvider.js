@@ -3,7 +3,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 export const SidebarCollapsedContext = createContext(0);
 
 export default function SidebarCollapsedProvider ({ children }) {
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState({
+    const [sidebarData, setSidebarData] = useState({
         collapsed: false,
         collapsing: false
     });
@@ -12,7 +12,7 @@ export default function SidebarCollapsedProvider ({ children }) {
         const handleStorageChange = () => {
             if(window.localStorage.getItem("sidebar_collapsed")) {
                 const value = window.localStorage.getItem("sidebar_collapsed");
-                setIsSidebarCollapsed((prev) => {
+                setSidebarData((prev) => {
                     return {
                         ...prev,
                         collapsed: value === "true"
@@ -21,7 +21,7 @@ export default function SidebarCollapsedProvider ({ children }) {
             }
             if(window.localStorage.getItem("sidebar_collapsing")) {
                 const value = window.localStorage.getItem("sidebar_collapsing");
-                setIsSidebarCollapsed((prev) => {
+                setSidebarData((prev) => {
                     return {
                         ...prev,
                         collapsing: value === "true"
@@ -41,7 +41,7 @@ export default function SidebarCollapsedProvider ({ children }) {
     }, []); 
 
     return (
-        <SidebarCollapsedContext.Provider value={isSidebarCollapsed}>
+        <SidebarCollapsedContext.Provider value={sidebarData}>
             { children }
         </SidebarCollapsedContext.Provider>
     )

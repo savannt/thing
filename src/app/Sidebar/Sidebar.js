@@ -12,7 +12,6 @@ import DotsText from "@/components/DotsText/DotsText";
 
 
 import { groupDelete } from "@/client/group";
-import fetchChats from "@/client/chats";
 import { chatDelete } from "@/client/chat";
 
 import error from "@/client/error";
@@ -304,7 +303,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                             if(isGroup) {
                                 icon = "/images/icons/thing.png"
 
-                                description = "Chat group"
+                                description = "Group"
                             } else {
                                 icon = "/images/icons/chat.png"
                                 

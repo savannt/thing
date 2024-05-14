@@ -8,6 +8,7 @@ import SquareButton from "@/components/Button/SquareButton";
 import useMobile from "@/providers/Mobile/useMobile";
 import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapsed";
 import { useEffect, useState } from "react";
+import toggleTheme from "@/client/toggleTheme";
 
 export default function Header ({ group, chat, onBack, onHome, onLogout, onChatDelete }) {
     const isMobile = useMobile();
@@ -76,15 +77,7 @@ export default function Header ({ group, chat, onBack, onHome, onLogout, onChatD
                     display: hideActions ? "none" : "flex"
                 }}>
                     <SquareButton id="logout" image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/>
-                    <SquareButton id="toggle-theme" image="/images/icons/ic_theme.svg" onClick={() => {
-                        // toggle data-theme from light to dark
-                        
-                        let newTheme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
-                        document.documentElement.setAttribute("data-theme", newTheme);
-                        
-                        // update theme-color content
-                        document.querySelector("meta[name=theme-color]").setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--background-color"));
-                    }}/>
+                    <SquareButton id="toggle-theme" image="/images/icons/ic_theme.svg" onClick={() => toggleTheme() }/>
                 </div>
 
                 {

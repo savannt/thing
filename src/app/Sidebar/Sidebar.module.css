@@ -149,13 +149,20 @@
     pointer-events: all;
 }
 
+.Sidebar__Result__Delete div {
+    background-color: var(--primary-text-color) !important;
+}
+
+.Sidebar__Result__Delete:hover div {
+    background-color: var(--red) !important;
+}
+
 .Sidebar__Result__Delete:hover {
     opacity: 0.5 !important;
 }
 .Sidebar__Result:hover .Sidebar__Result__Delete {
     opacity: 0.3 !important;
 }
-
 
 .Sidebar__Result__Delete:active {
     opacity: 1 !important;

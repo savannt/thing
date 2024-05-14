@@ -49,13 +49,15 @@ export default function Notifications({ }) {
                     }
                 }
 
-                const notification = window.localStorage.getItem("notification");
+                const notificationStr = window.localStorage.getItem("notification");
+                const { title, description, color } = JSON.parse(notificationStr);
                 const timeout = 5000;
                 const id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
                 
                 let newNotification = {
-                    text: notification,
-                    color: "green",
+                    title,
+                    description,
+                    color,
                     timeout,
                     id,
                     time: Date.now(),
@@ -98,7 +100,8 @@ export default function Notifications({ }) {
                     <NotificationCard color={notification.color} timeout={notification.timeout} key={index} onTimeout={() => {
                         // setNotifications(notifications.filter((n) => n.id !== notification.id));
                     }}>
-                        <p>{notification.text}</p>
+                        {notification.title && <h3>{notification.title}</h3> }
+                        { notification.description && <p>{notification.description}</p> }
                     </NotificationCard>
                 )
             }) }

@@ -27,7 +27,7 @@
 }
 
 .NotificationCard {
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
     color: var(--primary-text-color);
 
     display: flex;
@@ -42,6 +42,8 @@
     border-radius: var(--border-radius);
 
     gap: var(--gap);
+
+    box-shadow: var(--box-shadow-light);
 }
 
 .NotificationCard > .NotificationCard__Image {
@@ -56,6 +58,6 @@
     align-items: flex-start;
     justify-content: center;
 
-    gap: var(--gap);
+    /* gap: var(--gap); */
 }
 

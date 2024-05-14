@@ -36,6 +36,10 @@
   --margin-chat: 6vw;
 
   --scale-to: 0.975;
+
+  
+  --box-shadow: 0px 0px 20px 0px var(--box-shadow-color);
+  --box-shadow-light: 0px 0px 10px -10px var(--box-shadow-color);
 }
 
 /* disable hover on max-width: 400px */
@@ -69,7 +73,7 @@
   --active-color: #3b8140;
   --active-color-hidden: #4c855063;
 
-  --box-shadow: 0px 0px 20px 0px #000000a8;
+  --box-shadow-color: #000000a8;
 }
 
 /* data-theme light */
@@ -84,12 +88,49 @@
   --active-color: #3c6a3fd1;
   --active-color-hidden: #366d3a30;
 
-  --box-shadow: 0px 0px 20px 0px #00000053;
+  --box-shadow-color: #00000053;
+}
+
+:root[data-theme="gray"] {
+  --background-color: #6e6e6e;  
+  --secondary-color: #8c8c8c;
+
+  --primary-text-color: #ececec;
+  --secondary-text-color: #b3b3b3;
+  --tertiary-text-color: #595858;
+
+  --hover-color: #d3d3d319;
+  --hover-active-color: #c0c0c02d;
+
+  --active-color: #68bd6ed1;
+  --active-color-hidden: #69976c7b;
+
+  --box-shadow-color: #00000053;
+}
+
+:root[data-theme="black"] {
+  --background-color: #000000;  
+  --secondary-color: #1a1c1d;
+
+  --primary-text-color: #ececec;
+  --secondary-text-color: #b3b3b3;
+  --tertiary-text-color: #333;
+
+  --active-color: #3b8140;
+  --active-color-hidden: #4c855063;
+
+  --box-shadow-color: #000000a8;
 }
 
 *:focus {
   outline: 2px solid var(--action-color);
   outline-offset: 2px;
+}
+
+/* input placeholder color */
+::placeholder {
+  color: var(--secondary-text-color);
+  opacity: 0.8;
 }
 
 button, input, select, textarea {
