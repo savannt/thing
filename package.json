@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "desktop": "concurrently \"npm run dev\" \"npm run start --prefix ./desktop\""
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.0.4",
@@ -32,6 +33,7 @@
     "unified": "^11.0.4"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "electron": "^30.0.4"
   }
 }

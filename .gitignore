@@ -37,3 +37,6 @@ next-env.d.ts
 .env.local
 .env*.local
 .env.local/
+
+
+desktop/node_modules/
