@@ -18,11 +18,11 @@ import toggleSidebar from "@/client/toggleSidebar";
 export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup, disabledGroups, groups, setGroups, onDeleteGroup }) {
     let showDropdown = !!!group;
 
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [inputText, setInputText] = useState("");
-
+    
     const isMobile = useMobile();
-
+    
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     useEffect(() => {
         function handleDocumentClick (e) {
             if((e.target.id !== "newChat" && e.target.closest("#newChat") === null)) {

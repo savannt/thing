@@ -1,16 +1,19 @@
 export default function tryUntilSuccess (fn, interval = 5000) {
-    return new Promise(async resolve => {
-        function _retry (interval) {
-            console.log(`[ERROR] [Safe] Retrying in ${interval}ms`);
-            setInterval(async () => {
-                return resolve(await tryUntilSuccess(fn, interval));
-            }, interval);   
+    // call fn in a try block until it succeeds, when it does resolve its value- if it fails OR if the value is !value, wait interval and try again
+    return new Promise((resolve, reject) => {
+        let tryFn = async () => {
+            console.log("trying");
+            try {
+                let result = await fn();
+                if(result) {
+                    resolve(result);
+                } else {
+                    setTimeout(tryFn, interval);
+                }
+            } catch (error) {
+                setTimeout(tryFn, interval);
+            }
         }
-
-        try {
-            resolve(await fn());
-        } catch (err) {
-            _retry(interval);
-        }
-    })
+        tryFn();
+    });
 }

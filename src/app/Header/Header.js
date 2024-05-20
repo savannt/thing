@@ -76,7 +76,7 @@ export default function Header ({ group, chat, onBack, onHome, onLogout, onChatD
                 }} style={{
                     display: hideActions ? "none" : "flex"
                 }}>
-                    <SquareButton id="logout" image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/>
+                    {/* <SquareButton id="logout" image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/> */}
                     <SquareButton id="toggle-theme" image="/images/icons/ic_theme.svg" onClick={() => toggleTheme() }/>
                 </div>
 

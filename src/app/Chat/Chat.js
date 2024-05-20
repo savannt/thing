@@ -5,6 +5,8 @@ import ChatMessage from "@/app/Chat/ChatMessage"
 import SquareButton from "@/components/Button/SquareButton"
 import Input from "@/components/Input/Input"
 
+import Video from "@/app/Chat/Video"
+
 import { useChannel } from "ably/react";
 import { useState, useEffect } from "react"
 
@@ -80,12 +82,34 @@ export default function Chat ({ userId, enterpriseId, chat }) {
 
     let showNoMessages = chatMessages.length === 0;
 
+    let [showVideo, setShowVideo] = useState(false);
+
+    const [chatAnimation, setChatAnimation] = useState("");
+    const [videoAnimation, setVideoAnimation] = useState("");
+
     return (
         <>
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
-            <div id="chat" className={`${styles.Chat} animate__animated`} onAnimationEnd={() => {
-                // setChatAnimation("");
+            
+            { (showVideo || videoAnimation) && <Video className={`aniamte__animated ${videoAnimation}`} onAnimationEnd={() => {
+                console.log("ANIM_DONE", videoAnimation)
+                if(videoAnimation.includes("fadeOut")) {
+                    setShowVideo(false);
+                    setChatAnimation("animate__fadeInRight");
+                }
+                setVideoAnimation("");
+            }} onBack={() => {
+                setVideoAnimation("animate__fadeOutRight");
+            }} /> }
+            
+            { (!showVideo || chatAnimation) && <div id="chat" className={`${styles.Chat} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
+                if(chatAnimation.includes("fadeOut")) {
+                    setShowVideo(true);
+                } else {
+                    setShowVideo(false);
+                }
+                setChatAnimation("");
             }} style={{
                 background: !chat && "var(--secondary-color)",
                 opacity: !chat && 0.6
@@ -115,6 +139,13 @@ export default function Chat ({ userId, enterpriseId, chat }) {
                 <div className={styles.Chat__Bar} style={{
                     display: chat ? "flex" : "none"
                 }}>
+                    <SquareButton className={styles.Chat__Bar__InputRow__Live} image="/images/icons/live.png" background={false} onClick={() => {
+                        if(showVideo) {
+                            setVideoAnimation("animate__fadeOutRight");
+                        } else {
+                            setChatAnimation("animate__fadeOutRight");
+                        }
+                    }} />
                     <div className={styles.Chat__Bar__InputRow}>
                         <Input hiddenFocus={!allowSend} textarea={true} placeholder="Send a message" value={inputText} rows={inputRows} onChange={(e) => {
                             setInputText(e.target.value);
@@ -156,7 +187,7 @@ export default function Chat ({ userId, enterpriseId, chat }) {
                         }}/>
                     </div>
                 </div>
-            </div>
+            </div> }
         </>
     )
 }

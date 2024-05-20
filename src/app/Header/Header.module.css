@@ -36,6 +36,10 @@
     gap: var(--gap);
 }
 
+.Header__Start {
+    margin-right: var(--gap);
+}
+
 .Header__Start h2 {
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -48,7 +52,7 @@
     font-size: 140%;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 800px) {
     .Header__Start {
         width: -webkit-fill-available !important;
         max-width: -webkit-fill-available !important;

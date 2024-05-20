@@ -52,7 +52,7 @@
 }
 
 
-@media (max-width: 400px) {
+@media (max-width: 800px) {
     .ChatMessage__Header__Start > h1 {
         font-size: 80%;
     }

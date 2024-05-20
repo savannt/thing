@@ -48,6 +48,7 @@ export default function App ({ page }) {
     const [authSignedIn, setAuthSignedIn] = useState(false);
     const [isGuest, setIsGuest] = useState(false);
     useEffect(() => {
+        console.log("IS_LODAED_EFFECT", isLoaded, isSignedIn)
         if(isLoaded) {
             setAuthLoaded(true);
             if(isSignedIn) {
@@ -239,7 +240,9 @@ export default function App ({ page }) {
     useEffect(() => {
         if(authLoaded && isSignedIn) {
             tryUntilSuccess(() => {
+                if(!document.getElementById("update-chats")) return false;
                 document.getElementById("update-chats").click();
+                return true;
             });
         }
     }, [group, authLoaded && isSignedIn]);

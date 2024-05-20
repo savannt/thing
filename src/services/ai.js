@@ -5,7 +5,8 @@
 import "colors";
 
 // export const OPENAI_MODEL = "gpt-3.5-turbo";
-export const OPENAI_MODEL = "gpt-4-0125-preview";
+// export const OPENAI_MODEL = "gpt-4-0125-preview";
+export const OPENAI_MODEL = "gpt-4o";
 export const NEW_MESSAGES_TITLE_THRESHOLD = 3;
 
 
@@ -13,10 +14,20 @@ import { Readable } from "stream";
 
 import mongo from "@/services/mongodb";
 import ably from "@/services/ably";
-import { openai, Assistant } from "@/services/openai/OpenAI";
+import { Assistant } from "@/services/openai/OpenAI";
 
 import events from "events";
 const eventEmitter = new events.EventEmitter();
+
+
+
+
+
+/*
+
+Encode images as URL's
+
+*/
 
 
 

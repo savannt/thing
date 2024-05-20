@@ -46,7 +46,7 @@
     height: 100%;
 
     padding-inline: var(--gap);
-    padding-block: calc(var(--min-height) / 4 + 2px);
+    /* padding-block: calc(var(--min-height) / 4 + 2px); */
     line-height: calc(var(--min-height) / 2) !important;
     margin-block: -1px;
     margin-inline: -1px;
@@ -57,6 +57,13 @@
     border-radius: var(--border-radius);
 
     resize: none;
+
+    min-height: var(--min-height);
+}
+
+.Input textarea[rows="1"] {
+    /* center text on Y axis */
+    line-height: var(--min-height) !important;
 }
 
 .Input img {

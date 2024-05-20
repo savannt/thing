@@ -131,7 +131,7 @@
     opacity: 1 !important;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 800px) {
     .NewChat__Dropdown {
         width: 100vw;
         max-width: 100%;

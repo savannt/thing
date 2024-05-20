@@ -24,7 +24,7 @@
   --min-height: 42px;
 
   --header-height: 68px;
-  --body-height: calc(100dvh - var(--header-height) - 2px);
+  --body-height: calc(100dvh - var(--header-height) - 2px + 12px);
 
   --gap: 12px;
 
@@ -42,11 +42,11 @@
   --box-shadow-light: 0px 0px 10px -10px var(--box-shadow-color);
 }
 
-/* disable hover on max-width: 400px */
+/* disable hover on max-width: 800px */
 
 
 /* below 400 px */
-@media (max-width: 400px) {
+@media (max-width: 800px) {
   :root {
     --margin-inline: 18px;
     /* --margin-block: 9px; */
@@ -234,7 +234,7 @@ p, h1, h2, h3 {
 }
 
 /* width smaller then 400 */
-@media (max-width: 400px) {
+@media (max-width: 800px) {
   @keyframes growAppear {
     0% {
       width: 0; /* Start with the current width */
@@ -768,15 +768,15 @@ body > div > main {
   background-color: var(--active-color-hidden);
 }
 
-.cl-organizationSwitcherTrigger:hover {
+/* .cl-organizationSwitcherTrigger:hover {
   background: var(--hover-color) !important;
   border: 1px solid var(--hover-color) !important;
-}
+} */
 
-.cl-organizationSwitcherTrigger:active {
+/* .cl-organizationSwitcherTrigger:active {
   background: var(--hover-active-color) !important;
   border: 1px solid var(--hover-active-color) !important;
-}
+} */
 
 .cl-organizationPreviewMainIdentifier {
   color: var(--secondary-text-color);
@@ -946,12 +946,14 @@ body > div > main {
 
 .cl-organizationSwitcherTrigger {
   background: transparent !important;
-  border: 1px solid var(--hover-color) !important;
+  /* border: 1px solid var(--hover-color) !important; */
   border-radius: var(--border-radius-large) !important;
 
   align-items: flex-start;
 
-  padding: calc(var(--margin-block) * 1) !important;
+  /* padding: calc(var(--margin-block) * 1) !important; */
+
+  padding: 0px !important;
 
   width: -webkit-fill-available;
 
@@ -1126,7 +1128,7 @@ body > div > main {
 }
 
 /* if under 400 width */
-@media (max-width: 400px) {
+@media (max-width: 800px) {
   .cl-card.cl-signIn-start {
     padding-block: 25px;
     padding-inline: 18px;

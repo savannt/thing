@@ -19,7 +19,7 @@
     font-size: 150%;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 800px) {
     .Logo h1 {
         font-size: 160%;
     }

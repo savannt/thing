@@ -3,7 +3,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 export const MobileContext = createContext(0);
 
 export default function MobileProvider ({ children }) {
-    const MOBILE_BREAKPOINT = 400;
+    const MOBILE_BREAKPOINT = 800;
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {

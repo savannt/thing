@@ -2,10 +2,9 @@
     position: absolute;
 
     left: 0px;
+    right: 0px;
     top: 0px;
-
-    width: 100vw;
-    height: 100dvh;
+    bottom: 0px;
 
     overflow: hidden;
 
@@ -17,10 +16,8 @@
 
     gap: var(--gap);
 
-    margin-inline: calc(-2 * var(--margin-inline));
-    margin-block: calc(-2 * var(--margin-inline));
-
-    overflow: visible;
+    padding-inline: var(--margin-inline);
+    padding-block: var(--margin-inline);
 
 
     pointer-events: none;
@@ -41,7 +38,7 @@
     border: 1px solid var(--hover-color);
     border-radius: var(--border-radius);
 
-    gap: var(--gap);
+    gap: calc(var(--gap) * 2);
 
     box-shadow: var(--box-shadow-light);
 }
@@ -61,3 +58,15 @@
     /* gap: var(--gap); */
 }
 
+@media (max-width: 800px) {
+    .NotificationCard__Content {
+        gap: calc(var(--gap) / 2);
+    }
+
+    .NotificationCard__Content h3 {
+        font-size: 90%;
+    }
+    .NotificationCard__Content p {
+        font-size: 90%;
+    }
+}

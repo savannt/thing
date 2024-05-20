@@ -23,6 +23,9 @@ import useMobile from "@/providers/Mobile/useMobile";
 import toggleSidebar from "@/client/toggleSidebar";
 
 
+import { useUser, UserButton, OrganizationSwitcher } from "@clerk/nextjs";
+
+
 function SidebarResult ({ id, active = false, disabled = false, image, color, title, description, prefix = "", onClick, showDelete, onDelete }) {
     return (
         <div id={id} className={styles.Sidebar__Result} onClick={onClick} style={{
@@ -55,8 +58,14 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     useEffect(() => {
         function handleMouseMove (e) {
             if(isResizing) {
-                ref.current.style.width = `${e.clientX}px`;
+                // ref.current.style.width = `${e.clientX}px`;
                 // send resize event
+
+
+                const max = "25vw";
+                const min = "275px";
+                ref.current.style.width = `max(${min}, min(${max}, ${e.clientX}px))`;
+
                 ref.current.dispatchEvent(new Event("resize"));
 
                 localStorage.setItem("sidebar_width", e.clientX);
@@ -87,13 +96,10 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         }
     }, [isResizing, ref]);
 
-    // useEffect(() => {
-    //     const width = localStorage.getItem("sidebar_width");
-    //     if(width && ref.current) {
-    //         ref.current.style.width = `${width}px`;
-    //     }
-    // }, [ref]);
+    const { user } = useUser();
 
+    const displayName = "Guest" || user.fullName;
+    console.log("user", user);
 
     let results = group ? chats : groups;
     let noResults = !results || results.length === 0;
@@ -110,10 +116,19 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     let isCollapsed = collapsed && collapsedFinished;
     let isCollapsing = collapsed;
 
+    useEffect(() => {
+        const width = localStorage.getItem("sidebar_width");
+        if(width && ref.current) {
+            const max = "25vw";
+            const min = "275px";
+            ref.current.style.width = isCollapsed ? `0px` : `max(${min}, min(${max}, ${width}px))`;
+        }
+    }, [ref]);
+
     console.log("iscollapsed", isCollapsed)
 
     const isMobile = useMobile();
-
+    
     if(localStorage) {
         localStorage.setItem("sidebar_collapsed", isCollapsed);
         localStorage.setItem("sidebar_collapsing", isCollapsing);
@@ -223,8 +238,8 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             setAnimation("");
             setCollapsedFinished(true);
         }} ref={ref} onMouseDown={(e) => (e.target === ref.current || e.target.parentElement === ref.current) && setIsResizing(true) } style={{
-            // width: isCollapsed ? "0px" : "",
-            // minWidth: isCollapsed ? "0px" : "",
+            width: isCollapsed ? "0px" : "",
+            minWidth: isCollapsed ? "0px" : "",
             display: isMobile && isCollapsed ? "none" : "flex",
             // height: "100%",
             // maxHeight: "100%",
@@ -233,7 +248,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             <input value={isCollapsed} id="toggle-sidebar" style={{
                 display: "none"
             }} onClick={() => {
-                // _onToggleSidebar();R
+                _onToggleSidebar();
             }} readOnly></input>
 
             {
@@ -321,6 +336,9 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                                     description = "blank chat";
                                 }
                             }
+                            // HARD OVERRIDE HERE
+                            prefix = "";
+                            description = "";
 
                             const isDisabled = item.chatId ? disabledChats.includes(item.chatId) : disabledGroups.includes(item.groupId);
                             const isActive = chat && item.chatId && chat.chatId === item.chatId;
@@ -344,8 +362,17 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                     }
                 </div>
 
+                <div className={styles.Sidebar_Organization}>
+                    <OrganizationSwitcher />
+                </div>
+
                 <div className={styles.Sidebar__Footer}>
-                    <Profile onLogout={onLogout} />
+               
+                    <UserButton />
+                    <p className={styles.Sidebar__Footer__DisplayName}>{displayName}</p>
+                    <div className={styles.Sidebar__Footer__Footer}>
+                        <SquareButton id="logout" background={false} image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/>
+                    </div>
                 </div>
             </div>
         </div>

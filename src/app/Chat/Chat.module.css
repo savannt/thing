@@ -36,13 +36,15 @@
 
 .Chat__Bar {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 
     width: -webkit-fill-available;
     
     overflow: visible;
+
+    position: relative;
 }
 
 .Chat__Bar__InputRow {
@@ -54,6 +56,10 @@
     min-height: var(--min-height);
 
     gap: var(--gap);
+}
+
+.Chat__Bar__InputRow > div > textarea {
+    padding-inline: var(--margin-inline);
 }
 
 .Chat__Bar__InputRow > button:last-child {
@@ -68,7 +74,36 @@
     height: var(--min-height) !important;
     
     margin-right: 3px;
-    margin-bottom: 1px;
+    /* margin-bottom: 1px; */
+}
+
+.Chat__Bar__InputRow__Live {
+    position: absolute;
+    right: calc(100% + var(--gap));
+}
+
+@media (max-width: 800px) {
+    .Chat__Bar__InputRow__Live {
+        /* left: 0px; */
+        left: 0px !important;
+        bottom: calc(100% + var(--gap));
+    }
+}
+
+.Chat__Bar__InputRow__Live div {
+    width: 65% !important;
+    height: 65% !important;
+
+    background-color: var(--tertiary-text-color) !important;
+}
+
+.Chat__Bar__InputRow__Live:hover div {
+    opacity: 0.8;
+    background-color: var(--red) !important;
+}
+
+.Chat__Bar__InputRow__Live:active div {
+    background-color: var(--red) !important;
 }
 
 .Chat__ToggleSidebar {
@@ -103,7 +138,7 @@
     padding-left: var(--margin-inline);
 }
 
-@media (max-width: 400px) {
+@media (max-width: 800px) {
     .Chat__Bar__InputRow {
         /* gap: 0px; */
         gap: 6px;
@@ -111,13 +146,19 @@
 
 
     .Chat__Bar__InputRow > *:last-child {
-        height: 36px !important;
+        height: var(--min-height) !important;
 
         border: 1px solid var(--tertiary-text-color);
         border-left: none;
 
         opacity: 1 !important;
     }
+
+    /* .Chat__Bar__InputRow second to last child */
+    /* .Chat__Bar__InputRow > *:nth-last-child(2):has(textarea[rows="1"]) {
+        border-top-right-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+    } */
 
 
     /* if InputRow > div > input [ has only 1 row ] then style InputRow > div */

@@ -88,7 +88,7 @@ export default function Notifications({ }) {
             { errors.map((error, index) => {
                 return (
                     <NotificationCard color={error.color} timeout={error.timeout} key={index} onTimeout={() => {
-                        // setErrors(errors.filter((e) => e.id !== error.id));
+                        setErrors(errors.filter((e) => e.id !== error.id));
                     }}>
                         <p>There was an error. <i>({error.text})</i></p>
                     </NotificationCard>
@@ -98,7 +98,7 @@ export default function Notifications({ }) {
             { notifications.map((notification, index) => {
                 return (
                     <NotificationCard color={notification.color} timeout={notification.timeout} key={index} onTimeout={() => {
-                        // setNotifications(notifications.filter((n) => n.id !== notification.id));
+                        setNotifications(notifications.filter((n) => n.id !== notification.id));
                     }}>
                         {notification.title && <h3>{notification.title}</h3> }
                         { notification.description && <p>{notification.description}</p> }

@@ -38,7 +38,7 @@
     opacity: 0.4;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 800px) {
     .Sidebar {
         width: 100vw;
         max-width: 100vw;
@@ -64,6 +64,7 @@
 /*  */
     padding-inline: var(--margin-inline);
     padding-block: var(--margin-block);
+    padding-bottom: 0px !important;
 
     border-right: var(--border);
 
@@ -137,8 +138,8 @@
     justify-content: flex-start;
 
     gap: var(--gap);
-    min-height: 70px;
-    height: 70px;
+    min-height: var(--min-height);
+    height: var(--min-height);;
 
     padding-inline: var(--margin-inline);
 }
@@ -228,16 +229,71 @@
     color: var(--secondary-text-color);
 }
 
+.Sidebar__Footer:hover {
+    cursor: pointer;
+    background-color: var(--hover-color);
+}
+
+.Sidebar__Footer:active {
+    background-color: var(--hover-active-color);
+}
+
 .Sidebar__Footer {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 
     gap: var(--gap);
 
     /* overflow: hidden; */
+
+
+    border-top: 0.5px solid var(--hover-color);
+    margin-inline: calc(-1 * var(--margin-inline));
+    padding-inline: var(--margin-inline);
+
+
+    padding-right: calc(var(--margin-inline) * 0.5);
+    padding-block: var(--margin-block);
+
+    overflow: hidden;
 }
+
+.Sidebar_Organization {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: var(--gap);
+
+    /* overflow: hidden; */
+
+
+    border-top: 0.5px solid var(--hover-color);
+    margin-inline: calc(-1 * var(--margin-inline));
+    padding-inline: var(--margin-inline);
+
+
+    padding-right: calc(var(--margin-inline) * 0.5);
+    padding-block: var(--margin-block);
+
+    margin-bottom: calc(-1 * var(--gap));
+
+    padding-block: var(--margin-block);
+}
+
+
+.Sidebar_Organization:hover {
+    cursor: pointer;
+    background-color: var(--hover-color);
+}
+
+.Sidebar_Organization:active {
+    background-color: var(--hover-active-color);
+}
+
 
 .Sidebar > h3:first-child {
     user-select: none;
@@ -262,7 +318,27 @@
     color: var(--secondary-text-color);
 }
 
-@media (max-width: 400px) {
+.Sidebar__Footer__DisplayName {
+    color: var(--primary-text-color);
+    opacity: 0.9;
+
+    font-size: 90%;
+    font-weight: 600;
+}
+
+.Sidebar__Footer__Footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: auto;
+    margin-right: 0px;
+
+    height: 0px;
+}
+
+@media (max-width: 800px) {
     .Sidebar {
         background-color: var(--background-color);
         position: absolute !important;
@@ -274,6 +350,6 @@
     }
 
     .Sidebar__Footer {
-        padding-block: var(--gap);
+        /* padding-block: var(--gap); */
     }
 }
