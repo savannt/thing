@@ -81,8 +81,8 @@ export default class ChatCompletion extends events.EventEmitter {
         super();
 
         // this._init(data);
+        this.json = false;
         this.choices = [];
-
     }
 
     _onChunk (chunk) {
@@ -155,7 +155,13 @@ export default class ChatCompletion extends events.EventEmitter {
                         this.emit("tool_call", { message: this.choices[index], toolCall: functionData });
                     }
                 } else if(this.choices[index].content) {
-                    this.emit("end", { index, ...this.choices[index] });
+                    let obj = {
+                        index,
+                        message: this.choices[index],
+                    }
+
+                    if(this.json) obj.json = JSON.parse(obj.message.content);
+                    this.emit("end", obj);
                 }
             }
             
@@ -219,6 +225,28 @@ export default class ChatCompletion extends events.EventEmitter {
         });
     }
 
+    static async createJsonFromSchema (schema, input, examples = [], model = OPENAI_MODEL, options = {}) {
+        const messages = new Messages();
+        messages.add("system", `**Please always generate a JSON object according to the following schema: **\n\`\`\`\n${JSON.stringify(schema, null, 2)}\n\`\`\`\n**Ensure that the JSON you generate follows the structure and types defined in this schema.**`)
+        
+        const inputDataPrefix = `input data: `;
+
+        for(let i = 0; i < examples.length; i++) {
+            const inExample = examples[i].in;
+            const outExample = examples[i].out;
+            if(!inExample) throw new Error("Example in is required");
+            if(!outExample) throw new Error("Example out is required");
+
+            messages.add("user", `${inputDataPrefix}\n\`\`\`\n${JSON.stringify(inExample)}\n\`\`\``)
+            messages.add("assistant", JSON.stringify(outExample));
+        }
+
+        messages.add("user", `${inputDataPrefix}\n\`\`\`\n${JSON.stringify(input, null, 2)}\n\`\`\``)
+        
+
+        return await this.createJson(messages, model, options);
+    }
+
     static async createJson (messages, model = OPENAI_MODEL, options = {}) {
         console.warn("[ChatCompletion] When using JSON mode, ensure that the messages instruct to output JSON");
 
@@ -247,6 +275,7 @@ export default class ChatCompletion extends events.EventEmitter {
 
         const completion = await openai.chat.completions.create(_completionData);
         let chatCompletion = new ChatCompletion(completion);
+        if(_completionData.response_format && _completionData.response_format.type === "json_object") chatCompletion.json = true;
 
         // for await (const chunk of completion) {
         //     chatCompletion._onChunk(

@@ -14,7 +14,7 @@ import { Readable } from "stream";
 
 import mongo from "@/services/mongodb";
 import ably from "@/services/ably";
-import { Assistant } from "@/services/openai/OpenAI";
+import { Assistant, ChatCompletion, Messages, Message, Tools, Tool } from "@/services/openai/OpenAI";
 
 import events from "events";
 const eventEmitter = new events.EventEmitter();
@@ -603,6 +603,9 @@ const generateChatTitle = async (messages) => {
         messages,
         model: OPENAI_MODEL,
     });
+
+    const completion = await ChatCompletion.create(messages);
+
 
 
 
@@ -1801,11 +1804,13 @@ return "something";
         const messagesSinceTitleUpdate = chat.messagesSinceTitleUpdate;
         if(messagesSinceTitleUpdate > NEW_MESSAGES_TITLE_THRESHOLD || messagesSinceTitleUpdate === -1) {
             // console.log("GENERATING NEW TITLE");
-            let title = await generateChatTitle(toOpenAIMessages(chat.messages, false));
+            // let title = await generateChatTitle(toOpenAIMessages(chat.messages, false));
             // if title starts with " or ends with " remove it
-            if(title.startsWith("\"") && title.endsWith("\"")) title = title.slice(1, title.length - 1);
-            await chats.updateOne({ chatId }, { $set: { title, messagesSinceTitleUpdate: 0 } });
-            await chatChannel.publish("title", { title });
+            // if(title.startsWith("\"") && title.endsWith("\"")) title = title.slice(1, title.length - 1);
+            // await chats.updateOne({ chatId }, { $set: { title, messagesSinceTitleUpdate: 0 } });
+            // await chatChannel.publish("title", { title });
+
+            // TODO: Generate chat title
         } else {
             await chats.updateOne({ chatId }, { $inc: { messagesSinceTitleUpdate: 1 } });
         }

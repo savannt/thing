@@ -3,6 +3,11 @@ import Message from "./Message.js";
 export default class Messages {
     constructor () {
         this.messages = [];
+
+    }
+    
+    addRaw (messageObject) {
+        this.messages.push(Message.from(messageObject));
     }
 
     add (role, content) {
