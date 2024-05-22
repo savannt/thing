@@ -71,10 +71,10 @@
 }
 
 .Input > input {
-    padding-inline-start: var(--gap);
+    padding-inline: var(--gap);
 }
 .Input > div + input {
-    padding-inline-start: var(--min-height);
+    padding-inline: var(--min-height);
 }
 /* .Input has no div child, make .Input > input padding */
 

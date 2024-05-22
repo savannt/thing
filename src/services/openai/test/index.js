@@ -163,9 +163,9 @@ const EXAMPLE_ARGUMENTS_OBJECT = {
         ]
     );
     tools.add(createFunctionTool);
-
-
-
+    
+    
+    
     let messages = new Messages();
     messages.add("system", "always speak like you are incredibly sweedish");
     
@@ -176,7 +176,6 @@ const EXAMPLE_ARGUMENTS_OBJECT = {
 
 
     const chatComplete = async (iteration = 0) => {
-        console.log("MESSAGES", messages.asArray());
         const chatCompletion = await ChatCompletion.createTools(messages, tools);
     
         chatCompletion.on("tool_call", async ({ message, toolCall }) => {
@@ -199,12 +198,14 @@ const EXAMPLE_ARGUMENTS_OBJECT = {
             if(iteration === 0) {
                 // function created message repsonse
                 messages.addRaw(obj.message);
-                console.log("function probably created, message is: ", obj.message.content);
+                console.log("Created function resposne", "\n", obj.message.content, "\n\n");
 
-                messages.add("user", "add 5123123124356 and 5123734757178960965423");
+                const userMessage = "add 5123123124356 and 5123734757178960965423";
+                messages.add("user", userMessage);
+                console.log("User sent message", "\n", userMessage, "\n\n");
                 chatComplete(1);
             } else if(iteration === 1) {
-                console.log("final response", obj.message.content);
+                console.log("AI Response", "\n", obj.message.content);
             }
             // Message finished
             // console.log("end", obj);

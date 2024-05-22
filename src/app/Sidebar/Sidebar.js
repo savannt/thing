@@ -54,6 +54,11 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     const [disabledGroups, setDisabledGroups] = useState([]); // [groupId, groupId, groupId]
     const [disabledChats, setDisabledChats] = useState([]); // [chatId, chatId, chatId]
 
+    const [collapsed, setCollapsed] = useState(false);
+    const [collapsedFinished, setCollapsedFinished] = useState(true);
+    let isCollapsed = collapsed && collapsedFinished;
+    let isCollapsing = collapsed;
+
     const [isResizing, setIsResizing] = useState(false)
     useEffect(() => {
         function handleMouseMove (e) {
@@ -78,7 +83,14 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             if(ref && ref.current) {
                 const width = ref.current.getBoundingClientRect().width;
                 const headerStart = document.getElementById("header-start");
-                if(headerStart) headerStart.style.maxWidth = `calc(${width}px - var(--margin-inline) - var(--margin-inline))`;
+
+                if(headerStart) {
+                    if(isCollapsed) {
+                        headerStart.style.maxWidth = `fit-content`;
+                    } else {
+                        headerStart.style.maxWidth = `calc(${width}px - var(--margin-inline) - var(--margin-inline))`;
+                    }
+                }
             }
         }
         updateTitleSize();
@@ -110,11 +122,6 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     const [animation, setAnimation] = useState("");
     const [secondaryAnimation, setSecondaryAnimation] = useState("");
     const [titleAnimation, setTitleAnimation] = useState("");
-
-    const [collapsed, setCollapsed] = useState(false);
-    const [collapsedFinished, setCollapsedFinished] = useState(true);
-    let isCollapsed = collapsed && collapsedFinished;
-    let isCollapsing = collapsed;
 
     useEffect(() => {
         const width = localStorage.getItem("sidebar_width");
@@ -252,7 +259,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             }} readOnly></input>
 
             {
-                !isMobile && <h3 className={`animate__animate ${titleAnimation}`} style={{
+                !isMobile && <h3 id="sidebar-header-title" className={`animate__animate ${titleAnimation}`} style={{
                     position: "absolute",
                     left: isCollapsed || isCollapsing ? "calc(max(var(--margin-chat) * 3, 0px))" : "calc(max(100% + var(--margin-chat) * 1, 11vw))",
                     bottom: "calc(100% + (var(--min-height) / 1.9))",

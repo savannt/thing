@@ -5,6 +5,7 @@ import ChatMessage from "@/app/Chat/ChatMessage"
 import SquareButton from "@/components/Button/SquareButton"
 import Input from "@/components/Input/Input"
 
+import ChatGraph from "@/app/Chat/ChatGraph/ChatGraph"
 import Video from "@/app/Chat/Video"
 
 import { useChannel } from "ably/react";
@@ -82,15 +83,30 @@ export default function Chat ({ userId, enterpriseId, chat }) {
 
     let showNoMessages = chatMessages.length === 0;
 
-    let [showVideo, setShowVideo] = useState(false);
-
-    const [chatAnimation, setChatAnimation] = useState("");
+    const [showVideo, setShowVideo] = useState(false);
+    const [showChatGraph, setShowChatGraph] = useState(false);
     const [videoAnimation, setVideoAnimation] = useState("");
+    const [chatAnimation, setChatAnimation] = useState("");
+    const [chatGraphAnimation, setChatGraphAnimation] = useState("");
+
 
     return (
         <>
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
+            {
+                (showChatGraph || chatGraphAnimation) && <ChatGraph className={`animate__animated ${chatGraphAnimation}`} onAnimationEnd={() => {
+                    if(chatGraphAnimation.includes("fadeOut")) {
+                        setShowChatGraph(false);
+                        setVideoAnimation("animate__fadeInRight");
+                    }
+                    setChatGraphAnimation("");
+                }}>
+                    <input id="back-chat-graph" style={{
+                        display: "none"
+                    }}></input>
+                </ChatGraph>
+            }
             
             { (showVideo || videoAnimation) && <Video className={`aniamte__animated ${videoAnimation}`} onAnimationEnd={() => {
                 console.log("ANIM_DONE", videoAnimation)
@@ -103,8 +119,10 @@ export default function Chat ({ userId, enterpriseId, chat }) {
                 setVideoAnimation("animate__fadeOutRight");
             }} /> }
             
-            { (!showVideo || chatAnimation) && <div id="chat" className={`${styles.Chat} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
-                if(chatAnimation.includes("fadeOut")) {
+            { ((!showVideo && !showChatGraph) || chatAnimation) && <div id="chat" className={`${styles.Chat} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
+                if(chatAnimation.includes("chat_graph")) {
+                    setShowChatGraph(true);
+                } else if(chatAnimation.includes("video")) {
                     setShowVideo(true);
                 } else {
                     setShowVideo(false);
@@ -139,11 +157,15 @@ export default function Chat ({ userId, enterpriseId, chat }) {
                 <div className={styles.Chat__Bar} style={{
                     display: chat ? "flex" : "none"
                 }}>
+                    <SquareButton className={styles.Chat__Bar__InputRow__Graph} image="/images/icons/flow.png" background={false} onClick={() => {
+                        setChatAnimation("chat_graph animate__fadeOutRight");
+                        setChatGraphAnimation("animate__fadeIn")
+                    }} />
                     <SquareButton className={styles.Chat__Bar__InputRow__Live} image="/images/icons/live.png" background={false} onClick={() => {
                         if(showVideo) {
                             setVideoAnimation("animate__fadeOutRight");
                         } else {
-                            setChatAnimation("animate__fadeOutRight");
+                            setChatAnimation("video animate__fadeOutRight");
                         }
                     }} />
                     <div className={styles.Chat__Bar__InputRow}>

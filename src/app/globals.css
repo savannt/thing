@@ -30,6 +30,7 @@
 
   --border: 2px solid var(--hover-color);
   --border-radius: 9px;
+  --border-radius-light: calc(var(--border-radius) * 0.6);
   --border-radius-large: 13px;
 
 
@@ -40,6 +41,7 @@
   
   --box-shadow: 0px 0px 20px 0px var(--box-shadow-color);
   --box-shadow-light: 0px 0px 10px -10px var(--box-shadow-color);
+  --box-shadow-light-light: 0px 0px 5px -5px var(--box-shadow-color);
 }
 
 /* disable hover on max-width: 800px */
@@ -83,7 +85,7 @@
 
   --primary-text-color: #000000;
   --secondary-text-color: #000000d6;
-  --tertiary-text-color: #00000080;
+  --tertiary-text-color: #00000033;
 
   --active-color: #3c6a3fd1;
   --active-color-hidden: #366d3a30;
@@ -276,6 +278,7 @@ p, h1, h2, h3 {
   }
 }
 
+
 .opacityFadeOut {
   animation: opacityDisappear 0.5s forwards;
 }
@@ -393,10 +396,24 @@ body > div > main {
   }
 }
 
+#context-menu:has(div[name="context-menu"]) {
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  /* border-right: none; */
+}
+
+div[name="context-menu"]:has(div[name="context-menu"]) {
+  border-top-right-radius: 0px !important;
+}
+
+div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] {
+  border-top-left-radius: 0px !important;
+  /* border-bottom-left-radius: 0px !important; */
+}
+
+
 
 #main {
-  position: relative;
-
   display: flex;
   flex-direction: row;
   justify-content: stretch;
@@ -412,6 +429,152 @@ body > div > main {
   height: var(--min-height);
   top: var(--margin-block);
   right: var(--margin-inline);
+}
+
+.react-flow__nodesselection-rect {
+  border-radius: var(--border-radius-large);
+  transform: translateX(-1px) translateY(-1px);
+}
+
+.react-flow__handle-left {
+  top: unset !important;
+  transform: unset !important;
+
+  left: 3px !important;
+
+  border: 1px solid var(--secondary-text-color) !important;
+}
+
+.react-flow__handle-right {
+  top: unset !important;
+  transform: unset !important;
+
+  right: 3px !important;
+
+  border: 1px solid var(--secondary-text-color) !important;
+}
+
+.react-flow__handle-left[data-handleid="execution"] {
+  top: calc(var(--margin-block) * 1.4) !important;
+  left: 2px !important;
+}
+
+.react-flow__handle-right[data-handleid="execution"] {
+  top: calc(var(--margin-block) * 1.4) !important;
+  right: 2px !important;
+}
+
+.react-flow__handle[data-handleid="execution"] {
+  mask-image: url("/images/icons/flow_play.png") !important;
+  mask-size: contain !important;
+  mask-repeat: no-repeat !important;
+  mask-position: center !important;
+
+  background-color: var(--secondary-text-color) !important;
+
+  border: none !important;
+  border-radius: 0px !important;
+
+  width: 12px;
+  height: 12px;
+}
+
+.react-flow__handle[data-handleid="execution"]:hover {
+  opacity: 0.8;
+}
+.react-flow__handle[data-handleid="execution"]:active {
+  opacity: 0.6;
+}
+
+
+.react-flow__minimap-node {
+  fill: var(--hover-color) !important;
+}
+
+.react-flow__controls-button {
+  background: var(--hover-color) !important;
+  color: var(--primary-text-color) !important;
+  border: 1px solid var(--hover-color) !important;
+  box-shadow: var(--box-shadow-light) !important;
+  fill: var(--secondary-text-color) !important;
+}
+
+.react-flow__controls-button:first-child {
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+}
+
+.react-flow__controls-button:hover {
+  background: var(--hover-active-color) !important;
+  fill: var(--secondary-text-color) !important;
+  opacity: 0.8;
+}
+
+.react-flow__controls-button:active {
+  background: var(--hover-active-color) !important;
+  fill: var(--secondary-text-color) !important;
+  opacity: 1;
+}
+
+
+.react-flow__controls-button:active {
+  fill: var(--primary-text-color) !important;
+}
+
+.react-flow__minimap {
+  background-color: var(--background-color) !important;
+
+  border-radius: calc(var(--border-radius) * 0.6);
+}
+
+.react-flow__handle {
+  background: var(--tertiary-text-color) !important;
+}
+
+.react-flow__minimap-mask {
+  fill: var(--hover-color) !important;
+}
+
+.react-flow__node:hover {
+  outline: 2px solid var(--hover-color);
+  outline-offset: 2px;
+}
+
+.react-flow__node.selected {
+  outline: 2px solid var(--hover-color) !important;
+  outline-offset: 2px;
+}
+
+.react-flow__node.dragging {
+  outline: 2px solid var(--action-color) !important;
+  outline-offset: 2px;
+}
+
+.react-flow__node:has(.deleting) {
+  outline: 2px solid var(--red) !important;
+  outline-offset: 2px;
+}
+
+
+
+.react-flow__node {
+  background: var(--secondary-color) !important;
+  color: var(--secondary-text-color) !important;
+
+  /* border: 2px solid var(--hover-color) !important; */
+  border-radius: var(--border-radius-large) !important;
+
+  overflow: hidden;
+  /* outline: none !important; */
+}
+
+.react-flow__controls {
+  /* box-shadow: var(--box-shadow-light-light) !important; */
 }
 
 .cl-navbarMobileMenuButton:focus {
@@ -1125,6 +1288,7 @@ body > div > main {
 
 #chat-collapse-sidebar {
   z-index: 10000000000000000000000;
+  top: calc(var(--header-height) + var(--margin-block) + 2px);
 }
 
 /* if under 400 width */

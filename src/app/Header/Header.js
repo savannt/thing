@@ -61,7 +61,7 @@ export default function Header ({ group, chat, onBack, onHome, onLogout, onChatD
 
                 { doShowLogo ? <Logo className={`animate__animate ${logoAnimation}`} onClick={() => onHome()} onAnimationEnd={() => {
                     setLogoAnimation("");
-                }} /> : <h3 className={`animate__animated ${groupAnimation}`} onClick={() => onHome()} onAnimationEnd={() => {
+                }} /> : <h3 id="header-title" className={`animate__animated ${groupAnimation}`} onClick={() => onHome()} onAnimationEnd={() => {
                     setGroupAnimation("");
                 }} >{isMobile ? chat?.title : group?.title || "Group"}</h3> }
             </div>

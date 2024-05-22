@@ -27,118 +27,20 @@
 }
 
 .NewChat__Dropdown {
-    opacity: 1 !important;
-
-    background-color: var(--background-color);
-
-    border: 1px solid var(--hover-color);
-    border-radius: var(--border-radius);
-
-
     position: absolute;
     bottom: -3px;
     left: 0;
     transform: translateY(100%);
 
-    z-index: 100;
-
     width: 35vw;
     max-width: 60vw;
     height: fit-content !important;
-
-    box-shadow: var(--box-shadow);
-}
-
-
-.NewChat__Dropdown__Header {
-    min-height: var(--min-height);
-    height: var(--min-height);
-
-    width: -webkit-fill-available;
-
-    padding-inline: var(--margin-inline);
-    padding-block: var(--margin-block);
-
-    border-bottom: var(--border);
-}
-
-.NewChat__Dropdown__Header input {
-    padding-left: var(--margin-inline);
-}
-
-.NewChat__Dropdown__Results {
-    padding-inline: var(--margin-inline);
-    padding-block: var(--margin-block);
-}
-
-.NewChat__Dropdown__Row {
-    background-color: transparent;
-
-    display: flex;
-    align-items: center;
-    gap: calc(var(--gap) * 2);
-    padding-block: calc(var(--margin-block) * 1.2);
-    padding-inline: calc(var(--margin-inline) * 1.2);
-
-    height: var(--margin-inline);
-
-    border-bottom: 1px solid var(--hover-color);
-}
-
-.NewChat__Dropdown__Row:last-child {
-    border-bottom: none;
-}
-
-.NewChat__Dropdown__Row:hover {
-    background-color: var(--hover-color);
-}
-
-.NewChat__Dropdown__Row:last-child:hover {
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
-}
-
-.NewChat__Dropdown__Row:active {
-    background-color: var(--hover-active-color);
-}
-
-.NewChat__Dropdown__Row > div:first-child {
-    aspect-ratio: 1/1 !important;
-    height: 100%;
-}
-
-.NewChat__Dropdown__Row > p {
-    color: var(--secondary-text-color);
-}
-
-.NewChat__Dropdown__Row:focus {
-    border-radius: var(--border-radius);
-}
-
-.NewChat__Dropdown__Row__Delete {
-    margin-left: auto;
-    opacity: 0 !important;
-}
-
-.NewChat__Dropdown__Row:hover .NewChat__Dropdown__Row__Delete {
-    opacity: 0.2 !important;
-}
-
-.NewChat__Dropdown__Row__Delete:hover {
-    opacity: 0.6 !important;
-}
-
-.NewChat__Dropdown__Row__Delete:active {
-    opacity: 1 !important;
 }
 
 @media (max-width: 800px) {
     .NewChat__Dropdown {
         width: 100vw;
         max-width: 100%;
-    }
-
-    .NewChat__Dropdown__Row__Delete {
-        opacity: 0.2 !important;
     }
 
     .body:has(#chat-back) .NewChat__Dropdown {

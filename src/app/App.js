@@ -154,7 +154,11 @@ export default function App ({ page }) {
     }
 
     function onHome () {
-        document.getElementById("chat-collapse-sidebar").click();
+        if(document.getElementById("back-chat-graph")) {
+            document.getElementById("back-chat-graph").click();
+        } else {
+            document.getElementById("chat-collapse-sidebar").click();
+        }
     }
 
     function onLogout () {

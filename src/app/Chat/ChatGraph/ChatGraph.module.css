@@ -1,0 +1,42 @@
+.ChatGraph {
+    /* position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0; */
+    width: 100%;
+}
+
+.NewNode {
+    position: absolute;
+    top: calc(var(--margin-block) + var(--header-height));
+    right: var(--margin-inline);
+
+    height: var(--min-height);
+
+    padding-inline: var(--margin-inline);
+
+    font-size: 100%;
+}
+
+.NodeMenuContainer {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--box-shadow-color);
+
+    z-index: 1000000000;
+}
+
+.NodeMenu {
+    margin-inline: calc(15vw);
+    margin-top: calc(var(--margin-inline) * 1.5);
+    width: -webkit-fill-available;
+
+    position: absolute;
+    top: 0px;
+}

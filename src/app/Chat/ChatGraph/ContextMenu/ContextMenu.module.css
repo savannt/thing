@@ -1,0 +1,63 @@
+.ContextMenu {
+    --context-menu-line-height: 32px;
+
+    position: absolute;
+
+    background: var(--secondary-color);
+
+    border-radius: var(--border-radius-light);
+
+    border: 1px solid var(--hover-color);
+
+    display: flex;
+    flex-direction: column;
+
+
+}
+
+.ContextMenu > div:not(.ContextMenu):hover {
+    background: var(--hover-color);
+    cursor: pointer;
+    user-select: none;
+}
+
+.ContextMenu > div:not(.ContextMenu):active {
+    background: var(--hover-active-color);
+}
+
+.Seperator {
+    height: 1px !important;
+    background: var(--hover-color) !important;
+    /* margin-inline: var(--margin-inline); */
+}
+
+.ContextMenu > div:not(.ContextMenu) {
+    background: transparent;
+    color: var(--primary-text-color);
+
+    /* width: 100%; */
+    height: var(--context-menu-line-height);
+
+    /* padding-inline: var(--margin-inline); */
+    /* padding-block: var(--margin-block); */
+
+    display: flex;
+    align-items: center;
+
+    border-radius: calc(var(--border-radius-light) * 0.8);
+}
+
+.ContextMenu > div:not(.ContextMenu) > p {
+    font-size: 85%;
+    padding-inline: var(--margin-inline);
+    white-space: nowrap;
+}
+
+.ContextMenu > div:not(.ContextMenu) > div:not(.ContextMenu) {
+    margin-left: auto;
+    margin-right: calc(var(--gap) / 2);
+
+    height: 30%;
+    aspect-ratio: 1/1 !important;
+    /* width: 100%; */
+}
