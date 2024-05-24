@@ -12,6 +12,7 @@
 
     gap: var(--gap);
 
+    animation-duration: 0.3s !important;
     /* overflow: hidden; */
 }
 

@@ -1,16 +1,16 @@
-import styles from "@/app/Chat/ChatGraph/ValueTypes/ValueTypes.module.css"
+import styles from "@/app/Chat/ChatGraph/Flow/ValueTypes/ValueTypes.module.css"
 
-import Value from "@/app/Chat/ChatGraph/ValueTypes/Value"
+import Value from "@/app/Chat/ChatGraph/Flow/ValueTypes/Value"
 
 import Input from "@/components/Input/Input"
 
 import { useState, useEffect } from "react"
 
-export default function InputValue ({ type, input, output, value, inputType }) {
+export default function InputValue ({ data, value, inputType = "text" }) {
     const [inputValue, setInputValue] = useState(value)
 
     return (
-        <Value type={type} input={input} output={output}>
+        <Value data={data}>
             <Input className={styles.Input} type={inputType} value={inputValue} onChange={(e) => {
                 setInputValue(e.target.value);
             }} />

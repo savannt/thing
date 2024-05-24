@@ -14,9 +14,12 @@ import { useState, useEffect } from "react"
 import { chat, chatMessage } from "@/client/chat"
 import toggleSidebar from "@/client/toggleSidebar"
 import notification from "@/client/notification";
+import useMobile from "@/providers/Mobile/useMobile"
 
-export default function Chat ({ userId, enterpriseId, chat }) {
+export default function Chat ({ userId, enterpriseId, chat, group }) {
     const hasChat = !!chat && chat?.chatId;
+
+    const isMobile = useMobile();
 
     // Chat Properties
     const [chatMessages, setChatMessages] = useState(chat?.messages || []);
@@ -96,15 +99,31 @@ export default function Chat ({ userId, enterpriseId, chat }) {
             
             {
                 (showChatGraph || chatGraphAnimation) && <ChatGraph className={`animate__animated ${chatGraphAnimation}`} onAnimationEnd={() => {
-                    if(chatGraphAnimation.includes("fadeOut")) {
+                    setChatGraphAnimation("");
+                    if(chatGraphAnimation.includes("fadeIn")) return;
+
+                    if(chatGraphAnimation.includes("video")) {
                         setShowChatGraph(false);
                         setVideoAnimation("animate__fadeInRight");
+                    } else {
+                        setChatAnimation("animate__fadeIn");
+                        setShowChatGraph(false);
                     }
-                    setChatGraphAnimation("");
                 }}>
                     <input id="back-chat-graph" style={{
                         display: "none"
-                    }}></input>
+                    }} onClick={() => {
+                        setChatGraphAnimation("animate__fadeOut");
+
+                        if(document.getElementById("header-title")) {
+                            console.log("GROUP TITLE", group);
+                            document.getElementById("header-title").innerText = group?.title || "Group";
+                        }
+                        if(document.getElementById("sidebar-header-title")) {
+                            document.getElementById("sidebar-header-title").style.visibility = "visible";
+                        }
+                        // setChatAnimation("animate__fadeIn");
+                    }} ></input>
                 </ChatGraph>
             }
             
@@ -122,6 +141,7 @@ export default function Chat ({ userId, enterpriseId, chat }) {
             { ((!showVideo && !showChatGraph) || chatAnimation) && <div id="chat" className={`${styles.Chat} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
                 if(chatAnimation.includes("chat_graph")) {
                     setShowChatGraph(true);
+                    setChatGraphAnimation("animate__fadeIn");
                 } else if(chatAnimation.includes("video")) {
                     setShowVideo(true);
                 } else {
@@ -155,11 +175,11 @@ export default function Chat ({ userId, enterpriseId, chat }) {
 
                 </div>
                 <div className={styles.Chat__Bar} style={{
-                    display: chat ? "flex" : "none"
+                    display: chat && !isMobile ? "flex" : "none"
                 }}>
                     <SquareButton className={styles.Chat__Bar__InputRow__Graph} image="/images/icons/flow.png" background={false} onClick={() => {
-                        setChatAnimation("chat_graph animate__fadeOutRight");
-                        setChatGraphAnimation("animate__fadeIn")
+                        setChatAnimation("chat_graph animate__fadeOut");
+                        // setChatGraphAnimation("animate__fadeIn")
                     }} />
                     <SquareButton className={styles.Chat__Bar__InputRow__Live} image="/images/icons/live.png" background={false} onClick={() => {
                         if(showVideo) {

@@ -7,12 +7,19 @@ import { useEffect, useState, useCallback } from "react"
 import ReactFlow, { MiniMap, Controls, Background, useEdgesState, useNodesState, addEdge } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-import nodeTypes from "@/app/Chat/ChatGraph/NodeTypes/NodeTypes";
+import nodeTypes from "@/app/Chat/ChatGraph/Flow/NodeTypes/NodeTypes";
+import edgeTypes from "@/app/Chat/ChatGraph/Flow/EdgeTypes/EdgeTypes";
 import Button from "@/components/Button/Button";
 import SearchMenu, { SearchMenuRow } from "@/components/SearchMenu/SearchMenu";
-import ContextMenu from "./ContextMenu/ContextMenu";
+import ContextMenu from "@/app/Chat/ChatGraph/ContextMenu/ContextMenu";
+
+import SaveIcon from "@/app/Chat/ChatGraph/SaveIcon/SaveIcon";
+
 
 import error from "@/client/error";
+import notification from "@/client/notification";
+
+const SAVE_TIMEOUT = 1000;
 
 const NODE_DICTIONARY = {
     "StringConstant": {
@@ -21,8 +28,13 @@ const NODE_DICTIONARY = {
             displayName: "String Constant",
             category: "Constant",
 
-            value: "Hello, world!",
-            valueType: "string"
+            out: {
+                value: {
+                    type: "string",
+                    description: "String value",
+                    constant: true
+                }
+            }
         },
     },
     "NumberConstant": {
@@ -31,8 +43,13 @@ const NODE_DICTIONARY = {
             displayName: "Number Constant",
             category: "Constant",
 
-            value: "1",
-            valueType: "number"
+            out: {
+                value: {
+                    type: "number",
+                    description: "Number value",
+                    constant: true
+                }
+            }
         },
     },
     "TextareaStringConstant": {
@@ -41,8 +58,13 @@ const NODE_DICTIONARY = {
             displayName: "Textarea String Constant",
             category: "Constant",
 
-            value: "This is a long string constant. It is used to store long strings.",
-            valueType: "textarea"
+            out: {
+                value: {
+                    type: "string",
+                    description: "String value",
+                    constant: true
+                },
+            }
         },
     },
     "SaveMessage": {
@@ -53,6 +75,13 @@ const NODE_DICTIONARY = {
 
             label: "Save Message",
             details: "function",
+
+            in: {
+                message: {
+                    type: "message",
+                    description: "Message to save"
+                }
+            }
         },
     },
     "OnUserMessage": {
@@ -64,8 +93,17 @@ const NODE_DICTIONARY = {
             label: "onUserMessage",
             details: "event",
 
-            message: "",
-            attachments: []
+            out: {
+                message: {
+                    type: "message",
+                    description: "User message"
+                },
+                attachments: {
+                    type: "array",
+                    description: "Attachments"
+                }
+            }
+
         }
     },
     "Array/Combine": {
@@ -438,13 +476,13 @@ const initialNodes = [];
     // Define edges here if needed
   ];
 
-export default function ChatGraph ({ className, children }) {
+export default function ChatGraph ({ className, onAnimationEnd, children }) {
     useEffect(() => {
         if(document.getElementById("header-title")) {
             document.getElementById("header-title").innerText = "Flow Graph";
         }
         if(document.getElementById("sidebar-header-title")) {
-            document.getElementById("sidebar-header-title").innerText = "";
+            document.getElementById("sidebar-header-title").style.visibility = "hidden";
         }
     }, []);
     
@@ -471,7 +509,19 @@ export default function ChatGraph ({ className, children }) {
         newNode.id = name + Math.random().toString(36).substring(7);
 
         setNodes((nodes) => [...nodes, newNode]);
-        setContextMenuPosition(null);
+        closeContextMenu();
+    }
+
+    const isValidConnection = (connection) => {
+        const sourceNodeId = connection.source;
+        const targetNodeId = connection.target;
+        if(sourceNodeId === targetNodeId) return false;
+
+        const sourceHandleType = connection.sourceHandle;
+        const targetHandleType = connection.targetHandle;
+
+        
+        return sourceHandleType === targetHandleType;
     }
 
     const onNodeContextMenu = useCallback((event, node) => {
@@ -500,6 +550,19 @@ export default function ChatGraph ({ className, children }) {
                 setClonedNodes([node, ...nodes.filter(n => n.selected)]);
             }
         }])
+
+        // set node to have "copying" boolean
+        setNodes((nodes) => {
+            return nodes.map(n => {
+                if(n.id === node.id) {
+                    n.data = {
+                        ...n.data,
+                        copying: true
+                    }
+                }
+                return n;
+            });
+        });
     });
 
     const [render, setRender] = useState(false);
@@ -507,6 +570,35 @@ export default function ChatGraph ({ className, children }) {
     const [contextMenuOptions, setContextMenuOptions] = useState([]);
 
     const [clonedNodes, setClonedNodes] = useState([]);
+
+    const [_saveIteration, setSaveIteration] = useState(0);
+    const [saveTimeout, setSaveTimeout] = useState(null);
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(true);
+
+    const save = () => {
+        setTimeout(() => {
+            setSaved(true);
+        }, 750);
+    }
+
+    useEffect(() => {
+        if(_saveIteration === 0) return;
+        setSaved(false);
+        setSaving(false);
+        if(saveTimeout) clearTimeout(saveTimeout);
+
+        setSaveTimeout(setTimeout(() => {
+            setSaving(true);
+            save();
+        }, SAVE_TIMEOUT));
+
+    }, [_saveIteration]);
+
+    const closeContextMenu = () => {
+        setContextMenuPosition(null);
+        clearCopyOutlines();
+    }
 
     const nodeMenu = [];
     for(const key in NODE_DICTIONARY) {
@@ -545,7 +637,40 @@ export default function ChatGraph ({ className, children }) {
     }]);
 
 
+    const pasteNodes = (x = false, y = false) => {
+        const POSITION_OFFSET = 50;
+        setNodes((nodes) => {
+            return [...nodes, ...clonedNodes.map(node => {
+                const newNode = JSON.parse(JSON.stringify(node));
+                newNode.id = node.id + "_" + Math.random().toString(36).substring(7);
+                if(!x && !y) {
+                    // update position of cloned nodes by this offset as well
+                    newNode.position.x += POSITION_OFFSET;
+                    newNode.position.y += POSITION_OFFSET;
+                } else {
+                    newNode.position.x = x;
+                    newNode.position.y = y;
+                }
+                newNode.selected = false;
+                if(newNode.data) {
+                    newNode.copying = false;
+                    newNode.deleting = false;
+                }
+                return newNode;
+            })];
+        });
+        if(!x && !y) {
+            // update all position offstes
+            setClonedNodes(clonedNodes.map(node => {
+                node.position.x += POSITION_OFFSET;
+                node.position.y += POSITION_OFFSET;
+                return node;
+            }));
+        }
+    }
+
     const onPaneContextMenu = (event) => {
+        clearCopyOutlines();
         event.preventDefault();
         console.log("pane context menu", event.clientX, event.clientY);
         setContextMenuPosition({ x: event.clientX, y: event.clientY });
@@ -572,24 +697,41 @@ export default function ChatGraph ({ className, children }) {
         // if we have anything in the clipboard allow Paste
         if(clonedNodes.length > 0) {
             menuOptions.push({
+                title: "Clear",
+                onClick: () => {
+                    setClonedNodes([]);
+                }
+            });
+            menuOptions.push({
                 title: "Paste",
                 onClick: () => {
-                    setNodes((nodes) => {
-                        return [...nodes, ...clonedNodes.map(node => {
-                            const newNode = JSON.parse(JSON.stringify(node));
-                            newNode.id = node.id + Math.random().toString(36).substring(7);
-                            newNode.position.x += 50;
-                            newNode.position.y += 50;
-                            return newNode;
-                        })];
-                    });
+                    pasteNodes(event.clientX, event.clientY);
                 }
             });
         }
         setContextMenuOptions(menuOptions);
       };
 
-    const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
+    const onConnect = useCallback((params) => {
+        const sourceNodeId = params.source;
+        const targetNodeId = params.target;
+
+        const sourceType = params.sourceHandle;
+        const targetType = params.targetHandle;
+
+        console.log("onConnect", params);
+
+
+        const newEdge = {
+            ...params,
+
+            type: "CustomEdge",
+            data: {
+                type: sourceType
+            }
+        }
+        setEdges((eds) => addEdge(newEdge, eds)), []
+    }, [setEdges]);
   
     const handleNodesChange = (changes) => {
         const filteredChanges = changes.filter(change => {
@@ -599,26 +741,104 @@ export default function ChatGraph ({ className, children }) {
             return true;
         });
         onNodesChange(filteredChanges);
+        setSaveIteration((prev) => prev + 1);
     };
+
+    const handleEdgesChange = (changes) => {
+        onEdgesChange(changes);
+        setSaveIteration((prev) => prev + 1);
+    }
 
     const onPaneClick = (...e) => {
         console.log("pane click", e);
-        setContextMenuPosition(null);
+        closeContextMenu();
         if(e) setShowNodeMenu(false);
     }
 
     const onMove = () => {
-        setContextMenuPosition(null);
+        closeContextMenu();
         // setShowNodeMenu(false);
     }
 
+
+    const clearCopyOutlines = () => {
+        // remove any copying true from nodes
+        setNodes((nodes) => {
+            return nodes.map(node => {
+                if(node.data.copying) {
+                    node.data = {
+                        ...node.data,
+                        copying: false
+                    }
+                }
+                return node;
+            });
+        });
+    }
 
     // search dictionary for any key that includes nodeMenuText
     const results = nodeMenuText && nodeMenuText.length > 0 ? Object.keys(NODE_DICTIONARY).filter(key => key.toLowerCase().includes(nodeMenuText.toLowerCase())) : [];
     const hasResults = results.length > 0;
 
+    // listen for ctrl + c and ctrl + v
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // if ctrl c
+            if(e.ctrlKey && e.key === "c") {
+                const toCopyNodes = nodes.filter(n => n.selected);
+                if(toCopyNodes.length === 0) {
+                    if(clonedNodes.length > 0) {
+                        setClonedNodes([]);
+                    } else {
+                        notification("", "Nothing selected to copy", "red");
+                    }
+                    return;
+                }
+
+                console.log("Saving", nodes.filter(n => n.selected));
+                // this node and any selected nodes
+                setClonedNodes(nodes.filter(n => n.selected));
+                // set selected nodes data.copying true
+                setNodes((nodes) => {
+                    return nodes.map(node => {
+                        if(node.selected) {
+                            node.data = {
+                                ...node.data,
+                                copying: true
+                            }
+                        }
+                        return node;
+                    });
+                });
+                notification("", `Copied ${nodes.filter(n => n.selected).length} nodes`, "var(--action-color)");
+            }
+
+            // if ctrl v
+            if(e.ctrlKey && e.key === "v") {
+                if(clonedNodes.length === 0) {
+                    notification("", "Nothing to paste", "red");
+                } else {
+                    notification(`Pasted ${clonedNodes.length} nodes`);
+                    pasteNodes();
+                }
+            }
+        }
+        const handleKeyUp = (e) => {
+            if(e.key === "c" || e.key === "v") {
+                clearCopyOutlines();
+            }
+        }
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("keyup", handleKeyUp);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("keyup", handleKeyUp);
+        }
+    }, [nodes]);
+
     return (
-        <div className={`${styles.ChatGraph} ${className}`} onKeyDown={(e) => {
+        <div className={`${styles.ChatGraph} ${className}`} onAnimationEnd={onAnimationEnd} onKeyDown={(e) => {
             // if key is backspace or delete
             if(e.key === "Backspace" || e.key === "Delete") {
                 const selectedNodes = nodes.filter(node => node.selected);
@@ -637,8 +857,15 @@ export default function ChatGraph ({ className, children }) {
 
                         // do the above, but also add a single junk object
                     });
-                    // force re-render
-                    // setRender((prev) => !prev);
+                }
+
+                // get selected edges
+                const selectedEdges = edges.filter(edge => edge.selected);
+                if(selectedEdges.length > 0) {
+                    // remove selected edges
+                    setEdges((edges) => {
+                        return edges.filter(edge => !edge.selected);
+                    });
                 }
             }
         }} onKeyUp={(e) => {
@@ -657,14 +884,16 @@ export default function ChatGraph ({ className, children }) {
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={handleNodesChange}
-                onEdgesChange={onEdgesChange}
+                onEdgesChange={handleEdgesChange}
                 onConnect={onConnect}
                 onPaneClick={onPaneClick}
                 onMove={onMove}
                 onPaneContextMenu={onPaneContextMenu}
                 onNodeContextMenu={onNodeContextMenu}
+                isValidConnection={isValidConnection}
                 fitView
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
                 selectionMode={true}
                 // selectionOnDrag={true}
                 // selectionKeyCode={null}
@@ -673,10 +902,10 @@ export default function ChatGraph ({ className, children }) {
                 // catch when we drag a handle but dont make a connection
                 onConnectEnd={(...e) => {
                     console.log("connect end", e);
-                    setShowNodeMenu(true);
+                    // setShowNodeMenu(true);
                 }}
             >
-                <MiniMap />
+                {/* <MiniMap /> */}
                 <Controls />
                 <Background />
                 {
@@ -695,6 +924,7 @@ export default function ChatGraph ({ className, children }) {
                         </SearchMenu>
                     </div>
                 }
+                <SaveIcon saving={saving} saved={saved} />
             </ReactFlow>
 
             
@@ -705,7 +935,7 @@ export default function ChatGraph ({ className, children }) {
             }} />
             <p>{JSON.stringify(contextMenuPosition || "none") || "none"}</p>
             <ContextMenu id="context-menu" options={contextMenuOptions} defaultOptions={contextMenuDefaultOptions} position={contextMenuPosition} onClose={() => {
-                setContextMenuPosition(null);
+                closeContextMenu();
             }} />
 
             { children }

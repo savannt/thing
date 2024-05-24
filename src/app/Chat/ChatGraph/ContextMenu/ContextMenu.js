@@ -2,6 +2,8 @@ import { useRef, useState, useEffect } from 'react';
 import styles from '@/app/Chat/ChatGraph/ContextMenu/ContextMenu.module.css';
 import ColorImage from '@/components/ColorImage/ColorImage';
 
+export const CLOSE_DELAY = 300;
+
 export default function ContextMenu({
     id,
     relative = false,
@@ -86,7 +88,7 @@ function Button({ option, onClose }) {
     function onMouseLeave() {
         timeoutId = setTimeout(() => {
             setShowOptions(false);
-        }, 150); // 300ms delay before hiding the submenu
+        }, CLOSE_DELAY); // 300ms delay before hiding the submenu
     }
 
     return (

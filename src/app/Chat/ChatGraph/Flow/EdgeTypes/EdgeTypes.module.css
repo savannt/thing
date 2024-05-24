@@ -1,0 +1,9 @@
+.edge-red {
+    stroke: var(--red);
+    stroke-width: 2;
+}
+  
+.edge-blue {
+    stroke: var(--action-color);
+    stroke-width: 2;
+}

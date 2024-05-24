@@ -5,6 +5,8 @@
     top: 0;
     bottom: 0; */
     width: 100%;
+
+    animation-duration: 0.3s !important;
 }
 
 .NewNode {

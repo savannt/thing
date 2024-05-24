@@ -1,0 +1,30 @@
+.SaveIcon {
+    position: absolute;
+    bottom: var(--margin-block);
+    right: var(--margin-block);;
+
+    height: 125px;
+    width: 125px;
+
+    z-index: 100;
+
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.SaveIcon > div {
+    width: -webkit-fill-available;
+}
+
+
+.SaveIcon__Waiting {
+    background-color: var(--hover-active-color) !important;
+    height: 60%;
+}
+
+.SaveIcon__Saving {
+    background-color: var(--hover-active-color) !important;
+}

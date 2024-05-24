@@ -352,11 +352,18 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
                             return (
                                 <SidebarResult id={`${item.chatId ? `chat-${item.chatId}` : `group-${item.groupId}`}`} active={isActive} disabled={isDisabled} key={index} image={icon} title={title} description={description} prefix={prefix} onClick={() => {
-                                    if(isGroup) {
-                                        setGroup(item);
-                                    } else {
-                                        setChat(item);
+                                    let time = 0;
+                                    if(document && document.getElementById("back-chat-graph")) {
+                                        time = 650;
+                                        document.getElementById("back-chat-graph").click();
                                     }
+                                    setTimeout(() => {
+                                        if(isGroup) {
+                                            setGroup(item);
+                                        } else {
+                                            setChat(item);
+                                        }
+                                    }, time);
                                 }} showDelete={true} onDelete={() => {
                                     if(isGroup) {
                                         onDeleteGroup(item);

@@ -31,6 +31,60 @@ import useMobile from "@/providers/Mobile/useMobile"
 import tryUntilSuccess from "@/client/tryUntilSuccess"
 import toggleTheme from "@/client/toggleTheme"
 
+
+function ThingApp ({ enterpriseId, group, setGroup, groups, setGroups, chat, chats, setChats, setChat, userId, onLogout, onBack, onHome, onChatDelete}) {
+    return (
+        <>
+            <button id="update-chats" style={{
+                display: "none"
+            }} onClick={() => {
+                const updateChats = () => {
+                    return new Promise(resolve => {
+                        fetchChats(enterpriseId, 20, group?.groupId || false).then(chats => {
+                            let _chats = [];
+                
+                            if(Array.isArray(chats)) {
+                                _chats = chats;
+                            } else {
+                                if(group && group.groupId) {
+                                    if(chats[group.groupId]) {
+                                        _chats = chats[group.groupId];
+                                    } else {
+                                        error("Failed to fetch chats, group not found");
+                                    }
+                                } else {
+                                    if(chats["ungrouped"]) {
+                                        _chats = chats["ungrouped"];
+                                    } else {
+                                        error("Failed to fetch chats, ungrouped not found");
+                                    }
+                                }
+                            }
+            
+                            // setChats(_chats);
+                            resolve(_chats);
+                        });
+                    });
+                }
+
+                updateChats().then(_chats => {
+                    setChats(_chats);
+                });
+            }} />
+
+            <Header      userId={userId}                                                             group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} onChatDelete={onChatDelete} />
+            <div id="main" style={{
+                // overflow: "hidden",
+            }}>
+                <Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
+                <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
+                { chat && chat?.chatId && <Chat    userId={userId} enterpriseId={enterpriseId} group={group} chat={chat} setChat={setChat} /> }
+                { !chat && !chat?.chatId && <NoChat /> }
+            </div>
+        </>
+    )
+}
+
 export default function App ({ page }) {
     const FAKE_LOGIN = false;
     const isMobile = useMobile();
@@ -149,8 +203,12 @@ export default function App ({ page }) {
 
 
     function onBack () {
-        setGroup(false);
-        // setChat(false);
+        if(document.getElementById("back-chat-graph")) {
+            document.getElementById("back-chat-graph").click();
+        } else {
+            setGroup(false);
+            // setChat(false);
+        }
     }
 
     function onHome () {
@@ -186,59 +244,6 @@ export default function App ({ page }) {
             window.removeEventListener("resize", handleResize);
         }
     }, []);
-
-    function ThingApp () {
-        return (
-            <>
-                <button id="update-chats" style={{
-                    display: "none"
-                }} onClick={() => {
-                    const updateChats = () => {
-                        return new Promise(resolve => {
-                            fetchChats(enterpriseId, 20, group?.groupId || false).then(chats => {
-                                let _chats = [];
-                    
-                                if(Array.isArray(chats)) {
-                                    _chats = chats;
-                                } else {
-                                    if(group && group.groupId) {
-                                        if(chats[group.groupId]) {
-                                            _chats = chats[group.groupId];
-                                        } else {
-                                            error("Failed to fetch chats, group not found");
-                                        }
-                                    } else {
-                                        if(chats["ungrouped"]) {
-                                            _chats = chats["ungrouped"];
-                                        } else {
-                                            error("Failed to fetch chats, ungrouped not found");
-                                        }
-                                    }
-                                }
-                
-                                // setChats(_chats);
-                                resolve(_chats);
-                            });
-                        });
-                    }
-
-                    updateChats().then(_chats => {
-                        setChats(_chats);
-                    });
-                }} />
-
-                <Header      userId={userId}                                                             group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} onChatDelete={onChatDelete} />
-                <div id="main" style={{
-                    // overflow: "hidden",
-                }}>
-                    <Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
-                    <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
-                    { chat && chat?.chatId && <Chat    userId={userId} enterpriseId={enterpriseId} chat={chat} setChat={setChat} /> }
-                    { !chat && !chat?.chatId && <NoChat /> }
-                </div>
-            </>
-        )
-    }
 
 
     useEffect(() => {
@@ -293,7 +298,23 @@ export default function App ({ page }) {
             </div>
 
             <SignedIn>
-                { authLoaded && isSignedIn && userId && <ThingApp />}
+                { authLoaded && isSignedIn && userId && <ThingApp
+                    enterpriseId={enterpriseId}
+                    group={group}
+                    setGroup={setGroup}
+                    groups={groups}
+                    setGroups={setGroups}
+                    chat={chat}
+                    chats={chats}
+                    setChats={setChats}
+                    setChat={setChat}
+                    userId={userId}
+
+                    onLogout={onLogout}
+                    onBack={onBack}
+                    onHome={onHome}
+                    onChatDelete={onChatDelete}
+                /> }
             </SignedIn>
 
             {/* {

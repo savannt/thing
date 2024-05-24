@@ -1,6 +1,7 @@
 import styles from "@/components/ColorImage/ColorImage.module.css";
 
-export default function ColorImage ({ size = false, aspectRatio, image, color = "var(--primary-text-color)", className }) {
+export default function ColorImage ({ show = true, visible = true, size = false, aspectRatio, image, color = "var(--primary-text-color)", className }) {
+    if(!show) return null;
     return (
         <div className={`${styles.ColorImage} ${className}`} style={{
             WebkitMaskImage: `url(${image})`,
@@ -10,6 +11,8 @@ export default function ColorImage ({ size = false, aspectRatio, image, color = 
             backgroundColor: color,
 
             aspectRatio: aspectRatio ? aspectRatio : "unset",
+
+            visibility: visible ? "visible" : "hidden",
 
             width: size ? size : "",
             height: size ? size : ""

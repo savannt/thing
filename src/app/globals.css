@@ -437,21 +437,9 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 }
 
 .react-flow__handle-left {
-  top: unset !important;
-  transform: unset !important;
-
-  left: 3px !important;
-
-  border: 1px solid var(--secondary-text-color) !important;
 }
 
 .react-flow__handle-right {
-  top: unset !important;
-  transform: unset !important;
-
-  right: 3px !important;
-
-  border: 1px solid var(--secondary-text-color) !important;
 }
 
 .react-flow__handle-left[data-handleid="execution"] {
@@ -533,7 +521,7 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 }
 
 .react-flow__handle {
-  background: var(--tertiary-text-color) !important;
+  /* background: var(--tertiary-text-color) !important; */
 }
 
 .react-flow__minimap-mask {
@@ -560,7 +548,31 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
   outline-offset: 2px;
 }
 
+.react-flow__node:has(.copying) {
+  outline: 2px solid var(--action-color) !important;
+  outline-offset: 2px;
+}
 
+
+.react-flow__attribution {
+  display: none;
+}
+
+.react-flow__edge * {
+  stroke: var(--hover-active-color);
+}
+.react-flow__edge.selected * {
+  stroke: var(--action-color) !important;
+  stroke-width: 2px !important;
+}
+
+.react-flow__edge:hover path {
+  opacity: 0.8 !important;
+}
+
+.react-flow__edge:active path {
+  opacity: 0.6 !important;
+}
 
 .react-flow__node {
   background: var(--secondary-color) !important;
@@ -569,7 +581,7 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
   /* border: 2px solid var(--hover-color) !important; */
   border-radius: var(--border-radius-large) !important;
 
-  overflow: hidden;
+  overflow: visible !important;
   /* outline: none !important; */
 }
 
@@ -1289,6 +1301,10 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 #chat-collapse-sidebar {
   z-index: 10000000000000000000000;
   top: calc(var(--header-height) + var(--margin-block) + 2px);
+}
+
+#newChatDropdownMenu {
+  max-height: 70vh !important;
 }
 
 /* if under 400 width */

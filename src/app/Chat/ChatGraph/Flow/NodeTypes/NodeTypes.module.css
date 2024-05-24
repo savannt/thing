@@ -1,48 +1,43 @@
 .Node {
     display: flex;
-    
     position: relative !important;
-
     border-radius: var(--border-radius-large) !important;
+    flex-direction: row; /* Default to row direction */
+}
 
-    overflow: hidden;
+.VerticalNode {
+    display: flex;
+    flex-direction: column; /* Ensure vertical layout */
 }
 
 .Node__Outputs__Left {
-    padding-left: calc(var(--margin-block) * 0.55) !important;
+    /* padding-left: calc(var(--margin-block) * 0.55) !important; */
 }
 
 .Node__Outputs__Right {
-    padding-right: 0px !important;
+    /* padding-right: 0px !important; */
 }
 
 .Node .Node__Outputs {
-    display: flex;
+    display: block;
     flex-direction: column;
     justify-content: flex-start;
+    padding: calc(var(--margin-inline) * 0.3);
+    padding-inline: calc(var(--margin-inline) * 0.5);
 
-    /* gap: var(--gap); */
-
-    padding-block: calc(var(--margin-block) * 0.55);
-    padding-inline: calc(var(--margin-inline) * 0.9);
-
-
-
-    /* padding-bottom: calc(var(--margin-block) * 1); */
+    min-width: calc(var(--min-height) * 3);
 }
 
 .Node .Node__Header {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-
     padding-block: calc(var(--margin-block) * 0.45);
     padding-inline: calc(var(--margin-inline) * 1.1);
-
     background: var(--hover-color);
 
-    /* border-top-left-radius: var(--border-radius); */
-    /* border-top-right-radius: var(--border-radius); */
+    border-top-left-radius: calc(var(--border-radius-large) * 0.85);
+    border-top-right-radius: calc(var(--border-radius-large) * 0.85);
 }
 
 .Node__Header__NoLeft {
@@ -63,10 +58,4 @@
     font-size: 80%;
     font-weight: 400;
     color: var(--secondary-text-color);
-}
-
-.VerticalNode {
-    flex-direction: column;
-
-    
 }
