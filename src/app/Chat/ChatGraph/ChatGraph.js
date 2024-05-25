@@ -15,401 +15,20 @@ import ContextMenu from "@/app/Chat/ChatGraph/ContextMenu/ContextMenu";
 
 import SaveIcon from "@/app/Chat/ChatGraph/SaveIcon/SaveIcon";
 
+import { groupUpdate } from "@/client/group";
 
 import error from "@/client/error";
 import notification from "@/client/notification";
 
 const SAVE_TIMEOUT = 1000;
 
-const NODE_DICTIONARY = {
-    "StringConstant": {
-        type: "ConstantNode",
-        data: {
-            displayName: "String Constant",
-            category: "Constant",
+import NODE_DICTIONARY from "@/app/Chat/ChatGraph/Flow/NodeDictionary";
 
-            out: {
-                value: {
-                    type: "string",
-                    description: "String value",
-                    constant: true
-                }
-            }
-        },
-    },
-    "NumberConstant": {
-        type: "ConstantNode",
-        data: {
-            displayName: "Number Constant",
-            category: "Constant",
-
-            out: {
-                value: {
-                    type: "number",
-                    description: "Number value",
-                    constant: true
-                }
-            }
-        },
-    },
-    "TextareaStringConstant": {
-        type: "ConstantNode",
-        data: {
-            displayName: "Textarea String Constant",
-            category: "Constant",
-
-            out: {
-                value: {
-                    type: "string",
-                    description: "String value",
-                    constant: true
-                },
-            }
-        },
-    },
-    "SaveMessage": {
-        type: "FunctionNode",
-        data: {
-            displayName: "Save Message",
-            category: "Function",
-
-            label: "Save Message",
-            details: "function",
-
-            in: {
-                message: {
-                    type: "message",
-                    description: "Message to save"
-                }
-            }
-        },
-    },
-    "OnUserMessage": {
-        type: "EventNode",
-        data: {
-            displayName: "On User Message",
-            category: "Event",
-
-            label: "onUserMessage",
-            details: "event",
-
-            out: {
-                message: {
-                    type: "message",
-                    description: "User message"
-                },
-                attachments: {
-                    type: "array",
-                    description: "Attachments"
-                }
-            }
-
-        }
-    },
-    "Array/Combine": {
-        type: "LogicNode",
-        data: {
-            displayName: "Combine",
-            category: "Array",
-
-            label: "Combine",
-            details: "array/combine",
-
-            in: {
-                arrayA: {
-                    type: "array",
-                    description: "First array"
-                },
-                arrayB: {
-                    type: "array",
-                    description: "Second array"
-                }
-            },
-            out: {
-                combined: {
-                    type: "array",
-                    description: "Combined array"
-                }
-            }
-        }
-    },
-    "Array/Push": {
-        type: "FunctionNode",
-        data: {
-            displayName: "Push",
-            category: "Array",
-
-            label: "Push",
-            details: "array/push",
-
-            in: {
-                array: {
-                    type: "array",
-                    description: "Array to push to"
-                },
-                value: {
-                    type: "any",
-                    description: "Value to push"
-                }
-            },
-            out: {
-                array: {
-                    type: "array",
-                    description: "Array after push"
-                }
-            },
-        }
-    },
-    "Array/Splice": {
-        type: "FunctionNode",
-        data: {
-            displayName: "Splice",
-            category: "Array",
-
-            label: "Splice",
-            details: "array/splice",
-
-            in: {
-                array: {
-                    type: "array",
-                    description: "Array to splice"
-                },
-                start: {
-                    type: "number",
-                    description: "Index to start at"
-                },
-                deleteCount: {
-                    type: "number",
-                    description: "Number of items to delete"
-                },
-                items: {
-                    type: "array",
-                    description: "Items to insert",
-                    required: false
-                }
-            },
-            out: {
-                array: {
-                    type: "array",
-                    description: "Array after splice"
-                }
-            }
-        }
-    },
-    "Array/Length": {
-        type: "LogicNode",
-        data: {
-            displayName: "Length",
-            category: "Array",
-            label: "Length",
-            details: "array/length",
-            in: {
-                array: {
-                    type: "array",
-                    description: "Array to get length of"
-                }
-            },
-            out: {
-                length: {
-                    type: "number",
-                    description: "Length of array"
-                }
-            }
-        }
-    },
-    "Array/Filter": {
-        type: "FunctionNode",
-        data: {
-            displayName: "Filter",
-            category: "Array",
-            label: "Filter",
-            details: "array/filter",
-            in: {
-                array: {
-                    type: "array",
-                    description: "Array to filter"
-                },
-                condition: {
-                    type: "function",
-                    description: "Condition to filter by"
-                }
-            },
-            out: {
-                array: {
-                    type: "array",
-                    description: "Filtered array"
-                }
-            }
-        }
-    },
-    "Array/Map": {
-        type: "FunctionNode",
-        data: {
-            displayName: "Map",
-            category: "Array",
-            label: "Map",
-            details: "array/map",
-            in: {
-                array: {
-                    type: "array",
-                    description: "Array to map"
-                },
-                transformation: {
-                    type: "function",
-                    description: "Transformation function"
-                }
-            },
-            out: {
-                array: {
-                    type: "array",
-                    description: "Transformed array"
-                }
-            }
-        }
-    },
-    "Math/Add": {
-        type: "LogicNode",
-        data: {
-            displayName: "Add",
-            category: "Math",
-            label: "Add",
-            details: "math/add",
-            in: {
-                a: {
-                    type: "number",
-                    description: "First number"
-                },
-                b: {
-                    type: "number",
-                    description: "Second number"
-                }
-            },
-            out: {
-                result: {
-                    type: "number",
-                    description: "Sum of numbers"
-                }
-            }
-        }
-    },
-    "Math/Subtract": {
-        type: "LogicNode",
-        data: {
-            displayName: "Subtract",
-            category: "Math",
-            label: "Subtract",
-            details: "math/subtract",
-            in: {
-                a: {
-                    type: "number",
-                    description: "First number"
-                },
-                b: {
-                    type: "number",
-                    description: "Second number"
-                }
-            },
-            out: {
-                result: {
-                    type: "number",
-                    description: "Difference of numbers"
-                }
-            }
-        }
-    },
-    "Math/Multiply": {
-        type: "LogicNode",
-        data: {
-            displayName: "Multiply",
-            category: "Math",
-            label: "Multiply",
-            details: "math/multiply",
-            in: {
-                a: {
-                    type: "number",
-                    description: "First number"
-                },
-                b: {
-                    type: "number",
-                    description: "Second number"
-                }
-            },
-            out: {
-                result: {
-                    type: "number",
-                    description: "Product of numbers"
-                }
-            }
-        }
-    },
-    "Math/Divide": {
-        type: "LogicNode",
-        data: {
-            displayName: "Divide",
-            category: "Math",
-            label: "Divide",
-            details: "math/divide",
-            in: {
-                a: {
-                    type: "number",
-                    description: "Dividend"
-                },
-                b: {
-                    type: "number",
-                    description: "Divisor"
-                }
-            },
-            out: {
-                result: {
-                    type: "number",
-                    description: "Quotient of numbers"
-                }
-            }
-        }
-    },
-    "JSON/Parse": {
-        type: "FunctionNode",
-        data: {
-            displayName: "Parse",
-            category: "JSON",
-            label: "Parse",
-            details: "json/parse",
-            in: {
-                jsonString: {
-                    type: "string",
-                    description: "JSON string to parse"
-                }
-            },
-            out: {
-                object: {
-                    type: "object",
-                    description: "Parsed JSON object"
-                }
-            }
-        }
-    },
-    "JSON/Stringify": {
-        type: "FunctionNode",
-        data: {
-            displayName: "Stringify",
-            category: "JSON",
-            label: "Stringify",
-            details: "json/stringify",
-            in: {
-                object: {
-                    type: "object",
-                    description: "Object to stringify"
-                }
-            },
-            out: {
-                jsonString: {
-                    type: "string",
-                    description: "Stringified JSON"
-                }
-            }
-        }
-    },
-}
+import MenuContainer from "@/components/Menu/MenuContainer";
+import Menu from "@/components/Menu/Menu";
+import ChatInput from "@/app/Chat/ChatInput/ChatInput";
+import { chatMessage } from "@/client/chat";
+import { useChannel } from "ably/react";
 
 /*
 
@@ -470,13 +89,7 @@ openai/ChatCompletions/create
 
 */
 
-const initialNodes = [];
-  
-  const initialEdges = [
-    // Define edges here if needed
-  ];
-
-export default function ChatGraph ({ className, onAnimationEnd, children }) {
+export default function ChatGraph ({ chat, group, enterpriseId, className, onAnimationEnd, children }) {
     useEffect(() => {
         if(document.getElementById("header-title")) {
             document.getElementById("header-title").innerText = "Flow Graph";
@@ -489,8 +102,13 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
     const [nodeMenuText, setNodeMenuText] = useState("");
     const [showNodeMenu, setShowNodeMenu] = useState(false);
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [showChatMenu, setShowChatMenu] = useState(false);
+    const [chatText, setChatText] = useState("");
+    const [chatRows, setChatRows] = useState(1);
+    const [chatFiles, setChatFiles] = useState([]);
+
+    const [nodes, setNodes, onNodesChange] = useNodesState(group.nodes || []);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(group.edges || []);
   
     const onNewNode = (e, name) => {
         if(!NODE_DICTIONARY[name]) {
@@ -509,6 +127,7 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
         newNode.id = name + Math.random().toString(36).substring(7);
 
         setNodes((nodes) => [...nodes, newNode]);
+        setSaveIteration((prev) => prev + 1);
         closeContextMenu();
     }
 
@@ -577,9 +196,14 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
     const [saved, setSaved] = useState(true);
 
     const save = () => {
-        setTimeout(() => {
+        groupUpdate(group.groupId, nodes, edges).then((data) => {
+            if(!data || data.message !== "OK") {
+                notification("Error", "Failed to save graph", "red");
+            } else {
+                // notification("Saved", "Graph saved successfully", "var(--action-color)");
+            }
             setSaved(true);
-        }, 750);
+        });
     }
 
     useEffect(() => {
@@ -634,6 +258,11 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
             setShowNodeMenu(true);
         },
         options: nodeMenu
+    }, {
+        title: "Simulate",
+        onClick: () => {
+            setShowChatMenu(true);
+        }
     }]);
 
 
@@ -722,10 +351,12 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
         console.log("onConnect", params);
 
 
+        const edgeType = sourceType === "execution" ? "ExecutionEdge" : "DataEdge";
+
         const newEdge = {
             ...params,
 
-            type: "CustomEdge",
+            type: edgeType,
             data: {
                 type: sourceType
             }
@@ -837,8 +468,159 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
         }
     }, [nodes]);
 
+    const animateError = (nodeOrEdgeId, valueName) => {
+        // set "error" boolean to true on data
+        setNodes((nodes) => {
+            return nodes.map(node => {
+                if(node.id === nodeOrEdgeId) {
+                    node.data = {
+                        ...node.data,
+                        error: true,
+                    }
+                    if(valueName) node.data.errorValue = valueName;
+                }
+                return node;
+            });
+        });
+        setEdges((edges) => {
+            return edges.map(edge => {
+                if(edge.id === nodeOrEdgeId) {
+                    edge.data = {
+                        ...edge.data,
+                        error: true
+                    }
+                }
+                return edge;
+            });
+        });
+        
+        setTimeout(() => {
+            // set "error" boolean to false on data
+            setNodes((nodes) => {
+                return nodes.map(node => {
+                    if(node.id === nodeOrEdgeId) {
+                        node.data = {
+                            ...node.data,
+                            error: false,
+                            errorValue: null
+                        }
+                    }
+                    return node;
+                });
+            });
+            setEdges((edges) => {
+                return edges.map(edge => {
+                    if(edge.id === nodeOrEdgeId) {
+                        edge.data = {
+                            ...edge.data,
+                            error: false
+                        }
+                    }
+                    return edge;
+                });
+            });
+        }, 1000);
+    }
+
+    const animateExecution = (nodeId) => {
+        const TIMEOUT = 1000;
+
+        // add data.animate = true
+        setNodes((nodes) => {
+            return nodes.map(node => {
+                if(node.id === nodeId) {
+                    node.data = {
+                        ...node.data,
+                        animate: true
+                    }
+                }
+                return node;
+            });
+        });
+
+        setTimeout(() => {
+            // remove data.animate = true
+            setNodes((nodes) => {
+                return nodes.map(node => {
+                    if(node.id === nodeId) {
+                        node.data = {
+                            ...node.data,
+                            animate: false
+                        }
+                    }
+                    return node;
+                });
+            });
+        }, TIMEOUT);
+    }
+
+    const animateExecutionEdge = (edgeId) => {
+        const TIMEOUT = 1000;
+
+        // add data.animate = true
+        setEdges((edges) => {
+            return edges.map(edge => {
+                if(edge.id === edgeId) {
+                    edge.data = {
+                        ...edge.data,
+                        animate: true
+                    }
+                }
+                return edge;
+            });
+        });
+
+        setTimeout(() => {
+            // remove data.animate = true
+            setEdges((edges) => {
+                return edges.map(edge => {
+                    if(edge.id === edgeId) {
+                        edge.data = {
+                            ...edge.data,
+                            animate: false
+                        }
+                    }
+                    return edge;
+                });
+            });
+        }, TIMEOUT);
+    }
+
+    const animateExecutionResponse = (nodeId, values) => {
+        // TODO: Here
+    }
+
+    useChannel(`flow-${chat.chatId}`, "error", (msg) => {
+        const data = msg.data;
+        notification(data.title, data.message, "red");
+
+        if(data.options) {
+            if(data.options.nodeId) animateError(data.options.nodeId, data.options.valueName);
+            if(data.options.edgeId) animateError(data.options.edgeId, data.options.valueName);
+        }
+    });
+
+    useChannel(`flow-${chat.chatId}`, "execute", (msg) => {
+        const { nodeId } = msg.data;
+
+        animateExecution(nodeId);
+    });
+
+    useChannel(`flow-${chat.chatId}`, "execute_edge", (msg) => {
+        const { edgeId } = msg.data;
+
+        animateExecutionEdge(edgeId);
+    });
+
+    useChannel(`flow-${chat.chatId}`, "execute_response", (msg) => {
+        const { nodeId, values } = msg.data;
+
+        animateExecutionResponse(nodeId, values);
+    });
+
+
     return (
-        <div className={`${styles.ChatGraph} ${className}`} onAnimationEnd={onAnimationEnd} onKeyDown={(e) => {
+        <div id="chat-graph" className={`${styles.ChatGraph} ${className}`} onAnimationEnd={onAnimationEnd} onKeyDown={(e) => {
             // if key is backspace or delete
             if(e.key === "Backspace" || e.key === "Delete") {
                 const selectedNodes = nodes.filter(node => node.selected);
@@ -854,7 +636,6 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
                             }
                             return node;
                         });
-
                         // do the above, but also add a single junk object
                     });
                 }
@@ -878,6 +659,7 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
                         return nodes.filter(node => !node.selected);
                     });
                 }
+                setSaveIteration((prev) => prev + 1);
             }
         }} >
             <ReactFlow
@@ -891,6 +673,9 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
                 onPaneContextMenu={onPaneContextMenu}
                 onNodeContextMenu={onNodeContextMenu}
                 isValidConnection={isValidConnection}
+                onEdgeUpdate={(oldEdge, newConnection) => {
+                    setSaveIteration((prev) => prev + 1);
+                }}
                 fitView
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
@@ -909,10 +694,10 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
                 <Controls />
                 <Background />
                 {
-                    showNodeMenu && <div className={`animate__animated animate__fadeIn ${styles.NodeMenuContainer}`} onClick={() => {
+                    showNodeMenu && <MenuContainer onClick={() => {
                         setShowNodeMenu(false);
                     }}>
-                        <SearchMenu placeholder={`Search for nodes`} hasResults={hasResults} inputText={nodeMenuText} setInputText={setNodeMenuText} className={styles.NodeMenu}>
+                        <SearchMenu placeholder={`Search for nodes`} hasResults={hasResults} inputText={nodeMenuText} setInputText={setNodeMenuText} >
                             {
                                 hasResults && results.map((key, index) => {
                                     return <SearchMenuRow key={index} id={key} text={key} onClick={(e) => {
@@ -922,17 +707,78 @@ export default function ChatGraph ({ className, onAnimationEnd, children }) {
                                 })
                             }
                         </SearchMenu>
-                    </div>
+                    </MenuContainer>
+                }
+                {
+                    showChatMenu && <MenuContainer onClick={() => {
+                        setShowChatMenu(false);
+                    }}>
+                        <Menu className={`${styles.ChatMenu} animate__animated animate__fadeInDown`}>
+                            <ChatInput allowSend={(chatText && chatText.length > 0) || chatFiles && chatFiles.length > 0} inputText={chatText} inputRows={chatRows} onChange={(e) => {
+                                setChatText(e.target.value);
+                                setChatRows(e.target.value.split("\n").length);
+                            }} onKeyUp={(e) => {
+                                // if key is escpae, close
+                                if(e.key === "Escape") {
+                                    setShowChatMenu(false);
+                                }
+                            }} onKeyDown={(e) => {
+                                // if key is enter without holding shift, send
+                                if(e.key === "Enter" && !e.shiftKey) {
+                                    // send
+                                    setShowChatMenu(false);
+                                    e.preventDefault();
+                                    return;
+                                } else if(e.key === "Enter") {
+                                    // press send
+                                    e.preventDefault();
+                                    document.getElementById("send").click();
+                                }
+                            }} onSend={() => {
+                                if(!chat || !chat.chatId) {
+                                    notification("Error", "Chat not found", "red");
+                                }
+                                chatMessage(chat.chatId, enterpriseId, chatText, chatFiles).then((data) => {
+                                    if(!data) {
+                                        notification("Error", "Failed to send message", "red");
+                                    } else {
+                                        notification("", "Message Sent", "var(--action-color)");
+                                    }
+                                });
+
+                                setChatText("");
+                                setChatRows(1);
+                                setChatFiles([]);
+                                setShowChatMenu(false);
+                            }} onFileChange={(e) => {
+                                if (e.target.files.length > 0) {
+                                    setChatFiles(e.target.files);
+                                }
+                            }} />
+                        </Menu>
+                    </MenuContainer>
                 }
                 <SaveIcon saving={saving} saved={saved} />
             </ReactFlow>
 
             
-            
+            <div className={styles.ChatGraph__Header}>
+                <Button text="Node" image={"/images/icons/plus.svg"} className={styles.NewNode} onClick={() => {
+                    setShowNodeMenu(true);
+                    setShowChatMenu(false);
+                    setChatText("");
+                    setChatRows(1);
+                    setChatFiles([]);
+                }} />
+                <Button text="Simulate" image={"/images/icons/chat.png"} className={styles.SimulateChat} onClick={() => {
+                    setShowNodeMenu(false);
+                    setShowChatMenu(true);
+                    setChatText("");
+                    setChatRows(1);
+                    setChatFiles([]);
+                }} />
+            </div>
 
-            <Button text="Node" image={"/images/icons/plus.svg"} className={styles.NewNode} onClick={() => {
-                setShowNodeMenu(true);
-            }} />
             <p>{JSON.stringify(contextMenuPosition || "none") || "none"}</p>
             <ContextMenu id="context-menu" options={contextMenuOptions} defaultOptions={contextMenuDefaultOptions} position={contextMenuPosition} onClose={() => {
                 closeContextMenu();

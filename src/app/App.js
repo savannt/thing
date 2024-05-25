@@ -24,7 +24,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import { SignedIn, SignedOut, SignIn, SignUp, useUser, useOrganization, useClerk } from "@clerk/nextjs"
 import notification from "@/client/notification"
-import { useChannel } from "ably/react"
+import { ChannelProvider, useChannel } from "ably/react"
 
 import toggleSidebar from "@/client/toggleSidebar"
 import useMobile from "@/providers/Mobile/useMobile"
@@ -102,7 +102,6 @@ export default function App ({ page }) {
     const [authSignedIn, setAuthSignedIn] = useState(false);
     const [isGuest, setIsGuest] = useState(false);
     useEffect(() => {
-        console.log("IS_LODAED_EFFECT", isLoaded, isSignedIn)
         if(isLoaded) {
             setAuthLoaded(true);
             if(isSignedIn) {

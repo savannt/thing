@@ -12,7 +12,7 @@ export default function ColorImage ({ show = true, visible = true, size = false,
 
             aspectRatio: aspectRatio ? aspectRatio : "unset",
 
-            visibility: visible ? "visible" : "hidden",
+            visibility: visible ? "inherit" : "hidden",
 
             width: size ? size : "",
             height: size ? size : ""

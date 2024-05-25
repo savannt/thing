@@ -33,6 +33,7 @@
     gap: var(--gap);
 
     overflow: hidden;
+    overflow-y: scroll;
 }
 
 .Chat__Bar {
@@ -67,16 +68,6 @@
     width: var(--min-height) !important;
 }
 
-.Chat__Bar__InputRow__Attachment {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: var(--min-height) !important;
-    height: var(--min-height) !important;
-    
-    margin-right: 3px;
-    /* margin-bottom: 1px; */
-}
 
 .Chat__Bar__InputRow__Live {
     position: absolute;

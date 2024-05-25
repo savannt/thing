@@ -111,7 +111,6 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     const { user } = useUser();
 
     const displayName = "Guest" || user.fullName;
-    console.log("user", user);
 
     let results = group ? chats : groups;
     let noResults = !results || results.length === 0;
@@ -132,8 +131,6 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         }
     }, [ref]);
 
-    console.log("iscollapsed", isCollapsed)
-
     const isMobile = useMobile();
     
     if(localStorage) {
@@ -149,9 +146,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     if(chatElement) {
         chatElement.style.position = isCollapsed ? "absolute" : "relative";
         chatElement.style.paddingInline = (collapsed || isMobile) ? "calc(var(--margin-chat) * 3)" : "calc(var(--margin-chat) * 1)";
-    }
-    // console.log("isCollapsed", isCollapsed);
-    
+    }    
 
     function _onToggleSidebar () {
         setCollapsed((prev) => {
@@ -166,15 +161,6 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         });
         setCollapsedFinished(false);
     }
-
-    // const [lastTitle, setLastTitle] = useState(false);
-    // useEffect(() => {
-    //     if(chat?.title !== lastTitle) {
-    //         setLastTitle(chat?.title);
-    //         console.log(chat, "Title: " + chat.title, "Last Title: " + lastTitle);
-    //         setTitleAnimation("animate__flipInX");
-    //     }
-    // }, [chat]);
 
     function onDeleteChat (_chat) {
         if(chat && chat.id === _chat.id) {

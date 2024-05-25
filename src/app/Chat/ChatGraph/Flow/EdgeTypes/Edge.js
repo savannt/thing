@@ -19,8 +19,10 @@ export default function Edge ({ id, sourceX, sourceY, targetX, targetY, sourcePo
     const alpha = typeData?.alpha || 0.5;
 
 
-    const stroke = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+    const doAnimate = data?.animate || false;
+    const stroke = doAnimate ? `var(--action-color)` : `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
     const strokeWidth = typeData?.stroke || 2;
+    const opacity = doAnimate ? 0.5 : 1;
 
 
     // Determine the edge style based on data.type or data.color
@@ -28,6 +30,7 @@ export default function Edge ({ id, sourceX, sourceY, targetX, targetY, sourcePo
     const edgeStyle = {
         stroke,
         strokeWidth,
+        opacity,
     }
 
     return (
@@ -39,11 +42,19 @@ export default function Edge ({ id, sourceX, sourceY, targetX, targetY, sourcePo
                 d={edgePath}
                 markerEnd={markerEnd}
             />
-            { /* create an invisible duplicate of the above for a wider pointer-event region*/ }
+            {
+                doAnimate && <path
+                    style={{ ...style, ...edgeStyle }}
+                    className="react-flow__edge-path-anim"
+                    d={edgePath}
+                    markerEnd={markerEnd}
+                />
+            }
             <path
                 style={{ stroke: "transparent", strokeWidth: 15, pointerEvents: "stroke" }}
                 className="react-flow__edge-path"
                 d={edgePath}
+                markerEnd={markerEnd}
             />
         </>
     );

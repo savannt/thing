@@ -1,8 +1,8 @@
 import mongo  from "@/services/mongodb";
 import { generateChatId } from "@/services/generator";
 
-import update, { userSentMessage, onChatCreated } from "@/services/ai";
 import authenticate from "@/services/authenticateRequest";
+import executeFlowEvent, { onUserMessage, onChatCreated } from "@/services/executeFlow";
 
 export default async function handler(req, res) {
     const didAuthenticate = await authenticate(req, res);
@@ -100,9 +100,12 @@ export default async function handler(req, res) {
             }
         });
 
-        userSentMessage(chatId, bodyMessage, bodyFiles);
+        // userSentMessage(chatId, bodyMessage, bodyFiles);
 
         // update(chatId);
+
+
+        onUserMessage(chatId, message);
 
         res.status(200).json({ message: "OK" });
     } else {

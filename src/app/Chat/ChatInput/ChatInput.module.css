@@ -1,0 +1,14 @@
+.ChatInput {
+
+}
+
+.ChatInput__Attachment {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: var(--min-height) !important;
+    height: var(--min-height) !important;
+    
+    margin-right: 3px;
+    /* margin-bottom: 1px; */
+}

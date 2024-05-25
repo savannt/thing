@@ -30,11 +30,14 @@
     position: absolute;
     bottom: -3px;
     left: 0;
-    transform: translateY(100%);
+    top: 0px;
 
-    width: 35vw;
+    width: 35vw !important;
     max-width: 60vw;
     height: fit-content !important;
+
+    margin-left: 0 !important;
+    margin-top: calc(var(--min-height) + 3px) !important;
 }
 
 @media (max-width: 800px) {

@@ -1,0 +1,53 @@
+.Menu {
+    background-color: var(--background-color);
+
+    border: 1px solid var(--hover-color);
+    border-radius: var(--border-radius);
+
+    z-index: 100;
+
+    box-shadow: var(--box-shadow);
+
+    max-height: 90%;
+
+    display: flex;
+    flex-direction: column;
+
+
+    margin-inline: calc(15vw);
+    margin-top: calc(var(--margin-inline) * 1.5);
+    width: -webkit-fill-available;
+
+    position: absolute;
+    top: 0px;
+}
+
+.MenuContainer {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--box-shadow-color-light);
+    backdrop-filter: blur(2px);
+
+    z-index: 1000000000;
+
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(2px);
+    }
+}

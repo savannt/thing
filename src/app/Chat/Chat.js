@@ -15,6 +15,7 @@ import { chat, chatMessage } from "@/client/chat"
 import toggleSidebar from "@/client/toggleSidebar"
 import notification from "@/client/notification";
 import useMobile from "@/providers/Mobile/useMobile"
+import ChatInput from "@/app/Chat/ChatInput/ChatInput"
 
 export default function Chat ({ userId, enterpriseId, chat, group }) {
     const hasChat = !!chat && chat?.chatId;
@@ -98,7 +99,10 @@ export default function Chat ({ userId, enterpriseId, chat, group }) {
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
             {
-                (showChatGraph || chatGraphAnimation) && <ChatGraph className={`animate__animated ${chatGraphAnimation}`} onAnimationEnd={() => {
+                (showChatGraph || chatGraphAnimation) && <ChatGraph chat={chat} group={group} enterpriseId={enterpriseId} className={`animate__animated ${chatGraphAnimation}`} onAnimationEnd={(e) => {
+                    if(e.target.id !== "chat-graph") return;
+
+
                     setChatGraphAnimation("");
                     if(chatGraphAnimation.includes("fadeIn")) return;
 
@@ -189,10 +193,10 @@ export default function Chat ({ userId, enterpriseId, chat, group }) {
                         }
                     }} />
                     <div className={styles.Chat__Bar__InputRow}>
-                        <Input hiddenFocus={!allowSend} textarea={true} placeholder="Send a message" value={inputText} rows={inputRows} onChange={(e) => {
+                        <ChatInput allowSend={allowSend} inputText={inputText} inputRows={inputRows} onChange={(e) => {
                             setInputText(e.target.value);
                             setInputRows(e.target.value.split("\n").length);
-
+                            
                             if(e.target.value.length === 0) {
                                 if(inputFiles.length === 0) {
                                     setAllowSend(false);
@@ -214,19 +218,11 @@ export default function Chat ({ userId, enterpriseId, chat, group }) {
                                     setAllowSend(true);
                                 }
                             }
-                        }}>
-                            <input style={{ display: "none" }} type="file" id="file" accept="image/*" onChange={(e) => {
-                                if (e.target.files.length > 0) {
-                                    setAllowSend(true);
-                                }
-                            }}/>
-                            <SquareButton className={styles.Chat__Bar__InputRow__Attachment} image="/images/icons/upload.png" background={false} color="var(--secondary-text-color)" onClick={() => {
-                                document.getElementById("file").click();
-                            }}/>
-                        </Input>
-                        <SquareButton id="send" image="/images/icons/send.png" color={allowSend ? "white" : "var(--primary-text-color)"} background={allowSend ? "var(--action-color)" : "var(--disabled-color)"} disabled={!allowSend} onClick={() => {
-                            send();
-                        }}/>
+                        }} onFileChange={(e) => {
+                            if (e.target.files.length > 0) {
+                                setAllowSend(true);
+                            }
+                        }} />
                     </div>
                 </div>
             </div> }

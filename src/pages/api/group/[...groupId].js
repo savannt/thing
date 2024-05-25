@@ -36,6 +36,9 @@ export default async function handler(req, res) {
             assistantId,
             deleted: false,
             lastTime: new Date(),
+
+            nodes: [],
+            edges: []
         };
 
         const groups = db.collection("groups");
@@ -62,6 +65,25 @@ export default async function handler(req, res) {
         // delete any chats with this groupId
         const chats = db.collection("chats");
         await chats.updateMany({ groupId, deleted: false }, { $set: { deleted: true } });
+
+        res.status(200).json({ message: "OK" });
+        return;
+    } else if(operation === "update") {
+        if(!req.body) return res.status(400).json({ message: "Invalid request" });
+        const body = JSON.parse(req.body);
+        if(typeof body.nodes === "undefined" || typeof body.edges === "undefined") return res.status(400).json({ message: "Invalid request" });
+        const nodes = body.nodes;
+        const edges = body.edges;
+
+        const groups = db.collection("groups");
+        const group = await groups.findOne({ groupId, deleted: false });
+        if(group.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
+
+        await groups.updateOne({ groupId }, { $set: {
+            nodes,
+            edges, 
+            lastTime: new Date()
+        } });
 
         res.status(200).json({ message: "OK" });
         return;

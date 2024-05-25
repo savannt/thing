@@ -21,10 +21,11 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
     }
     const hasValues = values.length > 0;
     
-    
-    
+        
+    const errorValue = data?.errorValue || false;
+
     return (
-        <div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""}`} style={{
+        <div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${data.animate ? "animate" : ""}`} style={{
             border: `2px solid ${semiTransparentColor}`
         }}>
             <div className={`${styles.Node__Header} ${!left ? "" : styles.Node__Header__NoLeft}`} style={{
@@ -64,7 +65,13 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
                             style.maxWidth = "fit-content";
                         }
 
-                        console.log("value", data);
+
+                        if(errorValue === name) {
+                            style.outline = "1.5px solid var(--red)";
+                            style.outlineOffset = "2px";
+                            style.borderRadius = "var(--border-radius-light)";
+                        }
+
 
                         if(constant) {
                             if(type === "string") {

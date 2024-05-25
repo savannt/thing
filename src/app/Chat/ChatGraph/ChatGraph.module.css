@@ -9,11 +9,24 @@
     animation-duration: 0.3s !important;
 }
 
-.NewNode {
+.ChatGraph__Header {
     position: absolute;
-    top: calc(var(--margin-block) + var(--header-height));
-    right: var(--margin-inline);
+    top: 0;
+    left: 0;
+    right: 0;
+    top: calc(var(--header-height));
+    height: var(--header-height);
 
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: var(--gap);
+
+    padding-inline: var(--margin-inline);
+}
+
+.NewNode {
     height: var(--min-height);
 
     padding-inline: var(--margin-inline);
@@ -21,24 +34,22 @@
     font-size: 100%;
 }
 
-.NodeMenuContainer {
-    position: absolute;
-    top: 0px;
-    right: 0px;
+.SimulateChat {
+    height: var(--min-height);
 
-    width: 100%;
-    height: 100%;
+    padding-inline: var(--margin-inline);
 
-    background: var(--box-shadow-color);
-
-    z-index: 1000000000;
+    font-size: 100%;
 }
 
-.NodeMenu {
-    margin-inline: calc(15vw);
-    margin-top: calc(var(--margin-inline) * 1.5);
-    width: -webkit-fill-available;
 
-    position: absolute;
-    top: 0px;
+.ChatMenu {
+    padding-inline: var(--margin-inline);
+    padding-block: var(--margin-block);
+
+    display: flex;
+    flex-direction: row !important;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--gap);
 }

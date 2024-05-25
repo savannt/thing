@@ -76,6 +76,7 @@
   --active-color-hidden: #4c855063;
 
   --box-shadow-color: #000000a8;
+  --box-shadow-color-light: #00000053;
 }
 
 /* data-theme light */
@@ -91,6 +92,7 @@
   --active-color-hidden: #366d3a30;
 
   --box-shadow-color: #00000053;
+  --box-shadow-color-light: #00000053;
 }
 
 :root[data-theme="gray"] {
@@ -108,6 +110,7 @@
   --active-color-hidden: #69976c7b;
 
   --box-shadow-color: #00000053;
+  --box-shadow-color-light: #00000053;
 }
 
 :root[data-theme="black"] {
@@ -122,6 +125,7 @@
   --active-color-hidden: #4c855063;
 
   --box-shadow-color: #000000a8;
+  --box-shadow-color-light: #00000053;
 }
 
 *:focus {
@@ -431,6 +435,20 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
   right: var(--margin-inline);
 }
 
+.react-flow__edge-path-anim {
+  stroke: var(--action-color) !important;
+  stroke-width: 3;
+  stroke-dasharray: 5, 5;
+  animation: dash-animation 1.5s linear infinite;
+  fill: none;
+}
+
+@keyframes dash-animation {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
 .react-flow__nodesselection-rect {
   border-radius: var(--border-radius-large);
   transform: translateX(-1px) translateY(-1px);
@@ -553,6 +571,29 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
   outline-offset: 2px;
 }
 
+.react-flow__node:has(.error) {
+  outline: 2px solid var(--red) !important;
+  outline-offset: 2px;
+}
+
+.react-flow__node:has(.animate) {
+  outline: 2px dashed var(--action-color) !important;
+  outline-offset: 2px;
+}
+
+
+.react-flow__edgeupdater {
+  stroke: none !important;
+}
+
+.react-flow__edgeupdater:hover {
+  stroke: var(--hover-active-color) !important;
+  fill: var(--hover-color) !important;
+}
+
+.react-flow__edgeupdater {
+  outline: none !important;
+}
 
 .react-flow__attribution {
   display: none;
@@ -561,7 +602,7 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 .react-flow__edge * {
   stroke: var(--hover-active-color);
 }
-.react-flow__edge.selected * {
+.react-flow__edge.selected *:not(.react-flow__edgeupdater) {
   stroke: var(--action-color) !important;
   stroke-width: 2px !important;
 }
