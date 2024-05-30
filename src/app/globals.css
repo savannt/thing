@@ -460,17 +460,24 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 .react-flow__handle-right {
 }
 
-.react-flow__handle-left[data-handleid="execution"] {
+div:first-child > div > .react-flow__handle-left[data-handleid="execution"] {
   top: calc(var(--margin-block) * 1.4) !important;
   left: 2px !important;
 }
 
-.react-flow__handle-right[data-handleid="execution"] {
+div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
   top: calc(var(--margin-block) * 1.4) !important;
   right: 2px !important;
 }
 
-.react-flow__handle[data-handleid="execution"] {
+.react-flow__handle-right[data-handleid="execution-event"] {
+  /* top: 50% !important; */
+  /* transform: translate(0px, 10%) !important; */
+  top: 0px !important;
+  right: -6px !important;
+}
+
+.react-flow__handle[data-handleid="execution"], .react-flow__handle[data-handleid^="execution-"] {
   mask-image: url("/images/icons/flow_play.png") !important;
   mask-size: contain !important;
   mask-repeat: no-repeat !important;
@@ -483,7 +490,17 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 
   width: 12px;
   height: 12px;
+
+  top: 0px;
+
+  transform: translate(0px, -50%);
 }
+
+.react-flow__handle[data-handleid^="execution-"] {
+  position: absolute;
+  top: 50%;
+}
+
 
 .react-flow__handle[data-handleid="execution"]:hover {
   opacity: 0.8;

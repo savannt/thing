@@ -1,3 +1,14 @@
+/*
+
+ Game Plan:
+  * Create terminal UI mode
+
+
+
+*/
+
+import "../../../../alias-register.js";
+
 process.env.OPENAI_API_KEY = "sk-1234567890abcdef1234567890abcdef";
 import { ChatCompletion, Messages, Tools, Tool } from "../OpenAI.js"
 
@@ -25,6 +36,14 @@ const EXAMPLE_ARGUMENTS_OBJECT = {
         }
     }
 };
+
+
+
+
+
+
+
+
 
 (async () => {
     let tools = new Tools();
@@ -190,7 +209,7 @@ const EXAMPLE_ARGUMENTS_OBJECT = {
             // Message started
             // console.log("starting", obj);
         });
-        chatCompletion.on("delta", (obj) => { 
+        chatCompletion.on("delta", (obj) => {
             // Message chunk streamed
             // console.log("delta", obj);
         });
@@ -214,28 +233,3 @@ const EXAMPLE_ARGUMENTS_OBJECT = {
     }
     await chatComplete(0);
 })();
-
-// (async () => {
-
-//     let messages = new Messages();
-//     messages.add("system", "**only output in json format**");
-    
-//     // bogus conversation between user and assistant regarding the weather
-//     messages.add("user", "What is the weather like today?");
-//     messages.add("assistant", "The weather is sunny and 75 degrees.");
-//     messages.add("user", "What about tomorrow?");
-//     messages.add("assistant", "Tomorrow will be rainy and 60 degrees.");
-//     messages.add("user", "Thank you.");
-//     messages.add("assistant", "You're welcome.");
-//     messages.add("user", "I feel like you might be lying to me");
-//     messages.add("assistant", "I am not lying to you.");
-//     messages.add("user", "I don't believe you.");
-
-//     messages.add("system", "output a title for this chat log in the title key of the json object");
-
-//     const completion = await ChatCompletion.createJson(messages);
-//     completion.on("end", (obj) => {
-//         console.log("Conversataion title: ", obj.json.title);
-//     });
-
-// })();

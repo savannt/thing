@@ -20,15 +20,20 @@ import { groupUpdate } from "@/client/group";
 import error from "@/client/error";
 import notification from "@/client/notification";
 
-const SAVE_TIMEOUT = 1000;
 
-import NODE_DICTIONARY from "@/app/Chat/ChatGraph/Flow/NodeDictionary";
+
+import NODE_DICTIONARY from "@/services/flow/NodeDictionary";
 
 import MenuContainer from "@/components/Menu/MenuContainer";
 import Menu from "@/components/Menu/Menu";
 import ChatInput from "@/app/Chat/ChatInput/ChatInput";
 import { chatMessage } from "@/client/chat";
 import { useChannel } from "ably/react";
+
+
+
+export const SAVE_TIMEOUT = 1000;
+export const ERROR_TIMEOUT = 5000;
 
 /*
 
@@ -90,6 +95,27 @@ openai/ChatCompletions/create
 */
 
 export default function ChatGraph ({ chat, group, enterpriseId, className, onAnimationEnd, children }) {
+    let initialNodes = group.nodes || [];
+    let initialEdges = group.edges || [];
+
+    // update nodes data with data from NODE_DICTIONARY
+    initialNodes = initialNodes.map(node => {
+        if(NODE_DICTIONARY[node.name]) {
+            return {
+                ...node,
+                data: {
+                    ...node.data,
+                    ...NODE_DICTIONARY[node.name].data,
+
+                    name: node.name,
+                }
+            }
+        } else {
+            notification("Node not found in dictionary", node.name, "red");
+        }
+    });
+    
+    
     useEffect(() => {
         if(document.getElementById("header-title")) {
             document.getElementById("header-title").innerText = "Flow Graph";
@@ -101,14 +127,31 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
     
     const [nodeMenuText, setNodeMenuText] = useState("");
     const [showNodeMenu, setShowNodeMenu] = useState(false);
+    const enableNodeMenu = () => {
+        setShowNodeMenu(true);
+        setNodeMenuText("");
+        // unselect any selected nodes or edges
+        setNodes((nodes) => {
+            return nodes.map(node => {
+                node.selected = false;
+                return node;
+            });
+        });
+        setEdges((edges) => {
+            return edges.map(edge => {
+                edge.selected = false;
+                return edge;
+            });
+        });
+    }
 
     const [showChatMenu, setShowChatMenu] = useState(false);
     const [chatText, setChatText] = useState("");
     const [chatRows, setChatRows] = useState(1);
     const [chatFiles, setChatFiles] = useState([]);
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(group.nodes || []);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(group.edges || []);
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   
     const onNewNode = (e, name) => {
         if(!NODE_DICTIONARY[name]) {
@@ -124,7 +167,11 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         newNode.position.x = e.clientX;
         newNode.position.y = e.clientY;
         newNode.name = name;
+        newNode.data.name = name;
         newNode.id = name + Math.random().toString(36).substring(7);
+
+        notification("Node spawned", name, "var(--action-color)");
+        console.log("Spawned new node", newNode, "at", e.clientX, e.clientY, "with name", name, "and id", newNode.id, "and data", newNode.data);
 
         setNodes((nodes) => [...nodes, newNode]);
         setSaveIteration((prev) => prev + 1);
@@ -136,8 +183,17 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         const targetNodeId = connection.target;
         if(sourceNodeId === targetNodeId) return false;
 
-        const sourceHandleType = connection.sourceHandle;
-        const targetHandleType = connection.targetHandle;
+        let sourceHandleType = connection.sourceHandle;
+        let targetHandleType = connection.targetHandle;
+
+        let sourceHandleName = sourceHandleType.includes(":") ? sourceHandleType.split(":")[1] : false;
+        let targetHandleName = targetHandleType.includes(":") ? targetHandleType.split(":")[1] : false;
+
+        if(sourceHandleName) sourceHandleType = sourceHandleType.split(":")[0];
+        if(targetHandleName) targetHandleType = targetHandleType.split(":")[0];
+
+        // if sourceHandleStart && targetHandleType both start with "execution"
+        if(sourceHandleType.startsWith("execution") && targetHandleType.startsWith("execution")) return true;
 
         
         return sourceHandleType === targetHandleType;
@@ -166,7 +222,10 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
             title: "Copy",
             onClick: () => {
                 // this node and any selected nodes
-                setClonedNodes([node, ...nodes.filter(n => n.selected)]);
+                setClonedScene({
+                    nodes: [node, ...nodes.filter(n => n.selected)],
+                    edges: edges.filter(e => e.selected)
+                });
             }
         }])
 
@@ -188,7 +247,7 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
     const [contextMenuPosition, setContextMenuPosition] = useState(null);
     const [contextMenuOptions, setContextMenuOptions] = useState([]);
 
-    const [clonedNodes, setClonedNodes] = useState([]);
+    const [clonedScene, setClonedScene] = useState({ nodes: [], edges: []});
 
     const [_saveIteration, setSaveIteration] = useState(0);
     const [saveTimeout, setSaveTimeout] = useState(null);
@@ -230,7 +289,8 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         const value = NODE_DICTIONARY[key];
         const displayName = value.data.displayName || name;
 
-        const categoryName = value.data.category || "Uncategorized";
+        
+        const categoryName = value.data.category || key.includes("/") ? key.split("/")[0] : "Uncategorized";
 
         // if there is no object in nodeMenu with title key === name, create one
         if(!nodeMenu.find(obj => obj.title === categoryName)) {
@@ -255,7 +315,7 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
     const [contextMenuDefaultOptions, setContextMenuDefaultOptions] = useState([{
         title: "Add Node",
         onClick: () => {
-            setShowNodeMenu(true);
+            enableNodeMenu();
         },
         options: nodeMenu
     }, {
@@ -263,11 +323,29 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         onClick: () => {
             setShowChatMenu(true);
         }
+    }, {
+        title: "Copy All",
+        onClick: () => {
+            const newClonedScene = {
+                nodes: nodes,
+                edges: edges
+            };
+
+            setClonedScene(newClonedScene);
+
+            // copy JSON stringified clonedScene to clipboard
+            navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
+            notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+        }
     }]);
 
 
-    const pasteNodes = (x = false, y = false) => {
+    const paste = (x = false, y = false) => {
         const POSITION_OFFSET = 50;
+
+        const clonedNodes = clonedScene.nodes;
+        const clonedEdges = clonedScene.edges;
+
         setNodes((nodes) => {
             return [...nodes, ...clonedNodes.map(node => {
                 const newNode = JSON.parse(JSON.stringify(node));
@@ -288,13 +366,15 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
                 return newNode;
             })];
         });
+
         if(!x && !y) {
-            // update all position offstes
-            setClonedNodes(clonedNodes.map(node => {
-                node.position.x += POSITION_OFFSET;
-                node.position.y += POSITION_OFFSET;
-                return node;
-            }));
+            setClonedScene({
+                nodes: clonedNodes.map(node => {
+                    node.position.x += POSITION_OFFSET;
+                    node.position.y += POSITION_OFFSET;
+                    return node;
+                })
+            });
         }
     }
 
@@ -304,14 +384,43 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         console.log("pane context menu", event.clientX, event.clientY);
         setContextMenuPosition({ x: event.clientX, y: event.clientY });
 
+        setContextMenuDefaultOptions([{
+            title: "Add Node",
+            onClick: () => {
+                enableNodeMenu();
+            },
+            options: nodeMenu
+        }, {
+            title: "Simulate",
+            onClick: () => {
+                setShowChatMenu(true);
+            }
+        }, {
+            title: "Copy All",
+            onClick: () => {
+                const newClonedScene = {
+                    nodes: nodes,
+                    edges: edges
+                };
+    
+                setClonedScene(newClonedScene);
+    
+                // copy JSON stringified clonedScene to clipboard
+                navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
+                notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+            }
+        }]);
+
         let menuOptions = [];
         // if any selected allow Copy and Delete
         if(nodes.filter(node => node.selected).length > 0) {
             menuOptions.push({
                 title: "Copy",
                 onClick: () => {
-                    // this node and any selected nodes
-                    setClonedNodes(nodes.filter(n => n.selected));
+                    setClonedScene({
+                        nodes: nodes.filter(n => n.selected),
+                        edges: edges.filter(e => e.selected)
+                    });
                 }
             });
             menuOptions.push({
@@ -324,17 +433,17 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
             });
         }
         // if we have anything in the clipboard allow Paste
-        if(clonedNodes.length > 0) {
+        if(clonedScene.nodes.length > 0) {
             menuOptions.push({
                 title: "Clear",
                 onClick: () => {
-                    setClonedNodes([]);
+                    setClonedScene({ nodes: [], edges: [] });
                 }
             });
             menuOptions.push({
                 title: "Paste",
                 onClick: () => {
-                    pasteNodes(event.clientX, event.clientY);
+                    paste(event.clientX, event.clientY);
                 }
             });
         }
@@ -418,8 +527,8 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
             if(e.ctrlKey && e.key === "c") {
                 const toCopyNodes = nodes.filter(n => n.selected);
                 if(toCopyNodes.length === 0) {
-                    if(clonedNodes.length > 0) {
-                        setClonedNodes([]);
+                    if(clonedScene.nodes.length > 0) {
+                        setClonedScene({ nodes: [], edges: [] });
                     } else {
                         notification("", "Nothing selected to copy", "red");
                     }
@@ -428,7 +537,11 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
 
                 console.log("Saving", nodes.filter(n => n.selected));
                 // this node and any selected nodes
-                setClonedNodes(nodes.filter(n => n.selected));
+                setClonedScene({
+                    nodes: nodes.filter(n => n.selected),
+                    edges: edges.filter(e => e.selected)
+                });
+
                 // set selected nodes data.copying true
                 setNodes((nodes) => {
                     return nodes.map(node => {
@@ -446,11 +559,11 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
 
             // if ctrl v
             if(e.ctrlKey && e.key === "v") {
-                if(clonedNodes.length === 0) {
+                if(clonedScene.nodes.length === 0) {
                     notification("", "Nothing to paste", "red");
                 } else {
-                    notification(`Pasted ${clonedNodes.length} nodes`);
-                    pasteNodes();
+                    notification(`Pasted ${clonedScene.nodes.length} nodes`);
+                    paste();
                 }
             }
         }
@@ -519,7 +632,34 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
                     return edge;
                 });
             });
-        }, 1000);
+        }, ERROR_TIMEOUT);
+    }
+
+    const setAnimateEdge = (edgeId, doAnimate) => {
+        if(!edgeId) {
+            // unanimate all edges
+            setEdges((edges) => {
+                return edges.map(edge => {
+                    edge.data = {
+                        ...edge.data,
+                        animate: false
+                    }
+                    return edge;
+                });
+            });
+        } else {
+            setEdges((edges) => {
+                return edges.map(edge => {
+                    if(edge.id === edgeId) {
+                        edge.data = {
+                            ...edge.data,
+                            animate: doAnimate
+                        }
+                    }
+                    return edge;
+                });
+            });
+        }
     }
 
     const animateExecution = (nodeId) => {
@@ -600,16 +740,55 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         }
     });
 
+    useChannel("notifications", "notification", (msg) => {
+        const { title, content } = msg.data;
+
+        notification(title, content, "purple");
+    });
+
+    useChannel(`flow-${chat.chatId}`, "log", (msg) => {
+        const { messages } = msg.data;
+        
+        // remove any objects from messages
+
+
+        const foramttedMessages = messages.map(message => {
+            // TODO: Enforce only strings
+            if(typeof message !== "string") return;
+
+            return typeof message !== "string" ? JSON.stringify(message) : message;
+        });
+
+        notification("Log", foramttedMessages.join("\n"), "yellow");
+    });
+
     useChannel(`flow-${chat.chatId}`, "execute", (msg) => {
         const { nodeId } = msg.data;
 
         animateExecution(nodeId);
     });
 
+    useChannel(`flow-${chat.chatId}`, "edge_on", (msg) => {
+        const { edgeId } = msg.data;
+
+        setAnimateEdge(edgeId, true);
+    })
+
+    useChannel(`flow-${chat.chatId}`, "edge_off", (msg) => {
+        const { edgeId } = msg.data;
+        
+        setAnimateEdge(edgeId, false);
+    });
+
     useChannel(`flow-${chat.chatId}`, "execute_edge", (msg) => {
         const { edgeId } = msg.data;
 
         animateExecutionEdge(edgeId);
+    });
+
+    useChannel(`flow-${chat.chatId}`, "finish", (msg) => {
+        setAnimateEdge(false, false);
+        notification("", "Flow execution finished", "var(--active-color)");
     });
 
     useChannel(`flow-${chat.chatId}`, "execute_response", (msg) => {
@@ -764,7 +943,8 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
             
             <div className={styles.ChatGraph__Header}>
                 <Button text="Node" image={"/images/icons/plus.svg"} className={styles.NewNode} onClick={() => {
-                    setShowNodeMenu(true);
+                    enableNodeMenu();
+
                     setShowChatMenu(false);
                     setChatText("");
                     setChatRows(1);

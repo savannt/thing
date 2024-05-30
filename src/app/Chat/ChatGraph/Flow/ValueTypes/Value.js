@@ -33,8 +33,6 @@ export default function Value ({ data, style, children }) {
         background: "var(--hover-color)",
         border: "1px solid var(--hover-active-color)",
 
-        transform: "translateY(50%)",
-        top: "0px",
         right: "0px"
     }
     if(hasColor) {
@@ -67,7 +65,7 @@ export default function Value ({ data, style, children }) {
     return (
         <div className={`${styles.Value} ${input ? styles.Value__Input : ""} ${output ? styles.Value__Output : ""}`} style={style} >
             <div className={styles.Value__Header} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-                { input && <Handle type="target" position="left" id={type} style={handleStyle} onConnect={onTargetConnect} />}
+                { input && <Handle type="target" position="left" id={`${type}:${name}`} style={handleStyle} onConnect={onTargetConnect} />}
                 {
                     name && <p style={{
                         textAlign: data.input ? "left" : "right",
@@ -78,7 +76,7 @@ export default function Value ({ data, style, children }) {
                     <p style={{ color: primaryColor }}>{type}</p>
                     <p>{description || "No description available"}</p>
                 </div> }
-                { output && <Handle type="source" position="right" id={type} style={handleStyle} onConnect={onSourceConnection} />}
+                { output && <Handle type="source" position="right" id={`${type}:${name}`} style={handleStyle} onConnect={onSourceConnection} />}
             </div>
             <div className={styles.Value__Content}>
                 { children }

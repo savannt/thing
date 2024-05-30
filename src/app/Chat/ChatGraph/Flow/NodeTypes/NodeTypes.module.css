@@ -3,6 +3,7 @@
     position: relative !important;
     border-radius: var(--border-radius-large) !important;
     flex-direction: row; /* Default to row direction */
+    background-color: var(--secondary-color);
 }
 
 .VerticalNode {
@@ -28,6 +29,15 @@
     min-width: calc(var(--min-height) * 3);
 }
 
+.Node .Node__Outputs:empty {
+    display: none;
+}
+
+/* if Node__Outputs:empty, then set Node__Header borderradius */
+.Node:has(.Node__Outputs:empty) .Node__Header {
+    border-radius: calc(var(--border-radius-large) * 0.87);
+}
+
 .Node .Node__Header {
     display: flex;
     flex-direction: column;
@@ -49,13 +59,82 @@
 }
 
 .Node .Node__Header h1 {
-    font-size: 90%;
+    font-size: 80%;
     font-weight: 600;
     color: var(--primary-text-color);
+    opacity: 0.8;
+}
+
+.Node__Header__Description {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    position: relative;
 }
 
 .Node .Node__Header h2 {
-    font-size: 80%;
+    font-size: 60%;
     font-weight: 400;
     color: var(--secondary-text-color);
+
+    text-align: left;
+    padding-inline: var(--margin-block);
+
+    opacity: 0.5;
+}
+
+
+.Node__Group .Node__Group__Header p {
+    font-size: 75%;
+    color: var(--secondary-text-color);
+    font-weight: 600;
+}
+
+.Node__Group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+
+    border: 2px solid var(--hover-color);
+    border-radius: var(--border-radius-large);
+
+    padding-inline: calc(var(--margin-inline) * 0.6);
+    padding-block: calc(var(--margin-block) * 0.8);
+
+    min-width: calc(var(--min-height) * 2);
+    
+}
+
+.Node__Header {
+    position: relative;
+}
+
+.Node__Header__Dot {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    /* left: calc(var(--margin-inline) * 0.65); */
+    /* bottom: calc(var(--margin-block) * 0.7); */
+    aspect-ratio: 1/1 !important;
+    width: 4px;
+    height: 4px;
+    background-color: var(--secondary-text-color) !important;
+    opacity: 0.5;
+
+    /* padding-block: calc(var(--margin-block) * 0.45); */
+    /* padding-inline: calc(var(--margin-inline) * 1.1); */
+}
+
+.Node__Group__Header {
+    position: relative;
+
+    margin-bottom: var(--gap);
+}
+
+.Node__Group > div {
+    /* width: fit-content !important; */
+    /* overflow: hidden; */
 }

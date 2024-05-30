@@ -13,7 +13,10 @@ export default function Edge ({ id, sourceX, sourceY, targetX, targetY, sourcePo
     });
 
 
-    const type = data?.type;
+    let type = data?.type;
+    if(type.startsWith("execution-")) type = "execution";
+    if(type.includes(":")) type = type.split(":")[0];
+    
     const typeData = TYPES[type];
     const color = typeData?.color || [225, 225, 225];
     const alpha = typeData?.alpha || 0.5;

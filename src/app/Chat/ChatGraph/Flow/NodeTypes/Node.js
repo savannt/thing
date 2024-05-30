@@ -4,6 +4,34 @@ import { Handle } from "reactflow"
 
 import FieldValue from "@/app/Chat/ChatGraph/Flow/ValueTypes/FieldValue";
 import InputValue from "@/app/Chat/ChatGraph/Flow/ValueTypes/InputValue";
+import MasterValue from "../ValueTypes/MasterValue";
+import ColorImage from "@/components/ColorImage/ColorImage";
+
+export function NodeGroup ({ data, style }) {
+    let {
+        displayName,
+        name,
+        flow = false,
+
+        out
+    } = data;
+
+    return (
+        <div className={styles.Node__Group} style={style}>
+            <div className={styles.Node__Group__Header} style={{
+                paddingRight: flow ? `calc(var(--margin-inline) * 0.5)` : "0px"
+            }}>
+                <p>{displayName || name}</p>
+                { flow && <Handle type="source" position="right" id={`execution-${name}`} /> }
+            </div>
+            {
+                out && Object.entries(out).map(([name, data]) => {
+                    return <MasterValue data={{ name, ...data, input: false, output: true }} />
+                })
+            }
+        </div>
+    )
+}
 
 export default function Node ({ color=[200, 200, 200], left = false, right = false, inputExecution = true, outputExecution = true, className, data, children }) {    
     const semiTransparentColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.2)`
@@ -24,6 +52,12 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
         
     const errorValue = data?.errorValue || false;
 
+
+    const replaceUppercaseChangeWithUnderline = (str) => {
+        // when a string has a change in uppercase, i.e. helloWorld -> replace it with "hello_world"
+        return str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+    }
+
     return (
         <div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${data.animate ? "animate" : ""}`} style={{
             border: `2px solid ${semiTransparentColor}`
@@ -32,8 +66,11 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
                 background: semiTransparentColor
             }}>
                 { inputExecution && <Handle type="target" position="left" id="execution" />}
-                <h1>{data.label}</h1>
-                <h2>{data.details}</h2>
+                <h1>{data.displayName || data.name || "error"}</h1>
+                <div className={styles.Node__Header__Description} style={{}}>
+                    <ColorImage className={styles.Node__Header__Dot} image="/images/icons/dot.png" />
+                    <h2>{data.name ? replaceUppercaseChangeWithUnderline(data.name).toLowerCase() : "no name"}</h2>
+                </div>
                 { outputExecution && <Handle type="source" position="right" id="execution" />}
             </div>
 
@@ -42,6 +79,7 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
                     hasValues && values.map((data, i) => {
                         const {
                             name,
+                            displayName,
                             type,
                             description,
                             input = false,
@@ -72,16 +110,7 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
                             style.borderRadius = "var(--border-radius-light)";
                         }
 
-
-                        if(constant) {
-                            if(type === "string") {
-                                return <InputValue data={data} style={style} value="Default constant value" />
-                            } else {
-                                return <FieldValue data={data} style={style} />
-                            }
-                        } else {
-                            return <FieldValue data={data} style={style} />
-                        }
+                        return <MasterValue data={data} style={style} />
                     })
                 }
                 
