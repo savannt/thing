@@ -363,11 +363,22 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                     }
                 </div>
 
-                <div className={styles.Sidebar_Organization}>
+                <div className={styles.Sidebar_Organization} onClick={(e) => {
+                    if(document.querySelector(".cl-organizationSwitcherTrigger")) {
+                        // document.querySelector(".cl-organizationSwitcherTrigger").focus();
+                        // document.querySelector(".cl-organizationSwitcherTrigger").click();
+                        // e.stopPropagation();
+                    }
+                }}>
                     <OrganizationSwitcher />
                 </div>
 
-                <div className={styles.Sidebar__Footer}>
+                <div className={styles.Sidebar__Footer} onClick={(e) => {
+                    if(document.querySelector(".cl-userButtonTrigger")) {
+                        document.querySelector(".cl-userButtonTrigger").click();
+                        e.stopPropagation();
+                    }
+                }}>
                
                     <UserButton />
                     <p className={styles.Sidebar__Footer__DisplayName}>{displayName}</p>

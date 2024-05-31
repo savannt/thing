@@ -673,6 +673,14 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 	/* box-shadow: var(--box-shadow-light-light) !important; */
 }
 
+.cl-organizationSwitcher-root {
+  padding-inline: var(--margin-inline);
+
+
+  padding-right: calc(var(--margin-inline) * 0.5);
+  padding-block: var(--margin-block);
+}
+
 .cl-navbarMobileMenuButton:focus {
 	outline: 2px solid var(--action-color);
 	outline-offset: 2px;
@@ -1047,8 +1055,8 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 .cl-modalContent:focus .cl-cardBox {
-	outline-offset: 2px;
-	outline: 2px solid var(--action-color-hidden);
+	/* outline-offset: 2px; */
+	/* outline: 2px solid var(--action-color-hidden); */
 }
 
 .cl-tagInputContainer {

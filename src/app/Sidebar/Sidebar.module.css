@@ -273,15 +273,14 @@
 
     border-top: 0.5px solid var(--hover-color);
     margin-inline: calc(-1 * var(--margin-inline));
-    padding-inline: var(--margin-inline);
+    /* padding-inline: var(--margin-inline); */
 
 
-    padding-right: calc(var(--margin-inline) * 0.5);
-    padding-block: var(--margin-block);
+    /* padding-right: calc(var(--margin-inline) * 0.5); */
+    /* padding-block: var(--margin-block); */
 
     margin-bottom: calc(-1 * var(--gap));
 
-    padding-block: var(--margin-block);
 }
 
 
