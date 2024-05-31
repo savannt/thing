@@ -1,16 +1,16 @@
 {
-  "name": "thing-desktop",
-  "version": "1.0.0",
-  "description": "provides a desktop app experience to access thing-king",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "concurrently": "^8.2.2",
-    "dotenv": "^16.4.5"
-  }
+	"name": "thing-desktop",
+	"version": "1.0.0",
+	"description": "provides a desktop app experience to access thing-king",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "electron ."
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"concurrently": "^8.2.2",
+		"dotenv": "^16.4.5"
+	}
 }

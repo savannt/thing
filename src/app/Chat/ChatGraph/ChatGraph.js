@@ -1,11 +1,19 @@
-import "animate.css"
-import styles from "@/app/Chat/ChatGraph/ChatGraph.module.css"
-import chatStyles from "@/app/Chat/Chat.module.css"
+import "animate.css";
+import styles from "@/app/Chat/ChatGraph/ChatGraph.module.css";
+import chatStyles from "@/app/Chat/Chat.module.css";
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback } from "react";
 
-import ReactFlow, { MiniMap, Controls, Background, useEdgesState, useNodesState, addEdge } from 'reactflow';
-import 'reactflow/dist/style.css';
+import ReactFlow, {
+	MiniMap,
+	Controls,
+	Background,
+	useEdgesState,
+	useNodesState,
+	addEdge,
+    useReactFlow,
+} from "reactflow";
+import "reactflow/dist/style.css";
 
 import nodeTypes from "@/app/Chat/ChatGraph/Flow/NodeTypes/NodeTypes";
 import edgeTypes from "@/app/Chat/ChatGraph/Flow/EdgeTypes/EdgeTypes";
@@ -14,13 +22,10 @@ import SearchMenu, { SearchMenuRow } from "@/components/SearchMenu/SearchMenu";
 import ContextMenu from "@/app/Chat/ChatGraph/ContextMenu/ContextMenu";
 
 import SaveIcon from "@/app/Chat/ChatGraph/SaveIcon/SaveIcon";
-
 import { groupUpdate } from "@/client/group";
 
 import error from "@/client/error";
 import notification from "@/client/notification";
-
-
 
 import NODE_DICTIONARY from "@/services/flow/NodeDictionary";
 
@@ -30,1023 +35,829 @@ import ChatInput from "@/app/Chat/ChatInput/ChatInput";
 import { chatMessage } from "@/client/chat";
 import { useChannel } from "ably/react";
 
-
-
 export const SAVE_TIMEOUT = 1000;
 export const ERROR_TIMEOUT = 5000;
 
-/*
+export default function ChatGraph({
+	chat,
+	group,
+	enterpriseId,
+	className,
+	onAnimationEnd,
+	children,
+}) {
+	const initialNodes = (group.nodes || []).map((node) => {
+		if (NODE_DICTIONARY[node.name]) {
+			return {
+				...node,
+				data: {
+					...node.data,
+					...NODE_DICTIONARY[node.name].data,
+					name: node.name,
+				},
+			};
+		} else {
+			notification("Node not found in dictionary", node.name, "red");
+			return node;
+		}
+	});
 
-StringConstant
-NumberConstant
+	const initialEdges = group.edges || [];
 
+	useEffect(() => {
+		const headerTitle = document.getElementById("header-title");
+		const sidebarHeaderTitle = document.getElementById("sidebar-header-title");
 
+		if (headerTitle) {
+			headerTitle.innerText = "Flow Graph";
+		}
+		if (sidebarHeaderTitle) {
+			sidebarHeaderTitle.style.visibility = "hidden";
+		}
+	}, []);
 
-OnUserMessage
+    const reactFlow = useReactFlow();
 
+	const [nodeMenuText, setNodeMenuText] = useState("");
+	const [showNodeMenu, setShowNodeMenu] = useState(false);
+	const [showChatMenu, setShowChatMenu] = useState(false);
+	const [chatText, setChatText] = useState("");
+	const [chatRows, setChatRows] = useState(1);
+	const [chatFiles, setChatFiles] = useState([]);
+	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-SaveMessage
-* do push
+	const [render, setRender] = useState(false);
+	const [contextMenuPosition, setContextMenuPosition] = useState(null);
+    const [lastContextMenuPosition, setLastContextMenuPosition] = useState(null);
+	const [contextMenuOptions, setContextMenuOptions] = useState([]);
+	const [clonedScene, setClonedScene] = useState({ nodes: [], edges: [] });
+	const [_saveIteration, setSaveIteration] = useState(0);
+	const [saveTimeout, setSaveTimeout] = useState(null);
+	const [saving, setSaving] = useState(false);
+	const [saved, setSaved] = useState(true);
 
-array/combine
-* arrayA<Array<>>
-* arrayB<Array<>>
-
-array/splice
-* array<Array<>>
-* start<number>
-* deleteCount<number>
-
-array/length
-* array<Array<>>
-* length<number>
-
-openai/Tools
-* array of tool
-
-openai/Tool/createFromJsFn
-* jsFunction
-* properties
-* required
-
-openai/Tool/createFromJsFunction
-* name
-* description
-* jsFunction
-* properties
-* required
-
-openai/ChatCompletions/createTools
-* messages
-* tools
-* toolChoice
-
-openai/ChatCompletions/createJsomFromSchema
-* schema
-* input
-* examples
-
-openai/ChatCompletions/createJson
-* messages
-
-openai/ChatCompletions/create
-* messages
-
-*/
-
-export default function ChatGraph ({ chat, group, enterpriseId, className, onAnimationEnd, children }) {
-    let initialNodes = group.nodes || [];
-    let initialEdges = group.edges || [];
-
-    // update nodes data with data from NODE_DICTIONARY
-    initialNodes = initialNodes.map(node => {
-        if(NODE_DICTIONARY[node.name]) {
-            return {
-                ...node,
-                data: {
-                    ...node.data,
-                    ...NODE_DICTIONARY[node.name].data,
-
-                    name: node.name,
-                }
-            }
-        } else {
-            notification("Node not found in dictionary", node.name, "red");
-        }
-    });
+	const enableNodeMenu = () => {
+		setShowNodeMenu(true);
+		setNodeMenuText("");
+		setNodes((nodes) =>
+			nodes.map((node) => ({ ...node, selected: false }))
+		);
+		setEdges((edges) =>
+			edges.map((edge) => ({ ...edge, selected: false }))
+		);
+	};
     
-    
-    useEffect(() => {
-        if(document.getElementById("header-title")) {
-            document.getElementById("header-title").innerText = "Flow Graph";
-        }
-        if(document.getElementById("sidebar-header-title")) {
-            document.getElementById("sidebar-header-title").style.visibility = "hidden";
-        }
-    }, []);
-    
-    const [nodeMenuText, setNodeMenuText] = useState("");
-    const [showNodeMenu, setShowNodeMenu] = useState(false);
-    const enableNodeMenu = () => {
-        setShowNodeMenu(true);
+    const closeNodeMenu = () => {
+        setShowNodeMenu(false);
         setNodeMenuText("");
-        // unselect any selected nodes or edges
-        setNodes((nodes) => {
-            return nodes.map(node => {
-                node.selected = false;
-                return node;
-            });
-        });
-        setEdges((edges) => {
-            return edges.map(edge => {
-                edge.selected = false;
-                return edge;
-            });
-        });
+
+        setLastContextMenuPosition(null);
     }
 
-    const [showChatMenu, setShowChatMenu] = useState(false);
-    const [chatText, setChatText] = useState("");
-    const [chatRows, setChatRows] = useState(1);
-    const [chatFiles, setChatFiles] = useState([]);
+	const save = () => {
+		groupUpdate(group.groupId, nodes, edges).then((data) => {
+			if (!data || data.message !== "OK") {
+				notification("Error", "Failed to save graph", "red");
+			}
+			setSaved(true);
+		});
+	};
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+	useEffect(() => {
+		if (_saveIteration === 0) return;
+		setSaved(false);
+		setSaving(false);
+		if (saveTimeout) clearTimeout(saveTimeout);
+
+		setSaveTimeout(
+			setTimeout(() => {
+				setSaving(true);
+				save();
+			}, SAVE_TIMEOUT)
+		);
+	}, [_saveIteration]);
+
+	const closeContextMenu = () => {
+		setContextMenuPosition(null);
+		clearCopyOutlines();
+	};
+
+	const onNewNode = (e, name) => {
+		if (!NODE_DICTIONARY[name]) {
+			console.error("Node not found:", name);
+			error("Node not found:", name);
+			return;
+		}
+
+		const newNode = JSON.parse(JSON.stringify(NODE_DICTIONARY[name]));
+		newNode.draggable = true;
+
+        // get current position
+
+		// newNode.position = {
+        //     x: e.clientX,
+        //     y: e.clientY
+        // };
+        // use reactFlow to get the position of the node- if lastContextMenuPosition, use that- otherwise use event
+        newNode.position = {
+            x: lastContextMenuPosition ? lastContextMenuPosition.x : e.clientX,
+            y: lastContextMenuPosition ? lastContextMenuPosition.y : e.clientY
+        };
+        newNode.position = reactFlow.project({ x: newNode.position.x, y: newNode.position.y });
 
 
-    const onNewNode = (e, name) => {
-        if(!NODE_DICTIONARY[name]) {
-            console.error("Node not found:", name);
-            error("Node not found:", name);
+		newNode.name = name;
+		newNode.data.name = name;
+		newNode.id = name + Math.random().toString(36).substring(7);
+
+		notification("Node spawned", name, "var(--action-color)");
+		setNodes((nodes) => [...nodes, newNode]);
+		setSaveIteration((prev) => prev + 1);
+		closeContextMenu();
+	};
+
+	const isValidConnection = (connection) => {
+		const sourceNodeId = connection.source;
+		const targetNodeId = connection.target;
+		if (sourceNodeId === targetNodeId) return false;
+
+		let sourceHandleType = connection.sourceHandle;
+		let targetHandleType = connection.targetHandle;
+
+		let sourceHandleName = sourceHandleType.includes(":")
+			? sourceHandleType.split(":")[1]
+			: false;
+		let targetHandleName = targetHandleType.includes(":")
+			? targetHandleType.split(":")[1]
+			: false;
+
+		if (sourceHandleName) sourceHandleType = sourceHandleType.split(":")[0];
+		if (targetHandleName) targetHandleType = targetHandleType.split(":")[0];
+
+		if (
+			sourceHandleType.startsWith("execution") &&
+			targetHandleType.startsWith("execution")
+		)
+			return true;
+
+		return sourceHandleType === targetHandleType;
+	};
+
+	const onNodeContextMenu = useCallback((event, node) => {
+		event.preventDefault();
+		setContextMenuPosition({ x: event.clientX, y: event.clientY });
+        setLastContextMenuPosition({ x: event.clientX, y: event.clientY });
+		setContextMenuOptions([
+			{
+				title: "Delete",
+				onClick: () => {
+					deleteNode();
+                    deleteEdge();
+				},
+			},
+			{
+				title: "Duplicate",
+				onClick: () => {
+					const newNode = JSON.parse(JSON.stringify(node));
+					newNode.id = node.id + Math.random().toString(36).substring(7);
+					newNode.position.x += 50;
+					newNode.position.y += 50;
+					setNodes((nodes) => [...nodes, newNode]);
+				},
+			},
+			{
+				title: "Copy",
+				onClick: () => {
+					setClonedScene({
+						nodes: [node, ...nodes.filter((n) => n.selected)],
+						edges: edges.filter((e) => e.selected),
+					});
+				},
+			},
+		]);
+
+		setNodes((nodes) =>
+			nodes.map((n) => (n.id === node.id ? { ...n, data: { ...n.data, copying: true } } : n))
+		);
+	});
+
+    const deleteNode = (node) => {
+        if(!node) {
+            // call deleteNode for one of each selected node
+            nodes.filter((n) => n.selected).forEach((n) => deleteNode(n));
             return;
         }
-
-        const newNode = JSON.parse(JSON.stringify(NODE_DICTIONARY[name]));
-        newNode.draggable = true;
-
-        newNode.position = {}
-        newNode.position.x = e.clientX;
-        newNode.position.y = e.clientY;
-        newNode.name = name;
-        newNode.data.name = name;
-        newNode.id = name + Math.random().toString(36).substring(7);
-
-        notification("Node spawned", name, "var(--action-color)");
-        console.log("Spawned new node", newNode, "at", e.clientX, e.clientY, "with name", name, "and id", newNode.id, "and data", newNode.data);
-
-        setNodes((nodes) => [...nodes, newNode]);
-        setSaveIteration((prev) => prev + 1);
-        closeContextMenu();
+        setNodes((nodes) => nodes.filter((n) => n.id !== node.id));
+        setEdges((edges) => edges.filter((e) => e.source !== node.id && e.target !== node.id));
     }
 
-    const isValidConnection = (connection) => {
-        const sourceNodeId = connection.source;
-        const targetNodeId = connection.target;
-        if(sourceNodeId === targetNodeId) return false;
-
-        let sourceHandleType = connection.sourceHandle;
-        let targetHandleType = connection.targetHandle;
-
-        let sourceHandleName = sourceHandleType.includes(":") ? sourceHandleType.split(":")[1] : false;
-        let targetHandleName = targetHandleType.includes(":") ? targetHandleType.split(":")[1] : false;
-
-        if(sourceHandleName) sourceHandleType = sourceHandleType.split(":")[0];
-        if(targetHandleName) targetHandleType = targetHandleType.split(":")[0];
-
-        // if sourceHandleStart && targetHandleType both start with "execution"
-        if(sourceHandleType.startsWith("execution") && targetHandleType.startsWith("execution")) return true;
-
-        
-        return sourceHandleType === targetHandleType;
-    }
-
-    const onNodeContextMenu = useCallback((event, node) => {
-        event.preventDefault();
-        setContextMenuPosition({ x: event.clientX, y: event.clientY });
-        setContextMenuOptions([{
-            title: "Delete",
-            onClick: () => {
-                setNodes((nodes) => {
-                    return nodes.filter(n => n.id !== node.id);
-                });
-            }
-        }, {
-            title: "Duplicate",
-            onClick: () => {
-                const newNode = JSON.parse(JSON.stringify(node));
-                newNode.id = node.id + Math.random().toString(36).substring(7);
-                newNode.position.x += 50;
-                newNode.position.y += 50;
-                setNodes((nodes) => [...nodes, newNode]);
-            }
-        }, {
-            title: "Copy",
-            onClick: () => {
-                // this node and any selected nodes
-                setClonedScene({
-                    nodes: [node, ...nodes.filter(n => n.selected)],
-                    edges: edges.filter(e => e.selected)
-                });
-            }
-        }])
-
-        // set node to have "copying" boolean
-        setNodes((nodes) => {
-            return nodes.map(n => {
-                if(n.id === node.id) {
-                    n.data = {
-                        ...n.data,
-                        copying: true
-                    }
-                }
-                return n;
-            });
-        });
-    });
-
-    const [render, setRender] = useState(false);
-    const [contextMenuPosition, setContextMenuPosition] = useState(null);
-    const [contextMenuOptions, setContextMenuOptions] = useState([]);
-
-    const [clonedScene, setClonedScene] = useState({ nodes: [], edges: []});
-
-    const [_saveIteration, setSaveIteration] = useState(0);
-    const [saveTimeout, setSaveTimeout] = useState(null);
-    const [saving, setSaving] = useState(false);
-    const [saved, setSaved] = useState(true);
-
-    const save = () => {
-        console.log("Saving", nodes, edges)
-        groupUpdate(group.groupId, nodes, edges).then((data) => {
-            if(!data || data.message !== "OK") {
-                notification("Error", "Failed to save graph", "red");
-            } else {
-                // notification("Saved", "Graph saved successfully", "var(--action-color)");
-            }
-            setSaved(true);
-        });
-    }
-
-    useEffect(() => {
-        if(_saveIteration === 0) return;
-        setSaved(false);
-        setSaving(false);
-        if(saveTimeout) clearTimeout(saveTimeout);
-
-        setSaveTimeout(setTimeout(() => {
-            setSaving(true);
-            save();
-        }, SAVE_TIMEOUT));
-
-    }, [_saveIteration]);
-
-    const closeContextMenu = () => {
-        setContextMenuPosition(null);
-        clearCopyOutlines();
-    }
-
-    const nodeMenu = [];
-    for(const key in NODE_DICTIONARY) {
-        const name = key;
-        const value = NODE_DICTIONARY[key];
-        const displayName = value.data.displayName || name;
-
-        
-        const categoryName = value.data.category || key.includes("/") ? key.split("/")[0] : "Uncategorized";
-
-        // if there is no object in nodeMenu with title key === name, create one
-        if(!nodeMenu.find(obj => obj.title === categoryName)) {
-            nodeMenu.push({
-                title: categoryName,
-                options: []
-            });
+    const deleteEdge = (edge) => {
+        if(!edge) {
+            // call deleteEdge for one of each selected edge
+            edges.filter((e) => e.selected).forEach((e) => deleteEdge(e));
+            return;
         }
-
-        // find the object in nodeMenu with title key === name
-        const category = nodeMenu.find(obj => obj.title === categoryName);
-        
-        // add the new node to the category
-        category.options.push({
-            title: displayName,
-            onClick: (e) => {
-                onNewNode(e, name);
-            }
-        });
+        setEdges((edges) => edges.filter((e) => e.id !== edge.id));
     }
 
-    const [contextMenuDefaultOptions, setContextMenuDefaultOptions] = useState([{
-        title: "Add Node",
-        onClick: () => {
-            enableNodeMenu();
-        },
-        options: nodeMenu
-    }, {
-        title: "Simulate",
-        onClick: () => {
-            setShowChatMenu(true);
-        }
-    }, {
-        title: "Copy All",
-        onClick: () => {
-            const newClonedScene = {
-                nodes: nodes,
-                edges: edges
-            };
-
-            setClonedScene(newClonedScene);
-
-            // copy JSON stringified clonedScene to clipboard
-            navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
-            notification("Copied", "Graph copied to clipboard", "var(--active-color)");
-        }
-    }]);
-
-
-    const paste = (x = false, y = false) => {
-        const POSITION_OFFSET = 50;
-
-        const clonedNodes = clonedScene.nodes;
-        const clonedEdges = clonedScene.edges;
-
-        setNodes((nodes) => {
-            return [...nodes, ...clonedNodes.map(node => {
-                const newNode = JSON.parse(JSON.stringify(node));
-                newNode.id = node.id + "_" + Math.random().toString(36).substring(7);
-                if(!x && !y) {
-                    // update position of cloned nodes by this offset as well
-                    newNode.position.x += POSITION_OFFSET;
-                    newNode.position.y += POSITION_OFFSET;
-                } else {
-                    newNode.position.x = x;
-                    newNode.position.y = y;
-                }
-                newNode.selected = false;
-                if(newNode.data) {
-                    newNode.copying = false;
-                    newNode.deleting = false;
-                }
-                return newNode;
-            })];
-        });
-
-        if(!x && !y) {
-            setClonedScene({
-                nodes: clonedNodes.map(node => {
-                    node.position.x += POSITION_OFFSET;
-                    node.position.y += POSITION_OFFSET;
-                    return node;
-                })
-            });
-        }
-    }
-
-    const onPaneContextMenu = (event) => {
-        clearCopyOutlines();
-        event.preventDefault();
-        console.log("pane context menu", event.clientX, event.clientY);
-        setContextMenuPosition({ x: event.clientX, y: event.clientY });
-
-        setContextMenuDefaultOptions([{
-            title: "Add Node",
-            onClick: () => {
-                enableNodeMenu();
-            },
-            options: nodeMenu
-        }, {
-            title: "Simulate",
-            onClick: () => {
-                setShowChatMenu(true);
-            }
-        }, {
-            title: "Copy All",
-            onClick: () => {
-                const newClonedScene = {
-                    nodes: nodes,
-                    edges: edges
-                };
-    
-                setClonedScene(newClonedScene);
-    
-                // copy JSON stringified clonedScene to clipboard
-                navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
-                notification("Copied", "Graph copied to clipboard", "var(--active-color)");
-            }
-        }]);
-
-        let menuOptions = [];
-        // if any selected allow Copy and Delete
-        if(nodes.filter(node => node.selected).length > 0) {
-            menuOptions.push({
-                title: "Copy",
-                onClick: () => {
-                    setClonedScene({
-                        nodes: nodes.filter(n => n.selected),
-                        edges: edges.filter(e => e.selected)
-                    });
-                }
-            });
-            menuOptions.push({
-                title: "Delete",
-                onClick: () => {
-                    setNodes((nodes) => {
-                        return nodes.filter(n => !n.selected);
-                    });
-                }
-            });
-        }
-        // if we have anything in the clipboard allow Paste
-        if(clonedScene.nodes.length > 0) {
-            menuOptions.push({
-                title: "Clear",
-                onClick: () => {
-                    setClonedScene({ nodes: [], edges: [] });
-                }
-            });
-            menuOptions.push({
-                title: "Paste",
-                onClick: () => {
-                    paste(event.clientX, event.clientY);
-                }
-            });
-        }
-        setContextMenuOptions(menuOptions);
-      };
-
-    const onConnect = useCallback((params) => {
-        const sourceNodeId = params.source;
-        const targetNodeId = params.target;
-
-        const sourceType = params.sourceHandle;
-        const targetType = params.targetHandle;
-
-        console.log("onConnect", params);
-
-
-        const edgeType = sourceType === "execution" ? "ExecutionEdge" : "DataEdge";
-
-        const newEdge = {
-            ...params,
-
-            type: edgeType,
-            data: {
-                type: sourceType
-            }
-        }
-        setEdges((eds) => addEdge(newEdge, eds)), []
-    }, [setEdges]);
-  
-    const handleNodesChange = (changes) => {
-        const filteredChanges = changes.filter(change => {
-            if (change.type === "remove") {
-                return change.id !== "onUserMessage"; // Prevent removal of onUserMessage node
-            }
-            return true;
-        });
-        onNodesChange(filteredChanges);
-        setSaveIteration((prev) => prev + 1);
-    };
-
-    const handleEdgesChange = (changes) => {
-        onEdgesChange(changes);
-        setSaveIteration((prev) => prev + 1);
-    }
-
-    useEffect(() => {
-        setSaveIteration((prev) => prev + 1);
-    }, [nodes, edges]);
-
-    const onPaneClick = (...e) => {
-        console.log("pane click", e);
-        closeContextMenu();
-        if(e) setShowNodeMenu(false);
-    }
-
-    const onMove = () => {
-        closeContextMenu();
-        // setShowNodeMenu(false);
-    }
-
-
-    const clearCopyOutlines = () => {
-        // remove any copying true from nodes
-        setNodes((nodes) => {
-            return nodes.map(node => {
-                if(node.data.copying) {
-                    node.data = {
-                        ...node.data,
-                        copying: false
-                    }
-                }
-                return node;
-            });
-        });
-    }
-
-    // search dictionary for any key that includes nodeMenuText
-    const results = nodeMenuText && nodeMenuText.length > 0 ? Object.keys(NODE_DICTIONARY).filter(key => key.toLowerCase().includes(nodeMenuText.toLowerCase())) : [];
-    const hasResults = results.length > 0;
-
-    // listen for ctrl + c and ctrl + v
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            // if ctrl c
-            if(e.ctrlKey && e.key === "c") {
-                const toCopyNodes = nodes.filter(n => n.selected);
-                if(toCopyNodes.length === 0) {
-                    if(clonedScene.nodes.length > 0) {
-                        setClonedScene({ nodes: [], edges: [] });
-                    } else {
-                        notification("", "Nothing selected to copy", "red");
-                    }
-                    return;
-                }
-
-                console.log("Saving", nodes.filter(n => n.selected));
-                // this node and any selected nodes
-                setClonedScene({
-                    nodes: nodes.filter(n => n.selected),
-                    edges: edges.filter(e => e.selected)
-                });
-
-                // set selected nodes data.copying true
-                setNodes((nodes) => {
-                    return nodes.map(node => {
-                        if(node.selected) {
-                            node.data = {
-                                ...node.data,
-                                copying: true
-                            }
-                        }
-                        return node;
-                    });
-                });
-                notification("", `Copied ${nodes.filter(n => n.selected).length} nodes`, "var(--action-color)");
-            }
-
-            // if ctrl v
-            if(e.ctrlKey && e.key === "v") {
-                if(clonedScene.nodes.length === 0) {
-                    notification("", "Nothing to paste", "red");
-                } else {
-                    notification(`Pasted ${clonedScene.nodes.length} nodes`);
-                    paste();
-                }
-            }
-        }
-        const handleKeyUp = (e) => {
-            if(e.key === "c" || e.key === "v") {
-                clearCopyOutlines();
-            }
-        }
-        document.addEventListener("keydown", handleKeyDown);
-        document.addEventListener("keyup", handleKeyUp);
-
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown);
-            document.removeEventListener("keyup", handleKeyUp);
-        }
-    }, [nodes]);
-
-    const animateError = (nodeOrEdgeId, valueName) => {
-        // set "error" boolean to true on data
-        setNodes((nodes) => {
-            return nodes.map(node => {
-                if(node.id === nodeOrEdgeId) {
-                    node.data = {
-                        ...node.data,
-                        error: true,
-                        animate: false,
-                        animateBackwards: false
-                    }
-                    if(valueName) node.data.errorValue = valueName;
-                }
-                return node;
-            });
-        });
-        setEdges((edges) => {
-            return edges.map(edge => {
-                if(edge.id === nodeOrEdgeId) {
-                    edge.data = {
-                        ...edge.data,
-                        error: true,
-                        animate: false,
-                        animateBackwards: false
-                    }
-                }
-                return edge;
-            });
-        });
-        
-        setTimeout(() => {
-            // set "error" boolean to false on data
-            setNodes((nodes) => {
-                return nodes.map(node => {
-                    if(node.id === nodeOrEdgeId) {
-                        node.data = {
-                            ...node.data,
-                            error: false,
-                            errorValue: null
-                        }
-                    }
-                    return node;
-                });
-            });
-            setEdges((edges) => {
-                return edges.map(edge => {
-                    if(edge.id === nodeOrEdgeId) {
-                        edge.data = {
-                            ...edge.data,
-                            error: false
-                        }
-                    }
-                    return edge;
-                });
-            });
-        }, ERROR_TIMEOUT);
-    }
-
-    const setAnimateEdge = (edgeId, doAnimate) => {
-        if(!edgeId) {
-            // unanimate all edges
-            setEdges((edges) => {
-                return edges.map(edge => {
-                    edge.data = {
-                        ...edge.data,
-                        animate: false,
-                        animateBackwards: false
-                    }
-                    return edge;
-                });
-            });
-        } else {
-            setEdges((edges) => {
-                return edges.map(edge => {
-                    if(edge.id === edgeId) {
-                        edge.data = {
-                            ...edge.data,
-                            animate: doAnimate,
-                            animateBackwards: false
-                        }
-                    }
-                    return edge;
-                });
-            });
-        }
-    }
-
-    const animateExecutionBackwards = (nodeId) => {
-        setNodes((nodes) => {
-            return nodes.map(node => {
-                if(node.id === nodeId) {
-                    node.data = {
-                        ...node.data,
-                        animate: false,
-                        animateBackwards: true
-                    }
-                }
-                return node;
-            });
-        });
-    }
-
-    const animateExecution = (nodeId) => {
-        setNodes((nodes) => {
-            return nodes.map(node => {
-                if(node.id === nodeId) {
-                    node.data = {
-                        ...node.data,
-                        animate: true,
-                        animateBackwards: false,
-                    }
-                }
-                return node;
-            });
-        });
-    }
-
-    const animateEdgeExecutionBackwards = (edgeId) => {
-        setEdges((edges) => {
-            return edges.map(edge => {
-                if(edge.id === edgeId) {
-                    edge.data = {
-                        ...edge.data,
-                        animateBackwards: true
-                    }
-                }
-                return edge;
-            });
-        });
-    }
-
-    const animateExecutionEdgeResponse = (edgeId, value) => {
-        setEdges((edges) => {
-            return edges.map(edge => {
-                if(edge.id === edgeId) {
-                    edge.data = {
-                        ...edge.data,
-                        animate: false,
-                        animateBackwards: false,
-                        value
-                    }
-                }
-                return edge;
-            });
-        });
-    }
-
-    const animateExecutionEdge = (edgeId) => {
-        setEdges((edges) => {
-            return edges.map(edge => {
-                if(edge.id === edgeId) {
-                    edge.data = {
-                        ...edge.data,
-                        animate: true,
-                        animateBackwards: false
-                    }
-                }
-                return edge;
-            });
-        });
-    }
-
-    const animateExecutionResponse = (nodeId, values) => {
-        setNodes((nodes) => {
-            return nodes.map(node => {
-                if(node.id === nodeId) {
-                    node.data = {
-                        ...node.data,
-                        animate: false,
-                        animateBackwards: false,
-                        values
-                    }
-                }
-                return node;
-            });
-        });
-    }
-
-    const resetAllNodeStyles = () => {
-        setNodes((nodes) => {
-            return nodes.map(node => {
-                node.data = {
-                    ...node.data,
-                    animate: false,
-                    animateBackwards: false
-                }
-                return node;
-            });
-        });
-        setEdges((edges) => {
-            return edges.map(edge => {
-                edge.data = {
-                    ...edge.data,
-                    animate: false,
-                    animateBackwards: false
-                }
-                return edge;
-            });
-        });
-    }
-
-    useChannel(`flow-${chat.chatId}`, "error", (msg) => {
-        const data = msg.data;
-        notification(data.title, data.message, "red");
-
-        if(data.options) {
-            if(data.options.nodeId) animateError(data.options.nodeId, data.options.valueName);
-            if(data.options.edgeId) animateError(data.options.edgeId, data.options.valueName);
-        }
-    });
-
-    useChannel("notifications", "notification", (msg) => {
-        const { title, content } = msg.data;
-
-        notification(title, content, "purple");
-    });
-
-    useChannel(`flow-${chat.chatId}`, "log", (msg) => {
-        const { messages } = msg.data;
-        
-        // remove any objects from messages
-
-
-        const foramttedMessages = messages.map(message => {
-            // TODO: Enforce only strings
-            if(typeof message !== "string") return;
-
-            return typeof message !== "string" ? JSON.stringify(message) : message;
-        });
-
-        console.log("[Flow Log]", foramttedMessages.join("\n"));
-        // notification("Log", foramttedMessages.join("\n"), "yellow");
-    });
-
-    useChannel(`flow-${chat.chatId}`, "execute", (msg) => {
-        const { nodeId } = msg.data;
-
-        animateExecution(nodeId);
-    });
-
-    useChannel(`flow-${chat.chatId}`, "execute_backwards", (msg) => {
-        const { nodeId } = msg.data;
-
-        animateExecutionBackwards(nodeId);
-    });
-
-    useChannel(`flow-${chat.chatId}`, "edge_on", (msg) => {
-        const { edgeId } = msg.data;
-
-        setAnimateEdge(edgeId, true);
-    })
-
-    useChannel(`flow-${chat.chatId}`, "edge_off", (msg) => {
-        const { edgeId } = msg.data;
-        
-        setAnimateEdge(edgeId, false);
-    });
-
-    useChannel(`flow-${chat.chatId}`, "execute_edge", (msg) => {
-        const { edgeId } = msg.data;
-
-        animateExecutionEdge(edgeId);
-    });
-
-    useChannel(`flow-${chat.chatId}`, "execute_edge_response", (msg) => {
-        const { edgeId, value } = msg.data;
-
-        animateExecutionEdgeResponse(edgeId, value);
-    });
-
-    useChannel(`flow-${chat.chatId}`, "execute_edge_backwards", (msg) => {
-        const { edgeId } = msg.data;
-
-        animateEdgeExecutionBackwards(edgeId);
-    });
-
-    useChannel(`flow-${chat.chatId}`, "finish", (msg) => {
-        notification("", "Flow execution finished", "var(--active-color)");
-
-        resetAllNodeStyles();
-    });
-
-    useChannel(`flow-${chat.chatId}`, "execute_response", (msg) => {
-        const { nodeId, values } = msg.data;
-
-        animateExecutionResponse(nodeId, values);
-    });
-
-
-    return (
-        <div id="chat-graph" className={`${styles.ChatGraph} ${className}`} onAnimationEnd={onAnimationEnd} onKeyDown={(e) => {
-            // if key is backspace or delete
-            if(e.key === "Backspace" || e.key === "Delete") {
-                const selectedNodes = nodes.filter(node => node.selected);
-                if(selectedNodes.length > 0) {
-                    // make selected nodes have "deleting" boolean
-                    setNodes((nodes) => {
-                        return nodes.map(node => {
-                            if(node.selected) {
-                                node.data = {
-                                    ...node.data,
-                                    deleting: true
-                                }
-                            }
-                            return node;
-                        });
-                        // do the above, but also add a single junk object
-                    });
-                }
-
-                // get selected edges
-                const selectedEdges = edges.filter(edge => edge.selected);
-                if(selectedEdges.length > 0) {
-                    // remove selected edges
-                    setEdges((edges) => {
-                        return edges.filter(edge => !edge.selected);
-                    });
-                }
-            }
-        }} onKeyUp={(e) => {
-            // if key is backspace or delete
-            if(e.key === "Backspace" || e.key === "Delete") {
-                const selectedNodes = nodes.filter(node => node.selected || node.data.deleting);
-                if(selectedNodes.length > 0) {
-                    // remove selected nodes
-                    setNodes((nodes) => {
-                        return nodes.filter(node => !node.selected);
-                    });
-                }
-                setSaveIteration((prev) => prev + 1);
-            }
-        }} >
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={handleNodesChange}
-                onEdgesChange={handleEdgesChange}
-                onConnect={onConnect}
-                onPaneClick={onPaneClick}
-                onMove={onMove}
-                onPaneContextMenu={onPaneContextMenu}
-                onNodeContextMenu={onNodeContextMenu}
-                isValidConnection={isValidConnection}
-                onEdgeUpdate={(oldEdge, newConnection) => {
-                    setSaveIteration((prev) => prev + 1);
-                }}
-                fitView
-                nodeTypes={nodeTypes}
-                edgeTypes={edgeTypes}
-                selectionMode={true}
-                // selectionOnDrag={true}
-                // selectionKeyCode={null}
-                panOnDrag={[0, 1]}
-
-                // catch when we drag a handle but dont make a connection
-                onConnectEnd={(...e) => {
-                    console.log("connect end", e);
-                    // setShowNodeMenu(true);
-                }}
-            >
-                {/* <MiniMap /> */}
-                <Controls />
-                <Background />
-                {
-                    showNodeMenu && <MenuContainer onClick={() => {
-                        setShowNodeMenu(false);
-                    }}>
-                        <SearchMenu placeholder={`Search for nodes`} hasResults={hasResults} inputText={nodeMenuText} setInputText={setNodeMenuText} >
-                            {
-                                hasResults && results.map((key, index) => {
-                                    return <SearchMenuRow key={index} id={key} text={key} onClick={(e) => {
-                                        onNewNode(e, key);
-                                        setShowNodeMenu(false);
-                                    }} />
-                                })
-                            }
-                        </SearchMenu>
-                    </MenuContainer>
-                }
-                {
-                    showChatMenu && <MenuContainer onClick={() => {
-                        setShowChatMenu(false);
-                    }}>
-                        <Menu className={`${styles.ChatMenu} animate__animated animate__fadeInDown`}>
-                            <ChatInput allowSend={(chatText && chatText.length > 0) || chatFiles && chatFiles.length > 0} inputText={chatText} inputRows={chatRows} onChange={(e) => {
-                                setChatText(e.target.value);
-                                setChatRows(e.target.value.split("\n").length);
-                            }} onKeyUp={(e) => {
-                                // if key is escpae, close
-                                if(e.key === "Escape") {
-                                    setShowChatMenu(false);
-                                }
-                            }} onKeyDown={(e) => {
-                                // if key is enter without holding shift, send
-                                if(e.key === "Enter" && !e.shiftKey) {
-                                    // send
-                                    if(document.getElementById("send")) {
-                                        document.getElementById("send").click();
-                                    } else {
-                                        notification("Failed to send", "Send button not found", "red");
-                                    }
-                                    e.preventDefault();
-                                    return;
-                                } else if(e.key === "Enter") {
-                                    // press send
-                                    e.preventDefault();
-                                    document.getElementById("send").click();
-                                }
-                            }} onSend={() => {
-                                if(!chat || !chat.chatId) {
-                                    notification("Error", "Chat not found", "red");
-                                }
-                                chatMessage(chat.chatId, enterpriseId, chatText, chatFiles).then((data) => {
-                                    if(!data) {
-                                        notification("Error", "Failed to send message", "red");
-                                    } else {
-                                        notification("", "Message Sent", "var(--action-color)");
-                                    }
-                                });
-
-                                setChatText("");
-                                setChatRows(1);
-                                setChatFiles([]);
-                                setShowChatMenu(false);
-                            }} onFileChange={(e) => {
-                                if (e.target.files.length > 0) {
-                                    setChatFiles(e.target.files);
-                                }
-                            }} />
-                        </Menu>
-                    </MenuContainer>
-                }
-                <SaveIcon saving={saving} saved={saved} />
-            </ReactFlow>
-
-            
-            <div className={styles.ChatGraph__Header}>
-                <Button text="Node" image={"/images/icons/plus.svg"} className={styles.NewNode} onClick={() => {
-                    enableNodeMenu();
-
-                    setShowChatMenu(false);
-                    setChatText("");
-                    setChatRows(1);
-                    setChatFiles([]);
-                }} />
-                <Button text="Simulate" image={"/images/icons/chat.png"} className={styles.SimulateChat} onClick={() => {
-                    setShowNodeMenu(false);
-                    setShowChatMenu(true);
-                    setChatText("");
-                    setChatRows(1);
-                    setChatFiles([]);
-                }} />
-            </div>
-
-            <p>{JSON.stringify(contextMenuPosition || "none") || "none"}</p>
-            <ContextMenu id="context-menu" options={contextMenuOptions} defaultOptions={contextMenuDefaultOptions} position={contextMenuPosition} onClose={() => {
-                closeContextMenu();
-            }} />
-
-            { children }
-        </div>
-    )
+	const paste = (x = false, y = false) => {
+		const POSITION_OFFSET = 50;
+		const clonedNodes = clonedScene.nodes;
+		const clonedEdges = clonedScene.edges;
+
+		setNodes((nodes) => [
+			...nodes,
+			...clonedNodes.map((node) => {
+				const newNode = JSON.parse(JSON.stringify(node));
+				newNode.id = node.id + "_" + Math.random().toString(36).substring(7);
+				if (!x && !y) {
+					newNode.position.x += POSITION_OFFSET;
+					newNode.position.y += POSITION_OFFSET;
+				} else {
+					newNode.position.x = x;
+					newNode.position.y = y;
+				}
+				newNode.selected = false;
+				if (newNode.data) {
+					newNode.copying = false;
+					newNode.deleting = false;
+				}
+				return newNode;
+			}),
+		]);
+
+		if (!x && !y) {
+			setClonedScene({
+				nodes: clonedNodes.map((node) => ({
+					...node,
+					position: {
+						x: node.position.x + POSITION_OFFSET,
+						y: node.position.y + POSITION_OFFSET,
+					},
+				})),
+				edges: clonedEdges,
+			});
+		}
+	};
+
+	const handleNodesChange = (changes) => {
+		const filteredChanges = changes.filter((change) => {
+			if (change.type === "remove") {
+				return change.id !== "onUserMessage";
+			}
+			return true;
+		});
+		onNodesChange(filteredChanges);
+		setSaveIteration((prev) => prev + 1);
+	};
+
+	const handleEdgesChange = (changes) => {
+		onEdgesChange(changes);
+		setSaveIteration((prev) => prev + 1);
+	};
+
+	useEffect(() => {
+		setSaveIteration((prev) => prev + 1);
+	}, [nodes, edges]);
+
+	const onPaneContextMenu = (event) => {
+		clearCopyOutlines();
+		event.preventDefault();
+		setContextMenuPosition({ x: event.clientX, y: event.clientY });
+
+
+		setContextMenuOptions([
+			{
+				title: "Add Node",
+				onClick: enableNodeMenu,
+				options: nodeMenu,
+			},
+			{
+				title: "Simulate",
+				onClick: () => setShowChatMenu(true),
+			},
+			{
+				title: "Copy All",
+				onClick: () => {
+					const newClonedScene = {
+						nodes,
+						edges,
+					};
+
+					setClonedScene(newClonedScene);
+					navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
+					notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+				},
+			},
+		]);
+
+		let menuOptions = [];
+		if (nodes.some((node) => node.selected)) {
+			menuOptions.push(
+				{
+					title: "Copy",
+					onClick: () => {
+						setClonedScene({
+							nodes: nodes.filter((n) => n.selected),
+							edges: edges.filter((e) => e.selected),
+						});
+					},
+				},
+				{
+					title: "Delete",
+					onClick: () => {
+						deleteNode();
+                        deleteEdge();
+					},
+				}
+			);
+		}
+		if (clonedScene.nodes.length > 0) {
+			menuOptions.push(
+				{
+					title: "Clear",
+					onClick: () => setClonedScene({ nodes: [], edges: [] }),
+				},
+				{
+					title: "Paste",
+					onClick: () => paste(event.clientX, event.clientY),
+				}
+			);
+		}
+		setContextMenuOptions(menuOptions);
+	};
+
+	const onConnect = useCallback(
+		(params) => {
+			const sourceType = params.sourceHandle;
+			const edgeType = sourceType === "execution" ? "ExecutionEdge" : "DataEdge";
+
+			const newEdge = {
+				...params,
+				type: edgeType,
+				data: { type: sourceType },
+			};
+			setEdges((eds) => addEdge(newEdge, eds));
+		},
+		[setEdges]
+	);
+
+	const onPaneClick = (...e) => {
+		closeContextMenu();
+		if(e) closeNodeMenu();
+	};
+
+	const onMove = () => closeContextMenu();
+
+	const clearCopyOutlines = () => {
+		setNodes((nodes) =>
+			nodes.map((node) => (node.data.copying ? { ...node, data: { ...node.data, copying: false } } : node))
+		);
+	};
+
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			if (e.ctrlKey && e.key === "c") {
+				const toCopyNodes = nodes.filter((n) => n.selected);
+				if (toCopyNodes.length === 0) {
+					if (clonedScene.nodes.length > 0) {
+						setClonedScene({ nodes: [], edges: [] });
+					} else {
+						notification("", "Nothing selected to copy", "red");
+					}
+					return;
+				}
+
+				setClonedScene({
+					nodes: nodes.filter((n) => n.selected),
+					edges: edges.filter((e) => e.selected),
+				});
+
+				setNodes((nodes) =>
+					nodes.map((node) =>
+						node.selected ? { ...node, data: { ...node.data, copying: true } } : node
+					)
+				);
+				notification("", `Copied ${nodes.filter((n) => n.selected).length} nodes`, "var(--action-color)");
+			}
+
+			if (e.ctrlKey && e.key === "v") {
+				if (clonedScene.nodes.length === 0) {
+					notification("", "Nothing to paste", "red");
+				} else {
+					notification(`Pasted ${clonedScene.nodes.length} nodes`);
+					paste();
+				}
+			}
+		};
+
+		const handleKeyUp = (e) => {
+			if (e.key === "c" || e.key === "v") {
+				clearCopyOutlines();
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+		document.addEventListener("keyup", handleKeyUp);
+
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+			document.removeEventListener("keyup", handleKeyUp);
+		};
+	}, [nodes]);
+
+	const animateError = (nodeOrEdgeId, valueName) => {
+		setNodes((nodes) =>
+			nodes.map((node) =>
+				node.id === nodeOrEdgeId
+					? { ...node, data: { ...node.data, error: true, animate: false, animateBackwards: false, errorValue: valueName } }
+					: node
+			)
+		);
+		setEdges((edges) =>
+			edges.map((edge) =>
+				edge.id === nodeOrEdgeId ? { ...edge, data: { ...edge.data, error: true, animate: false, animateBackwards: false } } : edge
+			)
+		);
+
+		setTimeout(() => {
+			setNodes((nodes) =>
+				nodes.map((node) =>
+					node.id === nodeOrEdgeId ? { ...node, data: { ...node.data, error: false, errorValue: null } } : node
+				)
+			);
+			setEdges((edges) =>
+				edges.map((edge) =>
+					edge.id === nodeOrEdgeId ? { ...edge, data: { ...edge.data, error: false } } : edge
+				)
+			);
+		}, ERROR_TIMEOUT);
+	};
+
+	const setAnimateEdge = (edgeId, doAnimate) => {
+		if (!edgeId) {
+			setEdges((edges) =>
+				edges.map((edge) => ({ ...edge, data: { ...edge.data, animate: false, animateBackwards: false } }))
+			);
+		} else {
+			setEdges((edges) =>
+				edges.map((edge) =>
+					edge.id === edgeId ? { ...edge, data: { ...edge.data, animate: doAnimate, animateBackwards: false } } : edge
+				)
+			);
+		}
+	};
+
+	const animateExecutionBackwards = (nodeId) => {
+		setNodes((nodes) =>
+			nodes.map((node) =>
+				node.id === nodeId ? { ...node, data: { ...node.data, animate: false, animateBackwards: true } } : node
+			)
+		);
+	};
+
+	const animateExecution = (nodeId) => {
+		setNodes((nodes) =>
+			nodes.map((node) =>
+				node.id === nodeId ? { ...node, data: { ...node.data, animate: true, animateBackwards: false } } : node
+			)
+		);
+	};
+
+	const animateEdgeExecutionBackwards = (edgeId) => {
+		setEdges((edges) =>
+			edges.map((edge) =>
+				edge.id === edgeId ? { ...edge, data: { ...edge.data, animateBackwards: true } } : edge
+			)
+		);
+	};
+
+	const animateExecutionEdgeResponse = (edgeId, value) => {
+		setEdges((edges) =>
+			edges.map((edge) =>
+				edge.id === edgeId ? { ...edge, data: { ...edge.data, animate: false, animateBackwards: false, value } } : edge
+			)
+		);
+	};
+
+	const animateExecutionEdge = (edgeId) => {
+		setEdges((edges) =>
+			edges.map((edge) =>
+				edge.id === edgeId ? { ...edge, data: { ...edge.data, animate: true, animateBackwards: false } } : edge
+			)
+		);
+	};
+
+	const animateExecutionResponse = (nodeId, values) => {
+		setNodes((nodes) =>
+			nodes.map((node) =>
+				node.id === nodeId ? { ...node, data: { ...node.data, animate: false, animateBackwards: false, values } } : node
+			)
+		);
+	};
+
+	const resetAllNodeStyles = () => {
+		setNodes((nodes) =>
+			nodes.map((node) => ({ ...node, data: { ...node.data, animate: false, animateBackwards: false } }))
+		);
+		setEdges((edges) =>
+			edges.map((edge) => ({ ...edge, data: { ...edge.data, animate: false, animateBackwards: false } }))
+		);
+	};
+
+	useChannel(`flow-${chat.chatId}`, "error", (msg) => {
+		const data = msg.data;
+		notification(data.title, data.message, "red");
+
+		if (data.options) {
+			if (data.options.nodeId) animateError(data.options.nodeId, data.options.valueName);
+			if (data.options.edgeId) animateError(data.options.edgeId, data.options.valueName);
+		}
+	});
+
+	useChannel("notifications", "notification", (msg) => {
+		const { title, content } = msg.data;
+		notification(title, content, "purple");
+	});
+
+	useChannel(`flow-${chat.chatId}`, "log", (msg) => {
+		const { messages } = msg.data;
+
+		const formattedMessages = messages.map((message) => (typeof message !== "string" ? JSON.stringify(message) : message));
+		console.log("[Flow Log]", formattedMessages.join("\n"));
+	});
+
+	useChannel(`flow-${chat.chatId}`, "execute", (msg) => {
+		const { nodeId } = msg.data;
+		animateExecution(nodeId);
+	});
+
+	useChannel(`flow-${chat.chatId}`, "execute_backwards", (msg) => {
+		const { nodeId } = msg.data;
+		animateExecutionBackwards(nodeId);
+	});
+
+	useChannel(`flow-${chat.chatId}`, "edge_on", (msg) => {
+		const { edgeId } = msg.data;
+		setAnimateEdge(edgeId, true);
+	});
+
+	useChannel(`flow-${chat.chatId}`, "edge_off", (msg) => {
+		const { edgeId } = msg.data;
+		setAnimateEdge(edgeId, false);
+	});
+
+	useChannel(`flow-${chat.chatId}`, "execute_edge", (msg) => {
+		const { edgeId } = msg.data;
+		animateExecutionEdge(edgeId);
+	});
+
+	useChannel(`flow-${chat.chatId}`, "execute_edge_response", (msg) => {
+		const { edgeId, value } = msg.data;
+		animateExecutionEdgeResponse(edgeId, value);
+	});
+
+	useChannel(`flow-${chat.chatId}`, "execute_edge_backwards", (msg) => {
+		const { edgeId } = msg.data;
+		animateEdgeExecutionBackwards(edgeId);
+	});
+
+	useChannel(`flow-${chat.chatId}`, "finish", () => {
+		notification("", "Flow execution finished", "var(--active-color)");
+		resetAllNodeStyles();
+	});
+
+	useChannel(`flow-${chat.chatId}`, "execute_response", (msg) => {
+		const { nodeId, values } = msg.data;
+		animateExecutionResponse(nodeId, values);
+	});
+
+	const nodeMenu = Object.keys(NODE_DICTIONARY).reduce((acc, key) => {
+		const value = NODE_DICTIONARY[key];
+		const displayName = value.data.displayName || key;
+		const categoryName = value.data.category || key.includes("/") ? key.split("/")[0] : "Uncategorized";
+
+		const category = acc.find((obj) => obj.title === categoryName);
+		if (category) {
+			category.options.push({
+				title: displayName,
+				onClick: (e) => onNewNode(e, key),
+			});
+		} else {
+			acc.push({
+				title: categoryName,
+				options: [
+					{
+						title: displayName,
+						onClick: (e) => onNewNode(e, key),
+					},
+				],
+			});
+		}
+		return acc;
+	}, []);
+
+	const contextMenuDefaultOptions = [
+		{
+			title: "Add Node",
+			onClick: enableNodeMenu,
+			options: nodeMenu,
+		},
+		{
+			title: "Simulate",
+			onClick: () => setShowChatMenu(true),
+		},
+		{
+			title: "Copy All",
+			onClick: () => {
+				const newClonedScene = { nodes, edges };
+				setClonedScene(newClonedScene);
+				navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
+				notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+			},
+		},
+	];
+
+	const searchResults = nodeMenuText
+		? Object.keys(NODE_DICTIONARY).filter((key) => key.toLowerCase().includes(nodeMenuText.toLowerCase()))
+		: [];
+	const hasResults = searchResults.length > 0;
+
+	return (
+		<div
+			id="chat-graph"
+			className={`${styles.ChatGraph} ${className}`}
+			onAnimationEnd={onAnimationEnd}
+			onKeyDown={(e) => {
+				if (e.key === "Backspace" || e.key === "Delete") {
+					const selectedNodes = nodes.filter((node) => node.selected);
+					if (selectedNodes.length > 0) {
+						setNodes((nodes) =>
+							nodes.map((node) =>
+								node.selected ? { ...node, data: { ...node.data, deleting: true } } : node
+							)
+						);
+					}
+					const selectedEdges = edges.filter((edge) => edge.selected);
+					if (selectedEdges.length > 0) {
+						setEdges((edges) => edges.filter((edge) => !edge.selected));
+					}
+				}
+			}}
+			onKeyUp={(e) => {
+				if (e.key === "Backspace" || e.key === "Delete") {
+                    deleteNode();
+                    deleteEdge();
+				}
+			}}
+		>
+			<ReactFlow
+				nodes={nodes}
+				edges={edges}
+				onNodesChange={handleNodesChange}
+				onEdgesChange={handleEdgesChange}
+				onConnect={onConnect}
+				onPaneClick={onPaneClick}
+				onMove={onMove}
+				onPaneContextMenu={onPaneContextMenu}
+				onNodeContextMenu={onNodeContextMenu}
+				isValidConnection={isValidConnection}
+				fitView
+				nodeTypes={nodeTypes}
+				edgeTypes={edgeTypes}
+				selectionMode={true}
+				panOnDrag={[0, 1]}
+				onConnectEnd={(...e) => {
+					console.log("connect end", e);
+				}}
+			>
+				<Controls />
+				<Background />
+				{showNodeMenu && (
+					<MenuContainer
+						onClick={() => closeNodeMenu()}
+					>
+						<SearchMenu
+							placeholder={`Search for nodes`}
+							hasResults={hasResults}
+							inputText={nodeMenuText}
+							setInputText={setNodeMenuText}
+						>
+							{hasResults &&
+								searchResults.map((key, index) => (
+									<SearchMenuRow
+										key={index}
+										id={key}
+										text={key}
+										onClick={(e) => {
+											onNewNode(e, key);
+											closeNodeMenu();
+										}}
+									/>
+								))}
+						</SearchMenu>
+					</MenuContainer>
+				)}
+				{showChatMenu && (
+					<MenuContainer
+						onClick={() => {
+							setShowChatMenu(false);
+						}}
+					>
+						<Menu className={`${styles.ChatMenu} animate__animated animate__fadeInDown`}>
+							<ChatInput
+								allowSend={chatText.length > 0 || chatFiles.length > 0}
+								inputText={chatText}
+								inputRows={chatRows}
+								onChange={(e) => {
+									setChatText(e.target.value);
+									setChatRows(e.target.value.split("\n").length);
+								}}
+								onKeyUp={(e) => {
+									if (e.key === "Escape") {
+										setShowChatMenu(false);
+									}
+								}}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" && !e.shiftKey) {
+										if (document.getElementById("send")) {
+											document.getElementById("send").click();
+										} else {
+											notification("Failed to send", "Send button not found", "red");
+										}
+										e.preventDefault();
+									} else if (e.key === "Enter") {
+										e.preventDefault();
+										document.getElementById("send").click();
+									}
+								}}
+								onSend={() => {
+									if (!chat || !chat.chatId) {
+										notification("Error", "Chat not found", "red");
+									}
+									chatMessage(chat.chatId, enterpriseId, chatText, chatFiles).then((data) => {
+										if (!data) {
+											notification("Error", "Failed to send message", "red");
+										} else {
+											notification("", "Message Sent", "var(--action-color)");
+										}
+									});
+
+									setChatText("");
+									setChatRows(1);
+									setChatFiles([]);
+									setShowChatMenu(false);
+								}}
+								onFileChange={(e) => {
+									if (e.target.files.length > 0) {
+										setChatFiles(e.target.files);
+									}
+								}}
+							/>
+						</Menu>
+					</MenuContainer>
+				)}
+				<SaveIcon saving={saving} saved={saved} />
+			</ReactFlow>
+
+			<div className={styles.ChatGraph__Header}>
+				<Button
+					text="Node"
+					image={"/images/icons/plus.svg"}
+					className={styles.NewNode}
+					onClick={() => {
+						enableNodeMenu();
+						setShowChatMenu(false);
+						setChatText("");
+						setChatRows(1);
+						setChatFiles([]);
+					}}
+				/>
+				<Button
+					text="Simulate"
+					image={"/images/icons/chat.png"}
+					className={styles.SimulateChat}
+					onClick={() => {
+						closeNodeMenu();
+						setShowChatMenu(true);
+						setChatText("");
+						setChatRows(1);
+						setChatFiles([]);
+					}}
+				/>
+			</div>
+
+			<p>{JSON.stringify(contextMenuPosition || "none") || "none"}</p>
+			<ContextMenu
+				id="context-menu"
+				options={contextMenuOptions}
+				defaultOptions={contextMenuDefaultOptions}
+				position={contextMenuPosition}
+				onClose={closeContextMenu}
+			/>
+
+			{children}
+		</div>
+	);
 }

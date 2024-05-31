@@ -1,72 +1,72 @@
 .NotificationsLayer {
-    position: absolute;
+		position: absolute;
 
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
+		left: 0px;
+		right: 0px;
+		top: 0px;
+		bottom: 0px;
 
-    overflow: hidden;
-
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-end;
-
-    gap: var(--gap);
-
-    padding-inline: var(--margin-inline);
-    padding-block: var(--margin-inline);
+		overflow: hidden;
 
 
-    pointer-events: none;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		align-items: flex-end;
+
+		gap: var(--gap);
+
+		padding-inline: var(--margin-inline);
+		padding-block: var(--margin-inline);
+
+
+		pointer-events: none;
 }
 
 .NotificationCard {
-    background-color: var(--background-color);
-    color: var(--primary-text-color);
+		background-color: var(--background-color);
+		color: var(--primary-text-color);
 
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-start;
 
-    padding-block: var(--margin-block);
-    padding-inline: var(--margin-inline);
+		padding-block: var(--margin-block);
+		padding-inline: var(--margin-inline);
 
-    border: 1px solid var(--hover-color);
-    border-radius: var(--border-radius);
+		border: 1px solid var(--hover-color);
+		border-radius: var(--border-radius);
 
-    gap: calc(var(--gap) * 2);
+		gap: calc(var(--gap) * 2);
 
-    box-shadow: var(--box-shadow-light);
+		box-shadow: var(--box-shadow-light);
 }
 
 .NotificationCard > .NotificationCard__Image {
-    width: 50px;
-    height: 50px;
-    /* border-radius: 50%; */
+		width: 50px;
+		height: 50px;
+		/* border-radius: 50%; */
 }
 
 .NotificationCard__Content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: center;
 
-    /* gap: var(--gap); */
+		/* gap: var(--gap); */
 }
 
 @media (max-width: 800px) {
-    .NotificationCard__Content {
-        gap: calc(var(--gap) / 2);
-    }
+		.NotificationCard__Content {
+				gap: calc(var(--gap) / 2);
+		}
 
-    .NotificationCard__Content h3 {
-        font-size: 90%;
-    }
-    .NotificationCard__Content p {
-        font-size: 90%;
-    }
+		.NotificationCard__Content h3 {
+				font-size: 90%;
+		}
+		.NotificationCard__Content p {
+				font-size: 90%;
+		}
 }

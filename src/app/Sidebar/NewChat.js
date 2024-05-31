@@ -46,67 +46,75 @@ export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup,
     const hasText = inputText && inputText.length > 0;
 
     return (
-        <Button disabled={lockoutDropdown} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/new_chat.svg"} text={group ? `New Chat with ${group?.title}` : "New Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
-            // if we are not in the dropdown
-            if(e.target.id !== "newChatDropdownMenu" && e.target.closest("#newChatDropdownMenu") === null) {
-                if(group) {
-                    setDropdownLockout(true);
-                    chatNew(enterpriseId, group?.groupId || false).then((newChat) => {
-                        if(newChat) {
-                            setChat(newChat, true);
-                        } else {
-                            error("Failed to create chat");
-                        }
-                        setDropdownLockout(false);
-                    });
-                } else {
-                    setDropdownOpen((prev) => {
-                        return !prev;
-                    });
-                }
-
-            }
-        }}>
+        <>
             {
                 showDropdown && <>
-                    <SquareButton id="newChatDropdown" onClick={(e) => {
+                    { dropdownOpen && <SearchMenu id="newChatDropdownMenu" hasResults={hasMatches || hasText} inputText={inputText} setInputText={setInputText} placeholder={`Search or create a group`} className={styles.NewChat__Dropdown}>
+                        {
+                            !hasMatches && hasText && <SearchMenuRow id={"newGroup"} background="var(--active-color-hidden)" image="/images/icons/new_chat.svg" text={`Create a new "${inputText}" group`} onClick={() => {
+                                setDropdownOpen(false);
+                                setDropdownLockout(true);
+                                groupNew(enterpriseId, inputText).then((newGroup) => {
+                                    setGroups((prev) => {
+                                        return [...prev, newGroup];
+                                    });
+                                    setInputText("");
+                                    setGroup(newGroup);
+                                    setDropdownLockout(false);
+                                })
+                            }} />
+                        }
+                        {
+                            hasMatches && results.map((group, index) => {
+                                let id = index === 0 ? "firstGroupResult" : "";
+                                const isDisabled = disabledGroups.includes(group.groupId);
+                                return <SearchMenuRow disabled={isDisabled} id={id} key={group.groupId} image="/images/icons/thing.png" text={group.title} onClick={() => {
+                                    setGroup(group);
+                                    setDropdownOpen(false);
+                                }} showDelete={true} onDelete={() => {
+                                    onDeleteGroup(group);
+                                    // setDropdownOpen(false);
+                                }} />
+                            })
+                        }
+                        </SearchMenu>
+                    }
+                </>
+            }
+
+            
+            <Button disabled={lockoutDropdown} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/new_chat.svg"} text={group ? `New Chat with ${group?.title}` : "New Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
+                // if we are not in the dropdown
+                if(e.target.id !== "newChatDropdownMenu" && e.target.closest("#newChatDropdownMenu") === null) {
+                    if(group) {
+                        setDropdownLockout(true);
+                        chatNew(enterpriseId, group?.groupId || false).then((newChat) => {
+                            if(newChat) {
+                                setChat(newChat, true);
+                            } else {
+                                error("Failed to create chat");
+                            }
+                            setDropdownLockout(false);
+                        });
+                    } else {
                         setDropdownOpen((prev) => {
                             return !prev;
                         });
-                        e.stopPropagation();
-                    }} className={styles.NewChat__DropdownButton} background={false} image="/images/icons/caret/caret_down.svg" color="var(--active-color)" />
-                    { dropdownOpen && <SearchMenu id="newChatDropdownMenu" hasResults={hasMatches || hasText} inputText={inputText} setInputText={setInputText} placeholder={`Search or create a group`} className={styles.NewChat__Dropdown}>
-                    {
-                        !hasMatches && hasText && <SearchMenuRow id={"newGroup"} background="var(--active-color-hidden)" image="/images/icons/new_chat.svg" text={`Create a new "${inputText}" group`} onClick={() => {
-                            setDropdownLockout(true);
-                            groupNew(enterpriseId, inputText).then((newGroup) => {
-                                setGroups((prev) => {
-                                    return [...prev, newGroup];
-                                });
-                                setInputText("");
-                                setGroup(newGroup);
-                                setDropdownLockout(false);
-                            })
-                        }} />
                     }
 
-                    {
-                        hasMatches && results.map((group, index) => {
-                            let id = index === 0 ? "firstGroupResult" : "";
-                            const isDisabled = disabledGroups.includes(group.groupId);
-                            return <SearchMenuRow disabled={isDisabled} id={id} key={group.groupId} image="/images/icons/thing.png" text={group.title} onClick={() => {
-                                setGroup(group);
-                                setDropdownOpen(false);
-                            }} showDelete={true} onDelete={() => {
-                                onDeleteGroup(group);
-                                // setDropdownOpen(false);
-                            }} />
-                        })
-                    }
-                    </SearchMenu>}
-                </>
-            }
-            
-        </Button>
+                }
+            }}>
+                {
+                    showDropdown && <>
+                        <SquareButton id="newChatDropdown" onClick={(e) => {
+                            setDropdownOpen((prev) => {
+                                return !prev;
+                            });
+                            e.stopPropagation();
+                        }} className={styles.NewChat__DropdownButton} background={false} image="/images/icons/caret/caret_down.svg" color="var(--active-color)" />
+                    </>
+                }
+            </Button>
+        </>
     )
 }

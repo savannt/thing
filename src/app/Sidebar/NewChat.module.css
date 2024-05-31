@@ -23,14 +23,35 @@
 }
 
 .NewChat:hover{
-    opacity: 1 !important;
+    opacity: 1;
+    
+    outline: 2px solid var(--active-color-hidden);
+    outline-offset: 2px;
 }
+
+.NewChat:focus {
+    outline: 2px solid var(--active-color-hidden);
+    outline-offset: 2px;
+}
+
+.NewChat button:focus {
+    outline: 2px solid var(--active-color-hidden);
+    outline-offset: 2px;
+}
+
+.NewChat:active{
+    opacity: 1;
+    
+    outline: 2px solid var(--active-color);
+    outline-offset: 2px;
+}
+
 
 .NewChat__Dropdown {
     position: absolute;
     bottom: -3px;
-    left: 0;
-    top: 0px;
+    left: calc(var(--min-height) + var(--gap) + var(--margin-inline));
+    top: 13px !important;
 
     width: 35vw !important;
     max-width: 60vw;

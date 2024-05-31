@@ -346,6 +346,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                                     setTimeout(() => {
                                         if(isGroup) {
                                             setGroup(item);
+                                            setChats(false);
                                         } else {
                                             setChat(item);
                                         }

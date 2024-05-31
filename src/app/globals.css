@@ -1,48 +1,48 @@
 :root {
-  --background-color: #0e1011;  
-  --secondary-color: #1a1c1d;
+	--background-color: #0e1011;	
+	--secondary-color: #1a1c1d;
 
-  --primary-text-color: #ececec;
-  --secondary-text-color: #b3b3b3;
-  --tertiary-text-color: #333;
+	--primary-text-color: #ececec;
+	--secondary-text-color: #b3b3b3;
+	--tertiary-text-color: #333;
 
-  --action-color: #6486FF;
-  --action-color-light: #6486FF80;
-  --action-color-hidden: #6486ff2d;
-
-
-  --red: rgba(255, 101, 101, 0.668);
-
-  --disabled-color: #59595922;
-
-  --hover-color: #90909050;
-  --hover-active-color: #90909080;
+	--action-color: #6486FF;
+	--action-color-light: #6486FF80;
+	--action-color-hidden: #6486ff2d;
 
 
-  --margin-inline: 24px;
-  --margin-block: 12px;
+	--red: rgba(255, 101, 101, 0.668);
 
-  --min-height: 42px;
+	--disabled-color: #59595922;
 
-  --header-height: 68px;
-  --body-height: calc(100dvh - var(--header-height) - 2px + 12px);
-
-  --gap: 12px;
-
-  --border: 2px solid var(--hover-color);
-  --border-radius: 9px;
-  --border-radius-light: calc(var(--border-radius) * 0.6);
-  --border-radius-large: 13px;
+	--hover-color: #90909050;
+	--hover-active-color: #90909080;
 
 
-  --margin-chat: 6vw;
+	--margin-inline: 24px;
+	--margin-block: 12px;
 
-  --scale-to: 0.975;
+	--min-height: 42px;
 
-  
-  --box-shadow: 0px 0px 20px 0px var(--box-shadow-color);
-  --box-shadow-light: 0px 0px 10px -10px var(--box-shadow-color);
-  --box-shadow-light-light: 0px 0px 5px -5px var(--box-shadow-color);
+	--header-height: 68px;
+	--body-height: calc(100dvh - var(--header-height) - 2px + 12px);
+
+	--gap: 12px;
+
+	--border: 2px solid var(--hover-color);
+	--border-radius: 9px;
+	--border-radius-light: calc(var(--border-radius) * 0.6);
+	--border-radius-large: 13px;
+
+
+	--margin-chat: 6vw;
+
+	--scale-to: 0.975;
+
+	
+	--box-shadow: 0px 0px 20px 0px var(--box-shadow-color);
+	--box-shadow-light: 0px 0px 10px -10px var(--box-shadow-color);
+	--box-shadow-light-light: 0px 0px 5px -5px var(--box-shadow-color);
 }
 
 /* disable hover on max-width: 800px */
@@ -50,419 +50,419 @@
 
 /* below 400 px */
 @media (max-width: 800px) {
-  :root {
-    --margin-inline: 18px;
-    /* --margin-block: 9px; */
-    --min-height: 32px;
-    --gap: 6px;
+	:root {
+		--margin-inline: 18px;
+		/* --margin-block: 9px; */
+		--min-height: 32px;
+		--gap: 6px;
 
-    --header-height: 55px;
+		--header-height: 55px;
 
-    --margin-chat: 1vw;
-  }
+		--margin-chat: 1vw;
+	}
 }
 
 /* data-theme dark, or if not set */
 :root[data-theme="dark"], :root:not([data-theme]) {
-  --background-color: #0b1111;  
-  --secondary-color: #1a1c1d;
+	--background-color: #0b1111;	
+	--secondary-color: #1a1c1d;
 
-  --primary-text-color: #ececec;
-  --secondary-text-color: #b3b3b3;
-  --tertiary-text-color: #333;
+	--primary-text-color: #ececec;
+	--secondary-text-color: #b3b3b3;
+	--tertiary-text-color: #333;
 
-  --hover-color: #90909030;
+	--hover-color: #90909030;
 
-  --active-color: #3b8140;
-  --active-color-hidden: #4c855063;
+	--active-color: #3b8140;
+	--active-color-hidden: #4c855063;
 
-  --box-shadow-color: #000000a8;
-  --box-shadow-color-light: #00000053;
+	--box-shadow-color: #000000a8;
+	--box-shadow-color-light: #00000053;
 }
 
 /* data-theme light */
 :root[data-theme="light"] {
-  --background-color: #e9e9e9;  
-  --secondary-color: #b3b3b387;
+	--background-color: #e9e9e9;	
+	--secondary-color: #dbdbdb;
 
-  --primary-text-color: #000000;
-  --secondary-text-color: #000000d6;
-  --tertiary-text-color: #00000033;
+	--primary-text-color: #000000;
+	--secondary-text-color: #000000d6;
+	--tertiary-text-color: #00000033;
 
-  --active-color: #3c6a3fd1;
-  --active-color-hidden: #366d3a30;
+	--active-color: #3c6a3fd1;
+	--active-color-hidden: #366d3a30;
 
-  --box-shadow-color: #00000053;
-  --box-shadow-color-light: #00000053;
+	--box-shadow-color: #00000053;
+	--box-shadow-color-light: #00000053;
 }
 
 :root[data-theme="gray"] {
-  --background-color: #6e6e6e;  
-  --secondary-color: #8c8c8c;
+	--background-color: #6e6e6e;	
+	--secondary-color: #797979;
 
-  --primary-text-color: #ececec;
-  --secondary-text-color: #b3b3b3;
-  --tertiary-text-color: #595858;
+	--primary-text-color: #ececec;
+	--secondary-text-color: #b3b3b3;
+	--tertiary-text-color: #595858;
 
-  --hover-color: #d3d3d319;
-  --hover-active-color: #c0c0c02d;
+	--hover-color: #d3d3d319;
+	--hover-active-color: #c0c0c02d;
 
-  --active-color: #68bd6ed1;
-  --active-color-hidden: #69976c7b;
+	--active-color: #68bd6ed1;
+	--active-color-hidden: #69976c7b;
 
-  --box-shadow-color: #00000053;
-  --box-shadow-color-light: #00000053;
+	--box-shadow-color: #00000053;
+	--box-shadow-color-light: #00000053;
 }
 
 :root[data-theme="black"] {
-  --background-color: #000000;  
-  --secondary-color: #1a1c1d;
+	--background-color: #000000;	
+	--secondary-color: #1a1c1d;
 
-  --primary-text-color: #ececec;
-  --secondary-text-color: #b3b3b3;
-  --tertiary-text-color: #333;
+	--primary-text-color: #ececec;
+	--secondary-text-color: #b3b3b3;
+	--tertiary-text-color: #333;
 
-  --active-color: #3b8140;
-  --active-color-hidden: #4c855063;
+	--active-color: #3b8140;
+	--active-color-hidden: #4c855063;
 
-  --box-shadow-color: #000000a8;
-  --box-shadow-color-light: #00000053;
+	--box-shadow-color: #000000a8;
+	--box-shadow-color-light: #00000053;
 }
 
 *:focus {
-  outline: 2px solid var(--action-color);
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color);
+	outline-offset: 2px;
 }
 
 /* input placeholder color */
 ::placeholder {
-  color: var(--secondary-text-color);
-  opacity: 0.8;
+	color: var(--secondary-text-color);
+	opacity: 0.8;
 }
 
 button, input, select, textarea {
-  outline: none;
-  border: none;
+	outline: none;
+	border: none;
 }
 
 p, h1, h2, h3 {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 /* style scrollbar */
 ::-webkit-scrollbar {
-  /* width: 10px; */
-  width: calc(var(--gap) * 0.8);
-  background: transparent;
+	/* width: 10px; */
+	width: calc(var(--gap) * 0.8);
+	background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--hover-color);
-  border-radius: 10px;
+	background: var(--hover-color);
+	border-radius: 10px;
 
-  /* border-right: 4px solid transparent; */
+	/* border-right: 4px solid transparent; */
 
 
-  cursor: pointer;
+	cursor: pointer;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--hover-active-color);
+	background: var(--hover-active-color);
 }
 
 /* 
 ::-webkit-scrollbar-thumb:active {
-  outline: 2px solid var(--action-color-hidden);
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color-hidden);
+	outline-offset: 2px;
 } */
 
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+	background: transparent;
 }
 
 @keyframes shrinkDisappear {
-  0% {
-      /* width:  Start with the current width */
-      /* width: unset; */
-      min-width: 0;
-      /* opacity: 1; */
-  }
-  70% {
-    /* opacity: 0; */
-  }
-  90% {
-      width: 0%; /* Reduce width to 0 */
-      min-width: 0;
-      /* opacity: 0; Start fading out */
-  }
-  100% {
-    width: 0px; /* Reduce width to 0 */
-    max-width: 0px;
-    min-width: 0px;
+	0% {
+			/* width:	Start with the current width */
+			/* width: unset; */
+			min-width: 0;
+			/* opacity: 1; */
+	}
+	70% {
+		/* opacity: 0; */
+	}
+	90% {
+			width: 0%; /* Reduce width to 0 */
+			min-width: 0;
+			/* opacity: 0; Start fading out */
+	}
+	100% {
+		width: 0px; /* Reduce width to 0 */
+		max-width: 0px;
+		min-width: 0px;
 
-      /* display: none; Element completely disappears */
-      /* opacity: 0; */
-  }
+			/* display: none; Element completely disappears */
+			/* opacity: 0; */
+	}
 }
 
 @keyframes opacityDisappear {
-  0% {
-      opacity: 1;
-  }
-  70% {
-    opacity: 0;
-  }
-  90% {
-    opacity: 0;
-  }
-  100% {
-      opacity: 0;
-  }
+	0% {
+			opacity: 1;
+	}
+	70% {
+		opacity: 0;
+	}
+	90% {
+		opacity: 0;
+	}
+	100% {
+			opacity: 0;
+	}
 }
 
 @keyframes growAppear {
-  0% {
-      width: 0; /* Start with the current width */
-      min-width: 0;
-      /* opacity: 0; */
-  }
-  30% {
-    /* opacity: 0.2; */
-  }
-  70% {
-    /* opacity: 1; */
-  }
-  100% {
-    min-width: 275px;
-    /* display: block; Element completely disappears */
-    /* opacity: 1; */
-  }
+	0% {
+			width: 0; /* Start with the current width */
+			min-width: 0;
+			/* opacity: 0; */
+	}
+	30% {
+		/* opacity: 0.2; */
+	}
+	70% {
+		/* opacity: 1; */
+	}
+	100% {
+		min-width: 275px;
+		/* display: block; Element completely disappears */
+		/* opacity: 1; */
+	}
 }
 
 /* width smaller then 400 */
 @media (max-width: 800px) {
-  @keyframes growAppear {
-    0% {
-      width: 0; /* Start with the current width */
-      min-width: 0;
-      /* opacity: 0; */
-    }
-    30% {
-      /* opacity: 0.2; */
-    }
-    70% {
-      /* opacity: 1; */
-    }
-    100% {
-      width: 100%;
-      min-width: 100%;
-      /* display: block; Element completely disappears */
-      /* opacity: 1; */
-    }
-  }
+	@keyframes growAppear {
+		0% {
+			width: 0; /* Start with the current width */
+			min-width: 0;
+			/* opacity: 0; */
+		}
+		30% {
+			/* opacity: 0.2; */
+		}
+		70% {
+			/* opacity: 1; */
+		}
+		100% {
+			width: 100%;
+			min-width: 100%;
+			/* display: block; Element completely disappears */
+			/* opacity: 1; */
+		}
+	}
 }
 
 @keyframes opacityAppear {
-  0% {
-    opacity: 0;
-  }
-  30% {
-    opacity: 0.2;
-  }
-  70% {
-    opacity: 1
-  }
-  70% {
-    /* background: linear-gradient(90deg, var(--background-color), var(--secondary-color)); */
-  }
-  100% {
-    opacity: 1;
+	0% {
+		opacity: 0;
+	}
+	30% {
+		opacity: 0.2;
+	}
+	70% {
+		opacity: 1
+	}
+	70% {
+		/* background: linear-gradient(90deg, var(--background-color), var(--secondary-color)); */
+	}
+	100% {
+		opacity: 1;
 
-    background: transparent;
-  }
+		background: transparent;
+	}
 }
 
 
 .opacityFadeOut {
-  animation: opacityDisappear 0.5s forwards;
+	animation: opacityDisappear 0.5s forwards;
 }
 
 .opacityFadeIn {
-  animation: opacityAppear 0.5s forwards;
+	animation: opacityAppear 0.5s forwards;
 }
 
 .fadeOutLeft {
-  animation: shrinkDisappear 0.5s forwards;
+	animation: shrinkDisappear 0.5s forwards;
 }
 
 .fadeInRight {
-  animation: growAppear 0.5s forwards;
+	animation: growAppear 0.5s forwards;
 }
 
 .colorFadeOut {
-  animation: colorDisappear 0.5s forwards;
+	animation: colorDisappear 0.5s forwards;
 }
 
 .colorFadeIn {
-  animation: colorAppear 0.5s forwards;
+	animation: colorAppear 0.5s forwards;
 }
 
 
 p {
-  font-weight: 400;
+	font-weight: 400;
 }
 
 a {
-  color: var(--action-color);
-  cursor: pointer;
+	color: var(--action-color);
+	cursor: pointer;
 }
 
 h1, h2 {
-  font-weight: 600;;
+	font-weight: 600;;
 }
 
 body, html {
-  background: transparent;
+	background: transparent;
 
-  height: 100dvh;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+	height: 100dvh;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
 }
 
 
 body {
-  overflow: hidden;
-  height: 100dvh;
-  max-height: 100dvh;
+	overflow: hidden;
+	height: 100dvh;
+	max-height: 100dvh;
 }
 
 body > div {
-  height: 100dvh;
-  min-height: 100dvh;
+	height: 100dvh;
+	min-height: 100dvh;
 }
 
 /* main, body, html {
-  height: 100dvh !important;
-  max-height: 100dvh !important;
+	height: 100dvh !important;
+	max-height: 100dvh !important;
 } */
 
 body > div > main {
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
-  align-items: stretch;
+	display: flex;
+	flex-direction: column;
+	justify-content: stretch;
+	align-items: stretch;
 
-  height: 100dvh !important;
+	height: 100dvh !important;
 
-  background-color: var(--background-color);
+	background-color: var(--background-color);
 }
 :root[data-mode="app"] body > div > main {
-  border: 3px solid var(--tertiary-text-color);
-  border-radius: 3px;
+	border: 3px solid var(--tertiary-text-color);
+	border-radius: 3px;
 }
 
 
 * {
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 
-  animation-duration: 0.5s !important;
+	animation-duration: 0.5s !important;
 
-  overscroll-behavior: none !important;
+	overscroll-behavior: none !important;
 }
 
 
 
 .animate__heartBeat {
-  animation: heartBeatCustom 1.5s !important;
+	animation: heartBeatCustom 1.5s !important;
 }
 
 @keyframes heartBeatCustom {
-  0% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+	0% {
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
 
-  14% {
-    -webkit-transform: scale(var(--scale-to));
-    transform: scale(var(--scale-to));
-  }
+	14% {
+		-webkit-transform: scale(var(--scale-to));
+		transform: scale(var(--scale-to));
+	}
 
-  28% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+	28% {
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
 
-  100% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+	100% {
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
 }
 
 #context-menu:has(div[name="context-menu"]) {
-  border-top-right-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-  /* border-right: none; */
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	/* border-right: none; */
 }
 
 div[name="context-menu"]:has(div[name="context-menu"]) {
-  border-top-right-radius: 0px !important;
+	border-top-right-radius: 0px !important;
 }
 
 div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] {
-  border-top-left-radius: 0px !important;
-  /* border-bottom-left-radius: 0px !important; */
+	border-top-left-radius: 0px !important;
+	/* border-bottom-left-radius: 0px !important; */
 }
 
 
 
 #main {
-  display: flex;
-  flex-direction: row;
-  justify-content: stretch;
-  align-items: stretch;
+	display: flex;
+	flex-direction: row;
+	justify-content: stretch;
+	align-items: stretch;
 
-  height: var(--body-height);
-  max-height: var(--body-height);
+	height: var(--body-height);
+	max-height: var(--body-height);
 }
 
 #login-theme {
-  position: absolute;
-  width: var(--min-height);
-  height: var(--min-height);
-  top: var(--margin-block);
-  right: var(--margin-inline);
+	position: absolute;
+	width: var(--min-height);
+	height: var(--min-height);
+	top: var(--margin-block);
+	right: var(--margin-inline);
 }
 
 .react-flow__edge-path-anim {
-  /* stroke: var(--action-color) !important; */
-  stroke-width: 3;
-  stroke-dasharray: 5, 5;
-  animation: dash-animation 1.5s linear infinite;
-  fill: none;
+	/* stroke: var(--action-color) !important; */
+	stroke-width: 3;
+	stroke-dasharray: 5, 5;
+	animation: dash-animation 1.5s linear infinite;
+	fill: none;
 }
 
 .react-flow__edge-path-anim-backwards {
-  /* stroke: var(--action-color) !important; */
-  stroke-width: 3;
-  stroke-dasharray: 5, 5;
-  animation: dash-animation 1.5s linear infinite reverse;
-  fill: none;
-  /* opacity: 0.4 !important; */
+	/* stroke: var(--action-color) !important; */
+	stroke-width: 3;
+	stroke-dasharray: 5, 5;
+	animation: dash-animation 1.5s linear infinite reverse;
+	fill: none;
+	/* opacity: 0.4 !important; */
 }
 
 
 @keyframes dash-animation {
-  to {
-    stroke-dashoffset: -10;
-  }
+	to {
+		stroke-dashoffset: -10;
+	}
 }
 
 .react-flow__nodesselection-rect {
-  border-radius: var(--border-radius-large);
-  transform: translateX(-1px) translateY(-1px);
+	border-radius: var(--border-radius-large);
+	transform: translateX(-1px) translateY(-1px);
 }
 
 .react-flow__handle-left {
@@ -472,957 +472,957 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 }
 
 div:first-child > div > .react-flow__handle-left[data-handleid="execution"] {
-  top: calc(var(--margin-block) * 1.4) !important;
-  left: 2px !important;
+	top: calc(var(--margin-block) * 1.4) !important;
+	left: 2px !important;
 }
 
 div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
-  top: calc(var(--margin-block) * 1.4) !important;
-  right: 2px !important;
+	top: calc(var(--margin-block) * 1.4) !important;
+	right: 2px !important;
 }
 
 .react-flow__handle-right[data-handleid="execution-event"] {
-  /* top: 50% !important; */
-  /* transform: translate(0px, 10%) !important; */
-  top: 0px !important;
-  right: -6px !important;
+	/* top: 50% !important; */
+	/* transform: translate(0px, 10%) !important; */
+	top: 0px !important;
+	right: -6px !important;
 }
 
 .react-flow__handle[data-handleid="execution"], .react-flow__handle[data-handleid^="execution-"] {
-  mask-image: url("/images/icons/flow_play.png") !important;
-  mask-size: contain !important;
-  mask-repeat: no-repeat !important;
-  mask-position: center !important;
+	mask-image: url("/images/icons/flow_play.png") !important;
+	mask-size: contain !important;
+	mask-repeat: no-repeat !important;
+	mask-position: center !important;
 
-  background-color: var(--secondary-text-color) !important;
+	background-color: var(--secondary-text-color) !important;
 
-  border: none !important;
-  border-radius: 0px !important;
+	border: none !important;
+	border-radius: 0px !important;
 
-  width: 12px;
-  height: 12px;
+	width: 12px;
+	height: 12px;
 
-  top: 0px;
+	top: 0px;
 
-  transform: translate(0px, -50%);
+	transform: translate(0px, -50%);
 }
 
 .react-flow__handle[data-handleid^="execution-"] {
-  position: absolute;
-  top: 50%;
+	position: absolute;
+	top: 50%;
 }
 
 
 .react-flow__handle[data-handleid="execution"]:hover {
-  opacity: 0.8;
+	opacity: 0.8;
 }
 .react-flow__handle[data-handleid="execution"]:active {
-  opacity: 0.6;
+	opacity: 0.6;
 }
 
 
 .react-flow__minimap-node {
-  fill: var(--hover-color) !important;
+	fill: var(--hover-color) !important;
 }
 
 .react-flow__controls-button {
-  background: var(--hover-color) !important;
-  color: var(--primary-text-color) !important;
-  border: 1px solid var(--hover-color) !important;
-  box-shadow: var(--box-shadow-light) !important;
-  fill: var(--secondary-text-color) !important;
+	background: var(--hover-color) !important;
+	color: var(--primary-text-color) !important;
+	border: 1px solid var(--hover-color) !important;
+	box-shadow: var(--box-shadow-light) !important;
+	fill: var(--secondary-text-color) !important;
 }
 
 .react-flow__controls-button:first-child {
-  border-top-left-radius: var(--border-radius);
-  border-top-right-radius: var(--border-radius);
+	border-top-left-radius: var(--border-radius);
+	border-top-right-radius: var(--border-radius);
 }
 
 .react-flow__controls-button:last-child {
-  border-bottom-left-radius: var(--border-radius);
-  border-bottom-right-radius: var(--border-radius);
+	border-bottom-left-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
 }
 
 .react-flow__controls-button:hover {
-  background: var(--hover-active-color) !important;
-  fill: var(--secondary-text-color) !important;
-  opacity: 0.8;
+	background: var(--hover-active-color) !important;
+	fill: var(--secondary-text-color) !important;
+	opacity: 0.8;
 }
 
 .react-flow__controls-button:active {
-  background: var(--hover-active-color) !important;
-  fill: var(--secondary-text-color) !important;
-  opacity: 1;
+	background: var(--hover-active-color) !important;
+	fill: var(--secondary-text-color) !important;
+	opacity: 1;
 }
 
 
 .react-flow__controls-button:active {
-  fill: var(--primary-text-color) !important;
+	fill: var(--primary-text-color) !important;
 }
 
 .react-flow__minimap {
-  background-color: var(--background-color) !important;
+	background-color: var(--background-color) !important;
 
-  border-radius: calc(var(--border-radius) * 0.6);
+	border-radius: calc(var(--border-radius) * 0.6);
 }
 
 .react-flow__handle {
-  /* background: var(--tertiary-text-color) !important; */
+	/* background: var(--tertiary-text-color) !important; */
 }
 
 .react-flow__minimap-mask {
-  fill: var(--hover-color) !important;
+	fill: var(--hover-color) !important;
 }
 
 .react-flow__node:hover {
-  outline: 2px solid var(--hover-color);
-  outline-offset: 2px;
+	outline: 2px solid var(--hover-color);
+	outline-offset: 2px;
 }
 
 .react-flow__node.selected {
-  outline: 2px solid var(--hover-color) !important;
-  outline-offset: 2px;
+	outline: 2px solid var(--hover-color) !important;
+	outline-offset: 2px;
 }
 
 .react-flow__node.dragging {
-  outline: 2px solid var(--action-color) !important;
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color) !important;
+	outline-offset: 2px;
 }
 
 .react-flow__node:has(.deleting) {
-  outline: 2px solid var(--red) !important;
-  outline-offset: 2px;
+	outline: 2px solid var(--red) !important;
+	outline-offset: 2px;
 }
 
 .react-flow__node:has(.copying) {
-  outline: 2px solid var(--action-color) !important;
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color) !important;
+	outline-offset: 2px;
 }
 
 .react-flow__node:has(.error) {
-  outline: 2px solid var(--red) !important;
-  outline-offset: 2px;
+	outline: 2px solid var(--red) !important;
+	outline-offset: 2px;
 }
 
 .react-flow__node:has(.animate) {
-  outline: 2px solid var(--action-color-light) !important;
-  outline-offset: 0px;
-  outline-style: dashed;
+	outline: 2px solid var(--action-color-light) !important;
+	outline-offset: 0px;
+	outline-style: dashed;
 
 
-  /* give thinking cursor */
-  cursor: wait !important;
+	/* give thinking cursor */
+	cursor: wait !important;
 }
 
 .react-flow__node:has(.animateBackwards) {
-  outline: 2px dashed #ffff0066 !important;
-  outline-offset: 2px;
-  cursor: wait !important;
+	outline: 2px dashed #ffff0066 !important;
+	outline-offset: 2px;
+	cursor: wait !important;
 }
 
 .react-flow__nodes:has(.animate) .react-flow__node {
-  pointer-events: none !important;
+	pointer-events: none !important;
 }
 
 
 .react-flow__edgeupdater {
-  stroke: none !important;
+	stroke: none !important;
 }
 
 .react-flow__edgeupdater:hover {
-  stroke: var(--hover-active-color) !important;
-  fill: var(--hover-color) !important;
+	stroke: var(--hover-active-color) !important;
+	fill: var(--hover-color) !important;
 }
 
 .react-flow__edgeupdater {
-  outline: none !important;
+	outline: none !important;
 }
 
 .react-flow__attribution {
-  display: none;
+	display: none;
 }
 
 .react-flow__edge * {
-  stroke: var(--hover-active-color);
+	stroke: var(--hover-active-color);
 }
 .react-flow__edge.selected *:not(.react-flow__edgeupdater) {
-  stroke: var(--action-color) !important;
-  stroke-width: 2px !important;
+	stroke: var(--action-color) !important;
+	stroke-width: 2px !important;
 }
 
 .react-flow__edge:hover path {
-  opacity: 0.8 !important;
+	opacity: 0.8 !important;
 }
 
 .react-flow__edge:active path {
-  opacity: 0.6 !important;
+	opacity: 0.6 !important;
 }
 
 .react-flow__node {
-  background: var(--secondary-color) !important;
-  color: var(--secondary-text-color) !important;
+	background: var(--secondary-color) !important;
+	color: var(--secondary-text-color) !important;
 
-  /* border: 2px solid var(--hover-color) !important; */
-  border-radius: var(--border-radius-large) !important;
+	/* border: 2px solid var(--hover-color) !important; */
+	border-radius: var(--border-radius-large) !important;
 
-  overflow: visible !important;
-  /* outline: none !important; */
+	overflow: visible !important;
+	/* outline: none !important; */
 }
 
 .react-flow__controls {
-  /* box-shadow: var(--box-shadow-light-light) !important; */
+	/* box-shadow: var(--box-shadow-light-light) !important; */
 }
 
 .cl-navbarMobileMenuButton:focus {
-  outline: 2px solid var(--action-color);
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color);
+	outline-offset: 2px;
 }
 
 .cl-navbar:focus {
-  outline: none !important;
+	outline: none !important;
 }
 
 .cl-navbarMobileMenuRow {
-  color: var(--primary-text-color) !important;
-  background: var(--background-color) !important;
+	color: var(--primary-text-color) !important;
+	background: var(--background-color) !important;
 }
 
 .cl-organizationPreviewTextContainer span {
-  font-family: '__Figtree_d680cf' !important;
-  font-size: 110% !important;
+	font-family: '__Figtree_d680cf' !important;
+	font-size: 110% !important;
 }
 
 .cl-cardBox {
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+	border-radius: var(--border-radius);
+	box-shadow: var(--box-shadow);
 
-  max-height: 100% !important;
+	max-height: 100% !important;
 }
 
 .cl-navbarButtons {
-  z-index: 10000000000000;
+	z-index: 10000000000000;
 }
 
 .cl-modalBackdrop {
-  padding-block: var(--margin-inline);
+	padding-block: var(--margin-inline);
 }
 
 .cl-navbar:before {
-  content: "";
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  height: 100%;
-  background: var(--background-color);
+	content: "";
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	background: var(--background-color);
 }
 
 .cl-navbar:after {
-  content: "";
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  height: 100%;
-  background: var(--secondary-color);
+	content: "";
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	background: var(--secondary-color);
 }
 
 .cl-card {
-  background: var(--background-color);
-  border-bottom: var(--border);
-  box-shadow: none;
+	background: var(--background-color);
+	border-bottom: var(--border);
+	box-shadow: none;
 }
 
 #error-password {
-  color: var(--red);
+	color: var(--red);
 }
 
 #error-password * {
-  color: var(--red) !important;
+	color: var(--red) !important;
 }
 
 
 .cl-cardBox .cl-signIn-start {
-  border: var(--border);
+	border: var(--border);
 }
 
 .cl-footer {
-  background: var(--secondary-color);
+	background: var(--secondary-color);
 }
 
 .cl-headerTitle {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-headerSubtitle, .cl-dividerText {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-formFieldLabel {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-formFieldAction, .cl-footerActionLink {
-  color: var(--action-color);
+	color: var(--action-color);
 }
 
 .cl-formFieldAction:hover, .cl-footerActionLink:hover {
-  color: var(--action-color);
-  opacity: 0.8;
+	color: var(--action-color);
+	opacity: 0.8;
 }
 
 .cl-formFieldAction:active, .cl-footerActionLink:active {
-  color: var(--action-color);
-  opacity: 0.6;
+	color: var(--action-color);
+	opacity: 0.6;
 }
 
 .cl-socialButtonsIconButton {
-  background: var(--secondary-color);
-  /* border: 1px solid var(--tertiary-text-color) !important; */
-  aspect-ratio: 1/1;
+	background: var(--secondary-color);
+	/* border: 1px solid var(--tertiary-text-color) !important; */
+	aspect-ratio: 1/1;
 }
 
 .cl-socialButtonsIconButton:hover {
-  background: var(--hover-color);
-  box-shadow: none;
+	background: var(--hover-color);
+	box-shadow: none;
 }
 
 .cl-socialButtonsIconButton:active {
-  background: var(--hover-active-color);
-  box-shadow: none;
+	background: var(--hover-active-color);
+	box-shadow: none;
 }
 
 .cl-socialButtonsIconButton:focus {
-  box-shadow: none !important;
+	box-shadow: none !important;
 }
 
 .cl-selectOptionsContainer {
-  font-family: '__Figtree_d680cf';
-  background: var(--secondary-color);
-  border: 1px solid var(--tertiary-text-color);
-  color: var(--secondary-text-color);
+	font-family: '__Figtree_d680cf';
+	background: var(--secondary-color);
+	border: 1px solid var(--tertiary-text-color);
+	color: var(--secondary-text-color);
 
-  overflow: visible;
+	overflow: visible;
 }
 
 .cl-selectOptionsContainer > div:first-child {
-  border-bottom: 1px solid var(--tertiary-text-color);
+	border-bottom: 1px solid var(--tertiary-text-color);
 }
 
 .cl-selectSearchInput {
-  background: transparent !important;
-  /* font-family: '__Figtree_d680cf'; */
+	background: transparent !important;
+	/* font-family: '__Figtree_d680cf'; */
 }
 
 .cl-selectOption p {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-selectOption * {
-  font-family: '__Figtree_d680cf';
+	font-family: '__Figtree_d680cf';
 }
 
 /* .cl-selectSearchInput:focus {
-  outline-offset: 2px;
+	outline-offset: 2px;
 } */
 
 .cl-organizationSwitcher-root {
-  width: 100%;
-  background: transparent !important;
+	width: 100%;
+	background: transparent !important;
 }
 
 .cl-userButtonTrigger {
-  background: transparent !important;
+	background: transparent !important;
 }
 
 .cl-userPreview {
-  color: var(--secondary-text-color)
+	color: var(--secondary-text-color)
 }
 
 .cl-userButtonPopoverActionButtonIconBox {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-userButtonPopoverActionButton {
-  /* background: var(--secondary-color); */
-  color: var(--secondary-text-color);
+	/* background: var(--secondary-color); */
+	color: var(--secondary-text-color);
 }
 
 .cl-userButtonPopoverActionButton:hover {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 .cl-menuList {
-  font-family: '__Figtree_d680cf';
+	font-family: '__Figtree_d680cf';
 
-  border-radius: var(--border-radius);
+	border-radius: var(--border-radius);
 }
 
 .cl-menuItem {
-  border-radius: var(--border-radius);
+	border-radius: var(--border-radius);
 }
 
 .cl-actionCard, .cl-menuList {
-  background: var(--secondary-color);
-  border: 1px solid var(--hover-color);
-  box-shadow: var(--box-shadow);
+	background: var(--secondary-color);
+	border: 1px solid var(--hover-color);
+	box-shadow: var(--box-shadow);
 }
 
 .cl-formButtonReset:hover, .cl-profileSectionPrimaryButton:hover, .cl-profileSectionItemList .cl-button:hover {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 
 .cl-organizationSwitcherPreviewButton svg {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-modalContent:has(.cl-organizationProfile-root), .cl-modalContent:has(.cl-userProfile-root) {
-  background-color: var(--background-color);
+	background-color: var(--background-color);
 }
 .cl-modalContent .cl-cardBox {
-  border: 3px solid var(--tertiary-text-color);
-  border-radius: var(--border-radius);
+	border: 3px solid var(--tertiary-text-color);
+	border-radius: var(--border-radius);
 }
 .cl-userButtonPopoverActionButton:active {
-  background-color: var(--hover-active-color);
-  color: var(--primary-text-color);
+	background-color: var(--hover-active-color);
+	color: var(--primary-text-color);
 }
 .cl-cardBox * {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 .cl-cardBox h1 {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 .cl-navbar {
-  background: var(--secondary-color);
+	background: var(--secondary-color);
 }
 .cl-navbar * {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 .cl-navbar h1 {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-navbar > div > div:first-child {
-  z-index: 1000;
+	z-index: 1000;
 }
 
 .cl-scrollBox {
-  background-color: var(--background-color);
-  border-left: 1px solid var(--hover-color);
+	background-color: var(--background-color);
+	border-left: 1px solid var(--hover-color);
 }
 
 .cl-rootBox {
-  font-family: '__Figtree_d680cf';
+	font-family: '__Figtree_d680cf';
 
 }
 
 .cl-organizationSwitcherPopoverCard {
-  font-family: '__Figtree_d680cf';
-  z-index: 1000000000000;
-  /* background-color: var(--secondary-color); */
-  border-radius: var(--border-radius);
-  color: var(--primary-text-color);
+	font-family: '__Figtree_d680cf';
+	z-index: 1000000000000;
+	/* background-color: var(--secondary-color); */
+	border-radius: var(--border-radius);
+	color: var(--primary-text-color);
 }
 
 .cl-organizationSwitcherPopoverCard:focus {
-  outline: 2px solid var(--action-color-hidden);
+	outline: 2px solid var(--action-color-hidden);
 }
 .cl-userButtonPopoverCard:focus {
-  outline: 2px solid var(--action-color-hidden);
+	outline: 2px solid var(--action-color-hidden);
 }
 
 .cl-organizationSwitcherPopoverActionButton {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-organizationSwitcherPopoverActionButton:hover {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-organizationSwitcherPopoverActionButton:active {
-  background-color: var(--hover-active-color);
-  color: var(--primary-text-color);
+	background-color: var(--hover-active-color);
+	color: var(--primary-text-color);
 }
 
 .cl-userButtonPopoverCard {
-  font-family: '__Figtree_d680cf';
-  z-index: 1000000000000;
-  transform: translate(-12px, -8px) !important;
-  /* background-color: var(--secondary-color); */
-  border-radius: var(--border-radius);
-  color: var(--primary-text-color);
+	font-family: '__Figtree_d680cf';
+	z-index: 1000000000000;
+	transform: translate(-12px, -8px) !important;
+	/* background-color: var(--secondary-color); */
+	border-radius: var(--border-radius);
+	color: var(--primary-text-color);
 }
 
 .cl-userButtonPopoverMain, .cl-organizationSwitcherPopoverMain {
-  font-family: '__Figtree_d680cf';
-  background-color: var(--secondary-color);
-  border: 1px solid var(--hover-color);
-  border-radius: var(--border-radius);
-  color: var(--primary-text-color);
+	font-family: '__Figtree_d680cf';
+	background-color: var(--secondary-color);
+	border: 1px solid var(--hover-color);
+	border-radius: var(--border-radius);
+	color: var(--primary-text-color);
 }
 
 .cl-userPreview {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-userButtonPopoverFooter, .cl-organizationSwitcherPopoverFooter {
-  display: none;
-  background: var(--tertiary-text-color) !important;
+	display: none;
+	background: var(--tertiary-text-color) !important;
 }
 
 
 
 .cl-userButtonPopoverFooter * {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-avatarBox {
-  background: transparent !important;
+	background: transparent !important;
 }
 
 .cl-organizationSwitcherTrigger svg {
-  margin-left: auto;
-  color: var(--secondary-text-color);
+	margin-left: auto;
+	color: var(--secondary-text-color);
 }
 
 
 .cl-userButtonPopoverActionButton:hover {
-  background-color: var(--hover-color) !important;
+	background-color: var(--hover-color) !important;
 }
 .cl-userButtonPopoverActionButton:active {
-  background-color: var(--hover-active-color) !important;
+	background-color: var(--hover-active-color) !important;
 }
 
 .cl-avatarBox > img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBel"] {
-  display: none;
+	display: none;
 }
 
 .cl-avatarBox:not(.cl-organizationPreviewAvatarBox) {
-  -webkit-mask-image: url("/images/avatar.png");
-  -webkit-mask-size: contain;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  background-color: var(--active-color-hidden) !important;
+	-webkit-mask-image: url("/images/avatar.png");
+	-webkit-mask-size: contain;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	background-color: var(--active-color-hidden) !important;
 }
 
 .cl-organizationPreviewAvatarBox > img[src*="eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6"] {
-  display: none;
+	display: none;
 }
 
 .cl-organizationSwitcherPopoverActions > div {
-  border-bottom: 1px solid var(--hover-color);
+	border-bottom: 1px solid var(--hover-color);
 }
 
 .cl-userButtonPopoverMain > span {
-  border-bottom: 1px solid var(--hover-color);
+	border-bottom: 1px solid var(--hover-color);
 }
 
 
 .cl-organizationPreviewAvatarContainer {
-  -webkit-mask-image: url("/images/organization.png");
-  -webkit-mask-size: contain;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  background-color: var(--active-color-hidden);
+	-webkit-mask-image: url("/images/organization.png");
+	-webkit-mask-size: contain;
+	-webkit-mask-position: center;
+	-webkit-mask-repeat: no-repeat;
+	background-color: var(--active-color-hidden);
 }
 
 /* .cl-organizationSwitcherTrigger:hover {
-  background: var(--hover-color) !important;
-  border: 1px solid var(--hover-color) !important;
+	background: var(--hover-color) !important;
+	border: 1px solid var(--hover-color) !important;
 } */
 
 /* .cl-organizationSwitcherTrigger:active {
-  background: var(--hover-active-color) !important;
-  border: 1px solid var(--hover-active-color) !important;
+	background: var(--hover-active-color) !important;
+	border: 1px solid var(--hover-active-color) !important;
 } */
 
 .cl-organizationPreviewMainIdentifier {
-  color: var(--secondary-text-color);
-  font-weight: 700;
+	color: var(--secondary-text-color);
+	font-weight: 700;
 }
 
 .cl-modalContent:focus {
-  outline: none !important;
+	outline: none !important;
 }
 
 .cl-modalContent:focus .cl-cardBox {
-  outline-offset: 2px;
-  outline: 2px solid var(--action-color-hidden);
+	outline-offset: 2px;
+	outline: 2px solid var(--action-color-hidden);
 }
 
 .cl-tagInputContainer {
-  background: var(--secondary-color);
-  color: var(--secondary-text-color);
-  border: 1px solid var(--hover-color);
-  box-shadow: none !important;
+	background: var(--secondary-color);
+	color: var(--secondary-text-color);
+	border: 1px solid var(--hover-color);
+	box-shadow: none !important;
 }
 
 .cl-tagPillContainer {
-  border: 1px solid var(--hover-color);
+	border: 1px solid var(--hover-color);
 }
 
 .cl-tagPillContainer:hover {
-  background-color: var(--hover-color);
-  border: 1px solid var(--hover-color);
+	background-color: var(--hover-color);
+	border: 1px solid var(--hover-color);
 }
 
 .cl-input::placeholder {
-  color: var(--secondary-text-color);
-  opacity: 0.7;
+	color: var(--secondary-text-color);
+	opacity: 0.7;
 }
 
 .cl-tagPillContainer:active {
-  background-color: var(--hover-active-color);
-  border: 1px solid var(--hover-active-color);
+	background-color: var(--hover-active-color);
+	border: 1px solid var(--hover-active-color);
 }
 
 .cl-tagInputContainer:hover {
-  border: 1px solid var(--hover-active-color);
+	border: 1px solid var(--hover-active-color);
 }
 
 .cl-tagInputContainer:active {
-  border: 1px solid var(--secondary-text-color);
+	border: 1px solid var(--secondary-text-color);
 }
 
 .cl-tagInputContainer:has(input:focus) {
-  outline: 2px solid var(--action-color);
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color);
+	outline-offset: 2px;
 }
 
 .cl-tagInputContainer input:focus {
-  outline: none;
+	outline: none;
 }
 
 .cl-tagInputContainer input {
-  color: var(--secondary-text-color) !important;
+	color: var(--secondary-text-color) !important;
 }
 
 .cl-createOrganization-root .cl-headerTitle {
-  font-size: 160%;
+	font-size: 160%;
 }
 
 
 
 .cl-input {
-  background: transparent !important;
-  color: var(--secondary-text-color);
-  border: none !important;
-  border-radius: var(--border-radius);
-  box-shadow: none;
+	background: transparent !important;
+	color: var(--secondary-text-color);
+	border: none !important;
+	border-radius: var(--border-radius);
+	box-shadow: none;
 }
 .cl-formFieldInput__deleteConfirmation, .cl-formFieldInput {
-  border: 1px solid var(--hover-color) !important;
+	border: 1px solid var(--hover-color) !important;
 }
 .cl-footerActionText {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-form {
-  gap: var(--gap);
+	gap: var(--gap);
 }
 
 .cl-button {
-  background-color: var(--secondary-color);
-  border-radius: var(--border-radius);
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
+	background-color: var(--secondary-color);
+	border-radius: var(--border-radius);
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
 }
 
 .cl-tabPanel:focus {
-  outline: none !important;
+	outline: none !important;
 }
 
 .cl-tabListContainer button {
-  background-color: transparent;
+	background-color: transparent;
 }
 
 .cl-tabListContainer {
-  border-bottom: 1px solid var(--hover-color);
+	border-bottom: 1px solid var(--hover-color);
 }
 
 .cl-navbarButton.cl-button:not(.cl-active) {
-  background-color: transparent;
+	background-color: transparent;
 }
 
 .cl-navbarButton.cl-button:not(.cl-active):hover {
-  background-color: var(--hover-color);
+	background-color: var(--hover-color);
 }
 .cl-navbarButton.cl-button:not(.cl-active):active {
-  background-color: var(--hover-active-color);
+	background-color: var(--hover-active-color);
 }
 
 .cl-menuList {
-  background-color: var(--background-color);
+	background-color: var(--background-color);
 }
 
 .cl-modalContent {
-  border-radius: var(--border-radius);
-  margin: 0px !important;
+	border-radius: var(--border-radius);
+	margin: 0px !important;
 
-  max-height: 100% !important;
+	max-height: 100% !important;
 
-  z-index: 1000000000000000000000000000000000000;
+	z-index: 1000000000000000000000000000000000000;
 }
 
 .cl-cardBox:focus {
-  outline: none !important;
+	outline: none !important;
 }
 .cl-modalContent:focus {
-  outline: none !important;
-  /* outline: 2px solid var(--action-color-hdiden) !important; */
+	outline: none !important;
+	/* outline: 2px solid var(--action-color-hdiden) !important; */
 }
 .cl-rootBox:focus {
-  outline: none !important;
+	outline: none !important;
 }
 
 .cl-navbarButton.cl-button:focus, .cl-tabListContainer button:focus {
-  outline: 2px solid var(--action-color) !important;
-  outline-offset: 2px !important;
+	outline: 2px solid var(--action-color) !important;
+	outline-offset: 2px !important;
 }
 
 /* div with role = "menu" */
 .cl-organizationSwitcherPopoverActions div[role="menu"] > button {
-  border-radius: 100% !important;
+	border-radius: 100% !important;
 }
 
 .cl-organizationSwitcherPopoverActions .cl-button, .cl-userButtonPopoverActions .cl-button {
-  border-radius: 0px !important;
+	border-radius: 0px !important;
 }
 
 .cl-userButtonPopoverCard, .cl-organizationSwitcherPopoverCard {
-  background-color: var(--background-color);
+	background-color: var(--background-color);
 }
 
 .cl-tabButton {
-  padding-inline: var(--gap);
+	padding-inline: var(--gap);
 }
 
 .cl-tabButton:hover {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-organizationSwitcherTrigger {
-  background: transparent !important;
-  /* border: 1px solid var(--hover-color) !important; */
-  border-radius: var(--border-radius-large) !important;
+	background: transparent !important;
+	/* border: 1px solid var(--hover-color) !important; */
+	border-radius: var(--border-radius-large) !important;
 
-  align-items: flex-start;
+	align-items: flex-start;
 
-  /* padding: calc(var(--margin-block) * 1) !important; */
+	/* padding: calc(var(--margin-block) * 1) !important; */
 
-  padding: 0px !important;
+	padding: 0px !important;
 
-  width: -webkit-fill-available;
+	width: -webkit-fill-available;
 
 }
 
 .cl-organizationSwitcherTrigger svg {
-  visibility: hidden;
+	visibility: hidden;
 }
 
 .cl-button:hover {
-  background-color: var(--hover-color);
+	background-color: var(--hover-color);
 }
 
 .cl-button:active {
-  background-color: var(--hover-active-color);
+	background-color: var(--hover-active-color);
 }
 
 .cl-phoneInputBox > div > p {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-phoneInputBox {
-  gap: var(--gap);
-  /* box-shadow: none !important; */
-  border: 1px solid var(--hover-color);
+	gap: var(--gap);
+	/* box-shadow: none !important; */
+	border: 1px solid var(--hover-color);
 }
 
 .cl-socialButtons {
-  display: flex;
+	display: flex;
 }
 
 .cl-selectButton {
-  background-color: transparent;
-  /* border: 1px solid var(--hover-color) !important; */
+	background-color: transparent;
+	/* border: 1px solid var(--hover-color) !important; */
 }
 
 .cl-selectButton * {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 
 .cl-selectButton:hover {
-  background-color: var(--hover-color);
+	background-color: var(--hover-color);
 }
 
 .cl-selectButton:focus {
-  /* outline: initial !important; */
-  background-color: var(--hover-active-color);
+	/* outline: initial !important; */
+	background-color: var(--hover-active-color);
 }
 
 .cl-identityPreviewText {
-  color: var(--primary-text-color);
+	color: var(--primary-text-color);
 }
 
 .cl-identityPreviewEditButton {
-  background: transparent;
-  color: var(--hover-color);
+	background: transparent;
+	color: var(--hover-color);
 }
 
 .cl-formFieldInputShowPasswordButton {
-  color: var(--secondary-text-color);
+	color: var(--secondary-text-color);
 }
 
 .cl-identityPreviewEditButton:hover {
-  background: transparent;
-  color: var(--hover-active-color);
+	background: transparent;
+	color: var(--hover-active-color);
 }
 
 .cl-identityPreviewEditButton:active {
-  background: transparent;
-  color: var(--action-color);
+	background: transparent;
+	color: var(--action-color);
 }
 
 .cl-phoneInputBox .cl-formFieldInput {
-  border: 1px solid var(--tertiary-text-color);
-  background: var(--secondary-color);
-  border-radius: var(--border-radius);
+	border: 1px solid var(--tertiary-text-color);
+	background: var(--secondary-color);
+	border-radius: var(--border-radius);
 
-  margin-left: calc(var(--gap) / 2);
+	margin-left: calc(var(--gap) / 2);
 }
 
 .cl-phoneInputBox:hover {
-  border: 1px solid var(--hover-active-color);
+	border: 1px solid var(--hover-active-color);
 }
 
 .cl-formResendCodeLink {
-  background: transparent !important;
-  color: var(--action-color);
+	background: transparent !important;
+	color: var(--action-color);
 }
 
 .cl-formFieldInput__password {
-  border: 1px solid var(--tertiary-text-color) !important;
+	border: 1px solid var(--tertiary-text-color) !important;
 }
 
 .cl-otpCodeFieldInput {
-  background-color: var(--secondary-color) !important;
-  border: none !important;
+	background-color: var(--secondary-color) !important;
+	border: none !important;
 }
 
 .cl-phoneInputBox:has(input:focus) {
-  border: 1px solid var(--action-color);
+	border: 1px solid var(--action-color);
 }
 
 .cl-phoneInputBox:has(input[value=""]:focus) {
-  border: 1px solid var(--action-color-hidden);
+	border: 1px solid var(--action-color-hidden);
 }
 
 
 
 .cl-phoneInputBox input:focus {
-  outline: none !important;
+	outline: none !important;
 }
 
 /* last > div of .cl-footer if its not the only div */
 .cl-footer > div:last-child:not(:only-child) * {
-  color: var(--secondary-text-color);
-  opacity: 0.8;
+	color: var(--secondary-text-color);
+	opacity: 0.8;
 }
 
 .cl-phoneInputBox .cl-input {
-  border: none !important;
+	border: none !important;
 }
 
 .cl-footer > div:first-child:not(:only-child) {
-  /* border-radius: 0 0 var(--border-radius) var(--border-radius); */
-  border-bottom: 1px solid var(--hover-color);
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center; 
+	/* border-radius: 0 0 var(--border-radius) var(--border-radius); */
+	border-bottom: 1px solid var(--hover-color);
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center; 
 }
 
 .cl-footer > div:last-child:not(:only-child) {
-  /* border-top: 1px solid var(--hover-color); */
+	/* border-top: 1px solid var(--hover-color); */
 }
 
 .cl-userButtonPopoverActionButton__signOut {
-  color: var(--red) !important;
+	color: var(--red) !important;
 }
 
 .cl-userButtonPopoverActionButton__signOut svg {
-  color: var(--red) !important;
-  opacity: 1;
+	color: var(--red) !important;
+	opacity: 1;
 }
 
 /* .cl-input:focus {
-  outline: 2px solid var(--action-color);
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color);
+	outline-offset: 2px;
 } */
 
 
 
 .cl-input:focus {
-  outline: 2px solid var(--action-color);
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color);
+	outline-offset: 2px;
 }
 
 /* if .cl-input with no text value */
 .cl-input[value=""]:focus {
-  outline: 2px solid var(--action-color-hidden);
-  outline-offset: 2px;
+	outline: 2px solid var(--action-color-hidden);
+	outline-offset: 2px;
 }
 
 #mobile-toggle-sidebar {
-  display: none;
-  z-index: 1;
+	display: none;
+	z-index: 1;
 }
 
 #chat-collapse-sidebar {
-  z-index: 10000000000000000000000;
-  top: calc(var(--header-height) + var(--margin-block) + 2px);
+	z-index: 10000000000000000000000;
+	top: calc(var(--header-height) + var(--margin-block) + 2px);
 }
 
 #newChatDropdownMenu {
-  max-height: 70vh !important;
+	max-height: 70vh !important;
 }
 
 /* if under 400 width */
 @media (max-width: 800px) {
-  .cl-card.cl-signIn-start {
-    padding-block: 25px;
-    padding-inline: 18px;
-  } 
+	.cl-card.cl-signIn-start {
+		padding-block: 25px;
+		padding-inline: 18px;
+	} 
 
-  .cl-modalContent {
-    height: initial;
-  }
+	.cl-modalContent {
+		height: initial;
+	}
 
-  #login-theme {
-    top: var(--gap);
-    right: var(--gap);
-    width: calc(var(--min-height) * 0.7) !important;
-    height: calc(var(--min-height) * 0.7) !important;
-  }
+	#login-theme {
+		top: var(--gap);
+		right: var(--gap);
+		width: calc(var(--min-height) * 0.7) !important;
+		height: calc(var(--min-height) * 0.7) !important;
+	}
 
-  #chat-collapse-sidebar {
-    display: none !important;
-  }
+	#chat-collapse-sidebar {
+		display: none !important;
+	}
 
-  #mobile-toggle-sidebar {
-    display: flex;
-  }
+	#mobile-toggle-sidebar {
+		display: flex;
+	}
 
-  /* #toggle-theme {
-    display: none;
-  }
+	/* #toggle-theme {
+		display: none;
+	}
 
-  #logout {
-    display: none;
-  } */
-  
+	#logout {
+		display: none;
+	} */
+	
 }

@@ -77,6 +77,7 @@ export default async function handler(req, res) {
 
         const groups = db.collection("groups");
         const group = await groups.findOne({ groupId, deleted: false });
+        if(!group) return res.status(400).json({ message: "Group not found" });
         if(group.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
 
         await groups.updateOne({ groupId }, { $set: {
