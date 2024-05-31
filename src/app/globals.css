@@ -7,6 +7,7 @@
   --tertiary-text-color: #333;
 
   --action-color: #6486FF;
+  --action-color-light: #6486FF80;
   --action-color-hidden: #6486ff2d;
 
 
@@ -436,12 +437,22 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 }
 
 .react-flow__edge-path-anim {
-  stroke: var(--action-color) !important;
+  /* stroke: var(--action-color) !important; */
   stroke-width: 3;
   stroke-dasharray: 5, 5;
   animation: dash-animation 1.5s linear infinite;
   fill: none;
 }
+
+.react-flow__edge-path-anim-backwards {
+  /* stroke: var(--action-color) !important; */
+  stroke-width: 3;
+  stroke-dasharray: 5, 5;
+  animation: dash-animation 1.5s linear infinite reverse;
+  fill: none;
+  /* opacity: 0.4 !important; */
+}
+
 
 @keyframes dash-animation {
   to {
@@ -594,8 +605,23 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 .react-flow__node:has(.animate) {
-  outline: 2px dashed var(--action-color) !important;
+  outline: 2px solid var(--action-color-light) !important;
+  outline-offset: 0px;
+  outline-style: dashed;
+
+
+  /* give thinking cursor */
+  cursor: wait !important;
+}
+
+.react-flow__node:has(.animateBackwards) {
+  outline: 2px dashed #ffff0066 !important;
   outline-offset: 2px;
+  cursor: wait !important;
+}
+
+.react-flow__nodes:has(.animate) .react-flow__node {
+  pointer-events: none !important;
 }
 
 

@@ -677,7 +677,8 @@ export default {
                         },
                         messageId: {
                             type: "number",
-                            description: "Message ID"
+                            description: "Message ID",
+                            required: false
                         }
                     }
                     
@@ -926,7 +927,8 @@ export default {
             in: {
                 title: {
                     type: "string",
-                    description: "Notification title"
+                    description: "Notification title",
+                    required: false
                 },
                 content: {
                     type: "string",

@@ -18,15 +18,22 @@ export default function Edge ({ id, sourceX, sourceY, targetX, targetY, sourcePo
     if(type.includes(":")) type = type.split(":")[0];
     
     const typeData = TYPES[type];
-    const color = typeData?.color || [225, 225, 225];
-    const alpha = typeData?.alpha || 0.5;
+    let color = typeData?.color || [225, 225, 225];
+    let alpha = typeData?.alpha || 0.7;
 
 
     const doAnimate = data?.animate || false;
-    const stroke = doAnimate ? `var(--action-color)` : `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
-    const strokeWidth = typeData?.stroke || 2;
-    const opacity = doAnimate ? 0.5 : 1;
+    const doAnimateBackwards = data?.animateBackwards || false;
 
+    let stroke = type === "execution" && doAnimate ? `var(--action-color)` : `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+    const strokeWidth = typeData?.stroke || 2;
+    const opacity = doAnimate ? 0.8 : 1;
+
+    if(doAnimateBackwards) {
+        // make color construction orange
+        // alpha = type.includes("execution") ? 0.8 : 0.25;
+        stroke = `rgba(255, 165, 0, ${alpha})`;
+    }
 
     // Determine the edge style based on data.type or data.color
     // const edgeStyle = data?.color ? { stroke: data.color, strokeWidth: 2 } : {};
@@ -46,9 +53,17 @@ export default function Edge ({ id, sourceX, sourceY, targetX, targetY, sourcePo
                 markerEnd={markerEnd}
             />
             {
-                doAnimate && <path
+                doAnimate && !doAnimateBackwards && <path
                     style={{ ...style, ...edgeStyle }}
                     className="react-flow__edge-path-anim"
+                    d={edgePath}
+                    markerEnd={markerEnd}
+                />
+            }
+            {
+                doAnimateBackwards && <path
+                    style={{ ...style, ...edgeStyle }}
+                    className="react-flow__edge-path-anim-backwards"
                     d={edgePath}
                     markerEnd={markerEnd}
                 />

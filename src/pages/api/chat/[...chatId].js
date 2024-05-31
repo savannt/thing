@@ -105,7 +105,10 @@ export default async function handler(req, res) {
         // update(chatId);
 
 
-        onUserMessage(chatId, message);
+        onUserMessage(chatId, {
+            role: "user",
+            content: bodyMessage,
+        });
 
         res.status(200).json({ message: "OK" });
     } else {

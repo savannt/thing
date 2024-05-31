@@ -1,5 +1,17 @@
 import ably from "@/services/ably";
 
+import { ChatCompletion, Messages, Message, Tools, Tool } from "@/services/openai/OpenAI";
+
+
+const error = (title, ...messages) => {
+    return {
+        error: {
+            title,
+            messages
+        }
+    }
+}
+
 export default {
     "StringConstant": function String ({ value }) {
         return { value }
@@ -58,8 +70,20 @@ export default {
         return { jsonString: JSON.stringify(object) };
     },
 
-    "Messages/Push": function MessagesAdd ({ messages, message }) {
+    "Messages/CreateEmpty": function MessagesCreateEmpty () {
+        return Messages.empty();
+    },
 
+    "Messages/Push": function MessagesPush ({ messages, message }) {
+        // if messages is not instanceof Messages
+        if(Array.isArray(messages)) messages = Messages.from(messages);
+        if(!messages instanceof Messages) return error("Messages is not an instance of Messages");
+        if(!message instanceof Message) return error("Message is not an instance of Message");
+        // console.log("messag", message);
+
+        messages.add(message);
+
+        return { messages }
     },
     "Messages/Combine": function MessagesCombine ({ messagesA, messagesB }) {
 
@@ -86,14 +110,33 @@ export default {
 
     },
 
-    "ChatCompletion/Create": async function ChatCompletionCreate ({ messages }) {
 
+    
+    "ChatCompletion/Create": async function ChatCompletionCreate ({ messages }) {
+        return { run: await ChatCompletion.create(messages) }
     },
     "ChatCompletion/CreateWithTools": async function ChatCompletionCreateWithTools ({ messages, tools, toolChoice }) {
 
     },
     "ChatCompletion/CreateFromTemplate": async function ChatCompletionCreateFromTemplate ({ template, input, examples }) {
 
+    },
+
+    "Run/OnMessage": async function RunOnMessage ({ run }) {
+        if(run.choices && run.choices.length > 0) {
+            return {
+                message: run.choices[0],
+                index: 0,
+            }
+        }
+        return new Promise(resolve => {
+            run.on("end", ({ index, message }) => {
+                resolve({
+                    message,
+                    index
+                });
+            });
+        });
     },
 
     "Assistant/Create": async function AssistantCreate ({ name, instructions, tools }) {
@@ -124,5 +167,7 @@ export default {
 
         const channel = ably.channels.get("notifications");
         channel.publish("notification", { title, content });
+
+        return {};
     }
 }

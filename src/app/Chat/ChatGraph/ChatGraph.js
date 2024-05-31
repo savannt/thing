@@ -152,7 +152,8 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  
+
+
     const onNewNode = (e, name) => {
         if(!NODE_DICTIONARY[name]) {
             console.error("Node not found:", name);
@@ -255,6 +256,7 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
     const [saved, setSaved] = useState(true);
 
     const save = () => {
+        console.log("Saving", nodes, edges)
         groupUpdate(group.groupId, nodes, edges).then((data) => {
             if(!data || data.message !== "OK") {
                 notification("Error", "Failed to save graph", "red");
@@ -489,6 +491,10 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         setSaveIteration((prev) => prev + 1);
     }
 
+    useEffect(() => {
+        setSaveIteration((prev) => prev + 1);
+    }, [nodes, edges]);
+
     const onPaneClick = (...e) => {
         console.log("pane click", e);
         closeContextMenu();
@@ -589,6 +595,8 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
                     node.data = {
                         ...node.data,
                         error: true,
+                        animate: false,
+                        animateBackwards: false
                     }
                     if(valueName) node.data.errorValue = valueName;
                 }
@@ -600,7 +608,9 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
                 if(edge.id === nodeOrEdgeId) {
                     edge.data = {
                         ...edge.data,
-                        error: true
+                        error: true,
+                        animate: false,
+                        animateBackwards: false
                     }
                 }
                 return edge;
@@ -642,7 +652,8 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
                 return edges.map(edge => {
                     edge.data = {
                         ...edge.data,
-                        animate: false
+                        animate: false,
+                        animateBackwards: false
                     }
                     return edge;
                 });
@@ -653,7 +664,8 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
                     if(edge.id === edgeId) {
                         edge.data = {
                             ...edge.data,
-                            animate: doAnimate
+                            animate: doAnimate,
+                            animateBackwards: false
                         }
                     }
                     return edge;
@@ -662,72 +674,118 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         }
     }
 
-    const animateExecution = (nodeId) => {
-        const TIMEOUT = 1000;
-
-        // add data.animate = true
+    const animateExecutionBackwards = (nodeId) => {
         setNodes((nodes) => {
             return nodes.map(node => {
                 if(node.id === nodeId) {
                     node.data = {
                         ...node.data,
-                        animate: true
+                        animate: false,
+                        animateBackwards: true
                     }
                 }
                 return node;
             });
         });
-
-        setTimeout(() => {
-            // remove data.animate = true
-            setNodes((nodes) => {
-                return nodes.map(node => {
-                    if(node.id === nodeId) {
-                        node.data = {
-                            ...node.data,
-                            animate: false
-                        }
-                    }
-                    return node;
-                });
-            });
-        }, TIMEOUT);
     }
 
-    const animateExecutionEdge = (edgeId) => {
-        const TIMEOUT = 1000;
+    const animateExecution = (nodeId) => {
+        setNodes((nodes) => {
+            return nodes.map(node => {
+                if(node.id === nodeId) {
+                    node.data = {
+                        ...node.data,
+                        animate: true,
+                        animateBackwards: false,
+                    }
+                }
+                return node;
+            });
+        });
+    }
 
-        // add data.animate = true
+    const animateEdgeExecutionBackwards = (edgeId) => {
         setEdges((edges) => {
             return edges.map(edge => {
                 if(edge.id === edgeId) {
                     edge.data = {
                         ...edge.data,
-                        animate: true
+                        animateBackwards: true
                     }
                 }
                 return edge;
             });
         });
+    }
 
-        setTimeout(() => {
-            // remove data.animate = true
-            setEdges((edges) => {
-                return edges.map(edge => {
-                    if(edge.id === edgeId) {
-                        edge.data = {
-                            ...edge.data,
-                            animate: false
-                        }
+    const animateExecutionEdgeResponse = (edgeId, value) => {
+        setEdges((edges) => {
+            return edges.map(edge => {
+                if(edge.id === edgeId) {
+                    edge.data = {
+                        ...edge.data,
+                        animate: false,
+                        animateBackwards: false,
+                        value
                     }
-                    return edge;
-                });
+                }
+                return edge;
             });
-        }, TIMEOUT);
+        });
+    }
+
+    const animateExecutionEdge = (edgeId) => {
+        setEdges((edges) => {
+            return edges.map(edge => {
+                if(edge.id === edgeId) {
+                    edge.data = {
+                        ...edge.data,
+                        animate: true,
+                        animateBackwards: false
+                    }
+                }
+                return edge;
+            });
+        });
     }
 
     const animateExecutionResponse = (nodeId, values) => {
-        // TODO: Here
+        setNodes((nodes) => {
+            return nodes.map(node => {
+                if(node.id === nodeId) {
+                    node.data = {
+                        ...node.data,
+                        animate: false,
+                        animateBackwards: false,
+                        values
+                    }
+                }
+                return node;
+            });
+        });
+    }
+
+    const resetAllNodeStyles = () => {
+        setNodes((nodes) => {
+            return nodes.map(node => {
+                node.data = {
+                    ...node.data,
+                    animate: false,
+                    animateBackwards: false
+                }
+                return node;
+            });
+        });
+        setEdges((edges) => {
+            return edges.map(edge => {
+                edge.data = {
+                    ...edge.data,
+                    animate: false,
+                    animateBackwards: false
+                }
+                return edge;
+            });
+        });
     }
 
     useChannel(`flow-${chat.chatId}`, "error", (msg) => {
@@ -759,13 +817,20 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
             return typeof message !== "string" ? JSON.stringify(message) : message;
         });
 
-        notification("Log", foramttedMessages.join("\n"), "yellow");
+        console.log("[Flow Log]", foramttedMessages.join("\n"));
+        // notification("Log", foramttedMessages.join("\n"), "yellow");
     });
 
     useChannel(`flow-${chat.chatId}`, "execute", (msg) => {
         const { nodeId } = msg.data;
 
         animateExecution(nodeId);
+    });
+
+    useChannel(`flow-${chat.chatId}`, "execute_backwards", (msg) => {
+        const { nodeId } = msg.data;
+
+        animateExecutionBackwards(nodeId);
     });
 
     useChannel(`flow-${chat.chatId}`, "edge_on", (msg) => {
@@ -786,9 +851,22 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
         animateExecutionEdge(edgeId);
     });
 
+    useChannel(`flow-${chat.chatId}`, "execute_edge_response", (msg) => {
+        const { edgeId, value } = msg.data;
+
+        animateExecutionEdgeResponse(edgeId, value);
+    });
+
+    useChannel(`flow-${chat.chatId}`, "execute_edge_backwards", (msg) => {
+        const { edgeId } = msg.data;
+
+        animateEdgeExecutionBackwards(edgeId);
+    });
+
     useChannel(`flow-${chat.chatId}`, "finish", (msg) => {
-        setAnimateEdge(false, false);
         notification("", "Flow execution finished", "var(--active-color)");
+
+        resetAllNodeStyles();
     });
 
     useChannel(`flow-${chat.chatId}`, "execute_response", (msg) => {
@@ -905,7 +983,11 @@ export default function ChatGraph ({ chat, group, enterpriseId, className, onAni
                                 // if key is enter without holding shift, send
                                 if(e.key === "Enter" && !e.shiftKey) {
                                     // send
-                                    setShowChatMenu(false);
+                                    if(document.getElementById("send")) {
+                                        document.getElementById("send").click();
+                                    } else {
+                                        notification("Failed to send", "Send button not found", "red");
+                                    }
                                     e.preventDefault();
                                     return;
                                 } else if(e.key === "Enter") {

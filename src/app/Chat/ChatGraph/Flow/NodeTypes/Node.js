@@ -58,8 +58,11 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
         return str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
     }
 
+    const doAnimate = data?.animate || false;
+    const doAnimateBackwards = data?.animateBackwards || false;
+
     return (
-        <div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${data.animate ? "animate" : ""}`} style={{
+        <div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${doAnimate ? "animate" : ""} ${doAnimateBackwards ? "animateBackwards": ""}`} style={{
             border: `2px solid ${semiTransparentColor}`
         }}>
             <div className={`${styles.Node__Header} ${!left ? "" : styles.Node__Header__NoLeft}`} style={{

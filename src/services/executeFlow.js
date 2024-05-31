@@ -37,14 +37,17 @@ export default async function executeFlowEvent (chatId, values = {}, eventName =
     const handleExecuteResponse = async (nodeId, outputValues) => {
         await flowChannel.publish("execute_response", { nodeId, outputValues });
     }
-    const handleEdgeExecute = async (edgeId, value) => {
-        await flowChannel.publish("execute_edge", { edgeId, value });
+    const handleEdgeExecute = async (edgeId) => {
+        await flowChannel.publish("execute_edge", { edgeId });
     }
-    const handleEdgeOn = async (edgeId) => {
-        await flowChannel.publish("edge_on", { edgeId });
+    const handleEdgeExecuteResponse = async (edgeId, value) => {
+        await flowChannel.publish("execute_edge_response", { edgeId, value });
     }
-    const handleEdgeOff = async (edgeId) => {
-        await flowChannel.publish("edge_off", { edgeId });
+    const handleEdgeBackwards = async (edgeId) => {
+        await flowChannel.publish("execute_edge_backwards", { edgeId });
+    }
+    const handleBackwards = async (nodeId) => {
+        await flowChannel.publish("execute_backwards", { nodeId });
     }
     const handleFinish = async () => {
         await flowChannel.publish("finish", {});
@@ -86,11 +89,14 @@ export default async function executeFlowEvent (chatId, values = {}, eventName =
     flow.onLog((...messages) => handleLog(...messages));
     flow.onExecute((nodeId, defaultOutputValues) => handleExecute(nodeId, defaultOutputValues));
     flow.onExecuteResponse((nodeId, outputValues) => handleExecuteResponse(nodeId, outputValues));
-    flow.onEdgeExecute((edgeId, value) => handleEdgeExecute(edgeId, value));
-    flow.onEdgeOn((edgeId) => handleEdgeOn(edgeId));
-    flow.onEdgeOff((edgeId) => handleEdgeOff(edgeId));
+    flow.onEdgeExecute((edgeId) => handleEdgeExecute(edgeId));
+    flow.onEdgeExecuteResponse((edgeId, value) => handleEdgeExecuteResponse(edgeId, value));
+    flow.onEdgeBackwards((edgeId) => handleEdgeBackwards(edgeId));
+    flow.onBackwards((nodeId) => handleBackwards(nodeId));
     flow.onFinish(() => handleFinish());
-
+    
+    await flow.updateNodesData();
     const outputValues = await flow.executeFlowEvent(eventName, values);
+    if(!outputValues) return handleFinish(false);
     return outputValues;
 }

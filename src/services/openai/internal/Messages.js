@@ -3,7 +3,7 @@ import Message from "./Message.js";
 export default class Messages {
     constructor () {
         this.messages = [];
-
+        this._class = "Messages";
     }
     
     addRaw (messageObject) {
@@ -11,6 +11,12 @@ export default class Messages {
     }
 
     add (role, content) {
+        // if role is instanceof Message,
+        if(role.role && role.content) {
+            this.messages.push(role);
+            return;
+        }
+
         this.messages.push(
             Message.from({
                 role,
@@ -35,7 +41,7 @@ export default class Messages {
     }
 
     asArray () {
-        return this.messages.map(message => message.asJSON());
+        return this.messages.map(message => message.asJSON ? message.asJSON() : message);
     }
 
     validate () {
@@ -52,6 +58,12 @@ export default class Messages {
         this.messages = messagesArray.map(message => Message.from(message, true));
     }
 
+    static from (messagesArray) {
+        const messages = new Messages();
+        messages.from(messagesArray);
+        return messages;
+    }
+
     static validate (messagesArray) {
         if(!messagesArray) return { valid: false, reason: "Messages array is required" };
         if(!Array.isArray(messagesArray)) return { valid: false, reason: "Messages must be an array" };
@@ -63,5 +75,9 @@ export default class Messages {
         }
 
         return { valid: true, reason: null };
+    }
+
+    static empty () {
+        return new Messages();
     }
 }
