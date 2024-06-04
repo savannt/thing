@@ -63,8 +63,14 @@
 
 @media (max-width: 800px) {
     .NewChat__Dropdown {
-        width: 100vw;
+        /* width: 100vw !important; */
+        /* max-width: 100% !important; */
+
+
+        left: var(--margin-inline);
+        width: calc(100dvw - (var(--margin-inline) * 2)) !important;
         max-width: 100%;
+        top: 14px !important;
     }
 
     .body:has(#chat-back) .NewChat__Dropdown {

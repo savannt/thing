@@ -145,10 +145,15 @@
     padding-inline: var(--margin-inline);
 }
 
+.Sidebar__Result__Disabled {
+    
+}
+
 .Sidebar__Result__Delete {
     margin-left: auto;
     opacity: 0 !important;
     pointer-events: all;
+    z-index: 10000;
 }
 
 .Sidebar__Result__Delete div {
@@ -162,7 +167,7 @@
 .Sidebar__Result__Delete:hover {
     opacity: 0.5 !important;
 }
-.Sidebar__Result:hover .Sidebar__Result__Delete {
+.Sidebar__Result:not(.Sidebar__Result__Disabled):hover .Sidebar__Result__Delete {
     opacity: 0.3 !important;
 }
 
@@ -171,16 +176,16 @@
 }
 
 
-.Sidebar__Result:hover {
+.Sidebar__Result:not(.Sidebar__Result__Disabled):hover {
     background-color: var(--hover-color);
     cursor: pointer;
 }
 
-.Sidebar__Result:active {
+.Sidebar__Result:not(.Sidebar__Result__Disabled):active {
     background-color: var(--hover-active-color);
 }
  
-.Sidebar__Result:has(.Sidebar__Result__Delete:active) {
+.Sidebar__Result:not(.Sidebar__Result__Disabled):has(.Sidebar__Result__Delete:active) {
     background-color: var(--hover-color);;
 }
 
@@ -314,7 +319,7 @@
     font-weight: 500;
 }
 
-.Sidebar__Result:hover div h1 {
+.Sidebar__Result:not(.Sidebar__Result__Disabled):hover div h1 {
     color: var(--primary-text-color);
 }
 

@@ -29,7 +29,11 @@ import { useRouter } from "next/router";
 
 function SidebarResult ({ id, active = false, disabled = false, image, color, title, description, prefix = "", onClick, showDelete, onDelete }) {
     return (
-        <div id={id} className={styles.Sidebar__Result} onPointerUp={onClick} onClick={onClick} style={{
+        <div id={id} className={`${styles.Sidebar__Result} ${disabled ? styles.Sidebar__Result__Disabled : ""}`} onClick={(e) => {
+            const target = e.target;
+            if(target.id === `${id}-delete`) return;
+            onClick(e);
+        }} style={{
             cursor: disabled ? "not-allowed" : "pointer",
             opacity: disabled ? 0.5 : 1,
             background: active ? "var(--hover-active-color)" : ""
@@ -41,9 +45,9 @@ function SidebarResult ({ id, active = false, disabled = false, image, color, ti
                 }}>{title}</h1>
                 <p><b>{prefix}</b>{description}</p>
             </div>
-            { showDelete && <SquareButton id={`${id}-delete`} className={styles.Sidebar__Result__Delete} image="/images/icons/trash.svg" onClick={(...e) => {
-                e[0].stopPropagation();
-                if(onDelete) onDelete(...e);
+            { showDelete && <SquareButton disabled={disabled} id={`${id}-delete`} className={styles.Sidebar__Result__Delete} image="/images/icons/trash.svg" onClick={(e) => {
+                if(onDelete) onDelete();
+                return e.stopPropagation();
             }} color="var(--red)" background={false} />}
         </div>
     )
