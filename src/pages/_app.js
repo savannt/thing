@@ -29,7 +29,13 @@ export default function App ({ Component, pageProps }) {
                 <AblyProvider client={ably}>
                     <SidebarCollapsedProvider>
                         <MobileProvider>
-                            <main className={`${comfortaa.className} ${sourceCodePro.className} ${figtree.className}`}>
+                            <main className={`${comfortaa.className} ${sourceCodePro.className} ${figtree.className}`} style={{
+                                height: "100dvh",
+                                maxHeight: "100vh",
+                                minHeight: "100vh",
+                                overflow: "hidden",
+                                display: "flex",
+                            }}>
                                 <Component {...pageProps} />
                             </main>
                         </MobileProvider>

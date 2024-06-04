@@ -47,7 +47,7 @@ export default class Assistant {
         return await Assistant.fromId(assistantObject.id);
     }
 
-    static async create (name, instructions, model = OPENAI_MODEL, tools = []) {
+    static async create (name, instructions, tools = [], model = OPENAI_MODEL) {
         return await Assistant.from(
             await openai.beta.assistants.create({
                 name,

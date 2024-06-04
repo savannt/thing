@@ -44,15 +44,16 @@
         max-width: 100vw;
         min-width: 100vw;
 
-        height: var(--body-height) !important;
-        min-height: var(--body-height) !important;
-        max-height: var(--body-height) !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        max-height: 100dvh !important;
     }
 
     .Sidebar__Sidebar {
-        height: calc(var(--body-height) - (2 * var(--margin-block))) !important;
-        min-height:calc(var(--body-height) - (2 * var(--margin-block))) !important;
-        max-height: calc(var(--body-height) - (2 * var(--margin-block))) !important;
+        /* height: -webkit-fill-available !important; */
+        height: -webkit-fill-available !important;
+        min-height: -webkit-fill-available !important;
+        max-height: -webkit-fill-available !important;
     }
 }
 
@@ -71,7 +72,7 @@
     gap: var(--gap);
 
     width: -webkit-fill-available;
-    height: -webkit-fill-available;
+    height: calc(var(--body-height) - (2 * var(--margin-block))) !important;
 }
 
 .Sidebar__Sidebar::after {
@@ -308,8 +309,13 @@
 
 
 .Sidebar__Result div h1 {
+    color: var(--secondary-text-color);
     font-size: 100%;
     font-weight: 500;
+}
+
+.Sidebar__Result:hover div h1 {
+    color: var(--primary-text-color);
 }
 
 .Sidebar__Result div p {

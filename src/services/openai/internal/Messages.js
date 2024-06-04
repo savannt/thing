@@ -57,6 +57,13 @@ export default class Messages {
 
         this.messages = messagesArray.map(message => Message.from(message, true));
     }
+    
+    static combine (messagesA, messagesB) {
+        const messages = new Messages();
+        messagesA.messages.forEach(message => messages.add(message));
+        messagesB.messages.forEach(message => messages.add(message));
+        return messages;
+    }
 
     static from (messagesArray) {
         const messages = new Messages();

@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import styles from '@/app/Chat/ChatGraph/ContextMenu/ContextMenu.module.css';
 import ColorImage from '@/components/ColorImage/ColorImage';
 
-export const CLOSE_DELAY = 300;
+export const CLOSE_DELAY = 2500;
 
 export default function ContextMenu({
     id,
@@ -13,6 +13,7 @@ export default function ContextMenu({
     onMouseEnter = () => {},
     onMouseLeave = () => {},
     onClose = () => {},
+    style,
 }) {
     if (!position) return null;
 
@@ -25,6 +26,7 @@ export default function ContextMenu({
                 position: relative ? 'relative' : 'absolute',
                 top: position.y,
                 left: position.x,
+                ...style,
             }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}

@@ -10,6 +10,7 @@ import Video from "@/app/Chat/Video"
 
 import { useChannel } from "ably/react";
 import { useState, useEffect } from "react"
+import { useRouter } from "next/router"
 
 import { chat, chatMessage } from "@/client/chat"
 import toggleSidebar from "@/client/toggleSidebar"
@@ -17,10 +18,20 @@ import notification from "@/client/notification";
 import useMobile from "@/providers/Mobile/useMobile"
 import ChatInput from "@/app/Chat/ChatInput/ChatInput"
 
-export default function Chat ({ userId, enterpriseId, chat, group }) {
+
+import Console from "@/app/Chat/Console/Console"
+import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapsed"
+
+export default function Chat ({ userId, enterpriseId, chat, group, groups, setGroups }) {
     const hasChat = !!chat && chat?.chatId;
 
     const isMobile = useMobile();
+    const {
+		collapsed: isSidebarCollapsed,
+		collapsing: isSidebarCollapsing
+	} = useSidebarCollapsed();
+    const router = useRouter();
+
 
     // Chat Properties
     const [chatMessages, setChatMessages] = useState(chat?.messages || []);
@@ -93,9 +104,24 @@ export default function Chat ({ userId, enterpriseId, chat, group }) {
     const [chatAnimation, setChatAnimation] = useState("");
     const [chatGraphAnimation, setChatGraphAnimation] = useState("");
 
+    const [consoleOpen, setConsoleOpen] = useState(false);
 
+
+
+    // if path is /?terminal=true then open console
+    useEffect(() => {
+        if(router.query.terminal) {
+            setConsoleOpen(true);
+        }
+    }, [router.query.terminal]);
+    
     return (
         <>
+
+            { consoleOpen && <Console onBack={() => {
+                setConsoleOpen(false);
+            }} chat={chat} group={group} groups={groups} setGroups={setGroups} enterpriseId={enterpriseId} /> }
+
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
             {
@@ -154,7 +180,8 @@ export default function Chat ({ userId, enterpriseId, chat, group }) {
                 setChatAnimation("");
             }} style={{
                 background: !chat && "var(--secondary-color)",
-                opacity: !chat && 0.6
+                opacity: !chat && 0.6,
+                position: "relative"
             }}>
                 <div id="chat-main" className={styles.Chat__Main}>
 
@@ -179,13 +206,18 @@ export default function Chat ({ userId, enterpriseId, chat, group }) {
 
                 </div>
                 <div className={styles.Chat__Bar} style={{
-                    display: chat && !isMobile ? "flex" : "none"
+                    // if chat, flex, else none
+                    // but if isMoile and isSidebarCollapsed, none
+                    display: chat ? ((isMobile && !isSidebarCollapsed) ? "none" : "flex") : "none"
                 }}>
-                    <SquareButton className={styles.Chat__Bar__InputRow__Graph} image="/images/icons/flow.png" background={false} onClick={() => {
+                    <SquareButton className={styles.Chat__Bar__InputRow__Console} image="/images/icons/console.png" background={false} onClick={() => {
+                        setConsoleOpen(true);
+                    }} />
+                    <SquareButton className={styles.Chat__Bar__InputRow__Graph} image="/images/icons/nodes.png" background={false} onClick={() => {
                         setChatAnimation("chat_graph animate__fadeOut");
                         // setChatGraphAnimation("animate__fadeIn")
                     }} />
-                    <SquareButton className={styles.Chat__Bar__InputRow__Live} image="/images/icons/live.png" background={false} onClick={() => {
+                    <SquareButton className={styles.Chat__Bar__InputRow__Live} image="/images/icons/facetime.png" background={false} onClick={() => {
                         if(showVideo) {
                             setVideoAnimation("animate__fadeOutRight");
                         } else {

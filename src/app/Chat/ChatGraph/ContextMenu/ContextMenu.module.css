@@ -13,6 +13,7 @@
     flex-direction: column;
 
 
+    backdrop-filter: blur(var(--blur));
 }
 
 .ContextMenu > div:not(.ContextMenu):hover {

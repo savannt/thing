@@ -1,89 +1,91 @@
 .Input {
-		position: relative;
+	position: relative;
 
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
 
 
-		background: transparent;
-		color: var(--secondary-text-color);
-		border: 1px solid var(--tertiary-text-color);
+	background: transparent;
+	color: var(--secondary-text-color);
+	border: 1px solid var(--tertiary-text-color);
 
-		width: 100%;
-		height: 100%;
+	width: 100%;
+	height: 100%;
 
-		border-radius: var(--border-radius);
+	border-radius: var(--border-radius);
 }
 
 .Input input {
-		position: absolute;
+	position: absolute;
 
-		width: -webkit-fill-available;
-		height: 100%;
+	width: -webkit-fill-available;
+	height: 100%;
 
-		padding-block: 1px;
-		margin-inline: -1px;
-		
-		background: transparent;
-		color: var(--secondary-text-color);
+	padding-block: 1px;
+	margin-inline: -1px;
+	
+	background: transparent;
+	color: var(--secondary-text-color);
 
-		border-radius: var(--border-radius);
+	border-radius: var(--border-radius);
+
+	/* font-size: 110%; */
 }
 
 /* if .Input has > textarea set */
 .Input:has(textarea) {
-		height: fit-content;
+	height: fit-content;
 }
 
 .Input textarea {
-		font-family: inherit;
+	font-family: inherit;
 
-		position: relative;
+	position: relative;
 
-		width: -webkit-fill-available;
-		height: 100%;
+	width: -webkit-fill-available;
+	height: 100%;
 
-		padding-inline: var(--gap);
-		/* padding-block: calc(var(--min-height) / 4 + 2px); */
-		line-height: calc(var(--min-height) / 2) !important;
-		margin-block: -1px;
-		margin-inline: -1px;
-		
-		background: transparent;
-		color: var(--secondary-text-color);
+	padding-inline: var(--gap);
+	/* padding-block: calc(var(--min-height) / 4 + 2px); */
+	line-height: calc(var(--min-height) / 2) !important;
+	margin-block: -1px;
+	margin-inline: -1px;
+	
+	background: transparent;
+	color: var(--secondary-text-color);
 
-		border-radius: var(--border-radius);
+	border-radius: var(--border-radius);
 
-		resize: none;
+	resize: none;
 
-		min-height: var(--min-height);
+	min-height: var(--min-height);
 }
 
 .Input textarea[rows="1"] {
-		/* center text on Y axis */
-		line-height: var(--min-height) !important;
+	/* center text on Y axis */
+	line-height: var(--min-height) !important;
 }
 
 .Input img {
-		height: 100%;
+	height: 100%;
 }
 
 .Input > input {
-		padding-inline: var(--gap);
+	padding-inline: var(--gap);
 }
 .Input > div + input {
-		padding-inline: var(--min-height);
+	padding-inline: var(--min-height);
 }
 /* .Input has no div child, make .Input > input padding */
 
 .Input > div {
-		height: 50%;
-		padding-left: var(--margin-inline)
+	height: 50%;
+	padding-left: var(--margin-inline)
 }
 
 .Input__HiddenFocus:focus {
-		outline: 2px solid var(--action-color-hidden);
-		outline-offset: 2px;
+	outline: 2px solid var(--action-color-hidden);
+	outline-offset: 2px;
 }

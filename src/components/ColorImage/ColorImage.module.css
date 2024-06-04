@@ -1,16 +1,16 @@
 .ColorImage {
-		height: 100%;
+	height: 100%;
 }
 
 .ColorImageContainer::before {
-		content: "";
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 
-		background: white;
-		mix-blend-mode: difference;
-		pointer-events: none;
+	background: white;
+	mix-blend-mode: difference;
+	pointer-events: none;
 }

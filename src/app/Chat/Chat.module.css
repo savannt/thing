@@ -28,7 +28,7 @@
     align-items: flex-start;
 
     width: -webkit-fill-available;
-    height: 100%;
+    height: -webkit-fill-available;
 
     gap: var(--gap);
 
@@ -74,10 +74,16 @@
     right: calc(100% + var(--gap));
 }
 
+.Chat__Bar__InputRow__Console {
+    position: absolute;
+    right: calc(100% + var(--gap));
+    bottom: calc(200%);
+}
+
 .Chat__Bar__InputRow__Graph {
     position: absolute;
     right: calc(100% + var(--gap));
-    bottom: calc(100% + var(--gap));
+    bottom: calc(100%);
 }
 
 @media (max-width: 800px) {
@@ -86,11 +92,24 @@
         left: 0px !important;
         bottom: calc(100% + var(--gap));
     }
+
+    .Chat__Bar__InputRow__Graph {
+        left: calc(var(--min-height));
+        bottom: calc(100% + var(--gap)); 
+    }
+
+    .Chat__Bar__InputRow__Console {
+        left: calc(2 * var(--min-height));
+        bottom: calc(100% + var(--gap));
+    }
+
+
+
 }
 
 .Chat__Bar__InputRow__Graph div {
-    width: 45% !important;
-    height: 45% !important;
+    width: 65% !important;
+    height: 65% !important;
 
     background-color: var(--tertiary-text-color) !important;
 
@@ -106,9 +125,26 @@
 }
 
 
+.Chat__Bar__InputRow__Console div {
+    width: 70% !important;
+    height: 70% !important;
+
+    background-color: var(--tertiary-text-color) !important;
+}
+
+.Chat__Bar__InputRow__Console:hover div {
+    background-color: var(--primary-text-color) !important;
+    opacity: 0.5 !important;
+}
+
+.Chat__Bar__InputRow__Console:active div {
+    background-color: var(--primary-text-color) !important;
+    opacity: 1 !important;
+}
+
 .Chat__Bar__InputRow__Live div {
-    width: 65% !important;
-    height: 65% !important;
+    width: 60% !important;
+    height: 60% !important;
 
     background-color: var(--tertiary-text-color) !important;
 }
@@ -219,16 +255,17 @@
         /* height: calc(100dvh - var(--header-height)) !important; */
         /* max-height: calc(100dvh - var(--header-height)) !important; */
 
-
-        height: calc(var(--body-height) - (3 * var(--margin-block))) !important;
-        max-height: calc(var(--body-height) - (3 * var(--margin-block))) !important;
-        min-height: calc(var(--body-height) - (3 * var(--margin-block))) !important;
+        /* height: calc(var(--body-height) - var(--header-height)) !important; */
+        /* max-height: calc(var(--body-height) - var(--header-height)) !important; */
+        overflow: hidden;
+        /* height: calc(var(--body-height) - var(--header-height)) !important; */
+        /* max-height: calc(var(--body-height) - var(--header-height)) !important; */
+        /* min-height: calc(var(--body-height) - var(--header-height)) !important; */
 
 
 
 
         overflow: visible;
-        margin-bottom: var(--margin-block) !important;
     }
 
 }

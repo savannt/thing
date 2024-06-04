@@ -34,16 +34,20 @@ import Menu from "@/components/Menu/Menu";
 import ChatInput from "@/app/Chat/ChatInput/ChatInput";
 import { chatMessage } from "@/client/chat";
 import { useChannel } from "ably/react";
+import useMobile from "@/providers/Mobile/useMobile";
 
 export const SAVE_TIMEOUT = 1000;
 export const ERROR_TIMEOUT = 5000;
 
 export default function ChatGraph({
+	showHeader = true,
+	type = "chat-graph",
 	chat,
 	group,
 	enterpriseId,
 	className,
 	onAnimationEnd,
+	onEscape,
 	children,
 }) {
 	const initialNodes = (group.nodes || []).map((node) => {
@@ -77,6 +81,7 @@ export default function ChatGraph({
 	}, []);
 
     const reactFlow = useReactFlow();
+	const isMobile = useMobile();
 
 	const [nodeMenuText, setNodeMenuText] = useState("");
 	const [showNodeMenu, setShowNodeMenu] = useState(false);
@@ -309,6 +314,7 @@ export default function ChatGraph({
 			return true;
 		});
 		onNodesChange(filteredChanges);
+		closeContextMenu();
 		setSaveIteration((prev) => prev + 1);
 	};
 
@@ -327,7 +333,7 @@ export default function ChatGraph({
 		setContextMenuPosition({ x: event.clientX, y: event.clientY });
 
 
-		setContextMenuOptions([
+		setContextMenuOptions(showHeader ? [
 			{
 				title: "Add Node",
 				onClick: enableNodeMenu,
@@ -350,6 +356,25 @@ export default function ChatGraph({
 					notification("Copied", "Graph copied to clipboard", "var(--active-color)");
 				},
 			},
+		] : [
+			{
+				title: "Add Node",
+				onClick: enableNodeMenu,
+				options: nodeMenu,
+			},
+			{
+				title: "Copy All",
+				onClick: () => {
+					const newClonedScene = {
+						nodes,
+						edges,
+					};
+
+					setClonedScene(newClonedScene);
+					navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
+					notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+				},
+			}
 		]);
 
 		let menuOptions = [];
@@ -658,7 +683,7 @@ export default function ChatGraph({
 		return acc;
 	}, []);
 
-	const contextMenuDefaultOptions = [
+	const contextMenuDefaultOptions = showHeader ? [
 		{
 			title: "Add Node",
 			onClick: enableNodeMenu,
@@ -677,15 +702,48 @@ export default function ChatGraph({
 				notification("Copied", "Graph copied to clipboard", "var(--active-color)");
 			},
 		},
-	];
+	] : [
+		{
+			title: "Add Node",
+			onClick: enableNodeMenu,
+			options: nodeMenu,
+		},
+		{
+			title: "Copy All",
+			onClick: () => {
+				const newClonedScene = { nodes, edges };
+				setClonedScene(newClonedScene);
+				navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
+				notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+			},
+		}
+	]
 
 	const searchResults = nodeMenuText
 		? Object.keys(NODE_DICTIONARY).filter((key) => key.toLowerCase().includes(nodeMenuText.toLowerCase()))
 		: [];
 	const hasResults = searchResults.length > 0;
 
+	useEffect(() => {
+			// on key down if escape call onEscape
+		const handleKeyDown = (e) => {
+			if (e.key === "Escape" || e.key === "t") {
+				if (onEscape) {
+					onEscape();
+				}
+			}
+		}
+
+		document.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+		}
+	}, []);
+
 	return (
 		<div
+			type={type}
 			id="chat-graph"
 			className={`${styles.ChatGraph} ${className}`}
 			onAnimationEnd={onAnimationEnd}
@@ -730,6 +788,48 @@ export default function ChatGraph({
 				panOnDrag={[0, 1]}
 				onConnectEnd={(...e) => {
 					console.log("connect end", e);
+				}}
+				snapToGrid={true}
+				zoomOnDoubleClick={false}
+				onDoubleClick={(e) => {
+					if(isMobile) {
+						setContextMenuPosition({ x: e.clientX, y: e.clientY });
+						setContextMenuOptions(contextMenuDefaultOptions);
+					}
+				}}
+				onNodeDoubleClick={(e, node) => {
+					// open context menu at that position if on mobile
+					if(isMobile) {
+						setContextMenuPosition({ x: e.clientX, y: e.clientY });
+						setContextMenuOptions([
+							{
+								title: "Delete",
+								onClick: () => {
+									deleteNode(node);
+									deleteEdge();
+								}
+							},
+							{
+								title: "Duplicate",
+								onClick: () => {
+									const newNode = JSON.parse(JSON.stringify(node));
+									newNode.id = node.id + Math.random().toString(36).substring(7);
+									newNode.position.x += 50;
+									newNode.position.y += 50;
+									setNodes((nodes) => [...nodes, newNode]);
+								}
+							},
+							{
+								title: "Copy",
+								onClick: () => {
+									setClonedScene({
+										nodes: [node, ...nodes.filter((n) => n.selected)],
+										edges: edges.filter((e) => e.selected)
+									});
+								}
+							}
+						]);
+					}
 				}}
 			>
 				<Controls />
@@ -821,7 +921,9 @@ export default function ChatGraph({
 				<SaveIcon saving={saving} saved={saved} />
 			</ReactFlow>
 
-			<div className={styles.ChatGraph__Header}>
+			<div className={styles.ChatGraph__Header} style={{
+				display: showHeader ? "flex" : "none"
+			}}>
 				<Button
 					text="Node"
 					image={"/images/icons/plus.svg"}
@@ -848,13 +950,15 @@ export default function ChatGraph({
 				/>
 			</div>
 
-			<p>{JSON.stringify(contextMenuPosition || "none") || "none"}</p>
 			<ContextMenu
 				id="context-menu"
 				options={contextMenuOptions}
 				defaultOptions={contextMenuDefaultOptions}
 				position={contextMenuPosition}
 				onClose={closeContextMenu}
+				style={{
+					position: "fixed"
+				}}
 			/>
 
 			{children}

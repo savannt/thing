@@ -5,9 +5,9 @@ import LogicNode from "@/app/Chat/ChatGraph/Flow/NodeTypes/LogicNode"
 import EndNode from "@/app/Chat/ChatGraph/Flow/NodeTypes/EndNode"
 
 export default {
-		EventNode: EventNode,
-		ConstantNode: ConstantNode,
-		FunctionNode: FunctionNode,
-		LogicNode: LogicNode,
-		EndNode: EndNode
+	EventNode: EventNode,
+	ConstantNode: ConstantNode,
+	FunctionNode: FunctionNode,
+	LogicNode: LogicNode,
+	EndNode: EndNode
 };

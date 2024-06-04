@@ -16,7 +16,7 @@ import toggleSidebar from "@/client/toggleSidebar";
 import SearchMenu, { SearchMenuRow } from "@/components/SearchMenu/SearchMenu";
 
 
-export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup, disabledGroups, groups, setGroups, onDeleteGroup }) {
+export default function NewChat ({ enterpriseId, chat, setChat, setChats, group, setGroup, disabledGroups, groups, setGroups, onDeleteGroup }) {
     let showDropdown = !!!group;
 
     const [inputText, setInputText] = useState("");
@@ -41,7 +41,7 @@ export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup,
 
     const [lockoutDropdown, setDropdownLockout] = useState(false);
 
-    const results = groups.filter(group => group.title.toLowerCase().includes(inputText.toLowerCase()));
+    const results = groups ? groups.filter(group => group.title.toLowerCase().includes(inputText.toLowerCase())) : [];
     const hasMatches = results.length > 0;
     const hasText = inputText && inputText.length > 0;
 
@@ -49,9 +49,9 @@ export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup,
         <>
             {
                 showDropdown && <>
-                    { dropdownOpen && <SearchMenu id="newChatDropdownMenu" hasResults={hasMatches || hasText} inputText={inputText} setInputText={setInputText} placeholder={`Search or create a group`} className={styles.NewChat__Dropdown}>
+                    { dropdownOpen && <SearchMenu id="newChatDropdownMenu" hasResults={hasMatches || hasText} inputText={inputText} setInputText={setInputText} placeholder={`Search or create a 𝑡ℎ𝑖𝑛𝑔`} className={styles.NewChat__Dropdown}>
                         {
-                            !hasMatches && hasText && <SearchMenuRow id={"newGroup"} background="var(--active-color-hidden)" image="/images/icons/new_chat.svg" text={`Create a new "${inputText}" group`} onClick={() => {
+                            !hasMatches && hasText && <SearchMenuRow id={"newGroup"} background="var(--active-color-hidden)" image="/images/icons/new_chat.svg" text={`Create a new "${inputText}" 𝑡ℎ𝑖𝑛𝑔`} onClick={() => {
                                 setDropdownOpen(false);
                                 setDropdownLockout(true);
                                 groupNew(enterpriseId, inputText).then((newGroup) => {
@@ -60,6 +60,7 @@ export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup,
                                     });
                                     setInputText("");
                                     setGroup(newGroup);
+                                    setChats(false);
                                     setDropdownLockout(false);
                                 })
                             }} />
@@ -70,6 +71,7 @@ export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup,
                                 const isDisabled = disabledGroups.includes(group.groupId);
                                 return <SearchMenuRow disabled={isDisabled} id={id} key={group.groupId} image="/images/icons/thing.png" text={group.title} onClick={() => {
                                     setGroup(group);
+                                    setChats(false);
                                     setDropdownOpen(false);
                                 }} showDelete={true} onDelete={() => {
                                     onDeleteGroup(group);
@@ -83,7 +85,7 @@ export default function NewChat ({ enterpriseId, chat, setChat, group, setGroup,
             }
 
             
-            <Button disabled={lockoutDropdown} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/new_chat.svg"} text={group ? `New Chat with ${group?.title}` : "New Group"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
+            <Button disabled={lockoutDropdown} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/new_chat.svg"} text={group ? `${group?.title}` : "New 𝑡ℎ𝑖𝑛𝑔"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
                 // if we are not in the dropdown
                 if(e.target.id !== "newChatDropdownMenu" && e.target.closest("#newChatDropdownMenu") === null) {
                     if(group) {

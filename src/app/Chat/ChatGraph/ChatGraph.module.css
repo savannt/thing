@@ -9,6 +9,10 @@
     animation-duration: 0.3s !important;
 }
 
+.ChatGraph * {
+    user-select: none !important;
+}
+
 .ChatGraph__Header {
     position: absolute;
     top: 0;
@@ -24,6 +28,10 @@
     gap: var(--gap);
 
     padding-inline: var(--margin-inline);
+}
+
+div[type="console-graph"] .ChatGraph__Header {
+    top: 0px !important;
 }
 
 .NewNode {

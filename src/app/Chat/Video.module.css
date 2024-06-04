@@ -1,7 +1,18 @@
 .Video {
+    background-color: var(--secondary-color);
 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: -webkit-fill-available;
+
+    padding-block: var(--margin-block);
 }
 
 .Video__Video {
-    
+    height: 100%;
+    border: var(--border);
+    border-radius: var(--border-radius-large);
 }

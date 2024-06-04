@@ -25,17 +25,20 @@ import toggleSidebar from "@/client/toggleSidebar";
 
 import { useUser, UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 
+import { useRouter } from "next/router";
 
 function SidebarResult ({ id, active = false, disabled = false, image, color, title, description, prefix = "", onClick, showDelete, onDelete }) {
     return (
         <div id={id} className={styles.Sidebar__Result} onClick={onClick} style={{
             cursor: disabled ? "not-allowed" : "pointer",
-            opacity: disabled ? 0.5 : (active ? 0.8 : 1),
+            opacity: disabled ? 0.5 : 1,
             background: active ? "var(--hover-active-color)" : ""
         }}>
             <ColorImage color={color} image={image} aspectRatio="1/1" />
             <div>
-                <h1>{title}</h1>
+                <h1 style={{
+                    color: active ? "var(--primary-text-color)" : undefined
+                }}>{title}</h1>
                 <p><b>{prefix}</b>{description}</p>
             </div>
             { showDelete && <SquareButton id={`${id}-delete`} className={styles.Sidebar__Result__Delete} image="/images/icons/trash.svg" onClick={(...e) => {
@@ -50,6 +53,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     let groupsArray = groups;
     
     const ref = createRef(null);
+    const router = useRouter();
 
     const [disabledGroups, setDisabledGroups] = useState([]); // [groupId, groupId, groupId]
     const [disabledChats, setDisabledChats] = useState([]); // [chatId, chatId, chatId]
@@ -278,7 +282,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                     { isMobile && group && <SquareButton id="chat-back" image="/images/icons/caret/caret_left.svg" onClick={() => {
                         setGroup(false);
                     } }/> }
-                    <NewChat enterpriseId={enterpriseId} chat={chat} setChat={setChat} group={group} setGroup={setGroup} onDeleteGroup={onDeleteGroup} disabledGroups={disabledGroups} groups={groupsArray} setGroups={setGroups} />
+                    <NewChat enterpriseId={enterpriseId} chat={chat} setChat={setChat} setChats={setChats} group={group} setGroup={setGroup} onDeleteGroup={onDeleteGroup} disabledGroups={disabledGroups} groups={groupsArray} setGroups={setGroups} />
                 </div>
                 {
                     !!group && <div className={styles.Sidebar__Row}>
@@ -348,7 +352,15 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                                             setGroup(item);
                                             setChats(false);
                                         } else {
-                                            setChat(item);
+                                            // setChat(item);
+                                            // push query ?chatId = item.chatId
+
+                                            router.push({
+                                                pathname: "/",
+                                                query: {
+                                                    chatId: item.chatId
+                                                }
+                                            }, undefined, { shallow: true });
                                         }
                                     }, time);
                                 }} showDelete={true} onDelete={() => {

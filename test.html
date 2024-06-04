@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warped Div</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #333;
+        }
+
+        .warped-div {
+            width: 300px;
+            height: 200px;
+            background-color: #fff;
+            border: 5px solid #000;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .warped-div::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: #000;
+        }
+
+        /* Warped effect using CSS transform */
+        .warped-div::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            border-radius: inherit;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transform: perspective(600px) rotateX(10deg) rotateY(15deg);
+            z-index: 1;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="warped-div">
+        <div class="content">
+            Warped Screen
+        </div>
+    </div>
+</body>
+</html>

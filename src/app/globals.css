@@ -1,3 +1,72 @@
+@font-face {
+    font-family: 'IBM 3270';
+    src: url('/fonts/3270/3270-Regular.woff2') format('woff2'),
+        url('/fonts/3270/3270-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: '3270 Semi-Condensed';
+    src: url('/fonts/3270/3270SemiCondensed.woff2') format('woff2'),
+        url('/fonts/3270/3270SemiCondensed.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: '3270 Condensed';
+    src: url('/fonts/3270/3270Condensed.woff2') format('woff2'),
+        url('/fonts/3270/3270Condensed.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+
+@font-face {
+    font-family: 'Hermetico';
+    src: url('/fonts/hermetico/Hermetico-Italic.woff2') format('woff2'),
+        url('/fonts/hermetico/Hermetico-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Hermetico';
+    src: url('/fonts/hermetico/Hermetico-Regular.woff2') format('woff2'),
+        url('/fonts/hermetico/Hermetico-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+
+@font-face {
+    font-family: 'Perfect DOS VGA 437 Win';
+    src: url('/fonts/PerfectDOS437/PerfectDOSVGA437Win.woff2') format('woff2'),
+        url('/fonts/PerfectDOS437/PerfectDOSVGA437Win.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Perfect DOS VGA 437';
+    src: url('/fonts/PerfectDOS437/PerfectDOSVGA437.woff2') format('woff2'),
+        url('/fonts/PerfectDOS437/PerfectDOSVGA437.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+
 :root {
 	--background-color: #0e1011;	
 	--secondary-color: #1a1c1d;
@@ -40,6 +109,8 @@
 	--scale-to: 0.975;
 
 	
+	--blur: 3px;
+
 	--box-shadow: 0px 0px 20px 0px var(--box-shadow-color);
 	--box-shadow-light: 0px 0px 10px -10px var(--box-shadow-color);
 	--box-shadow-light-light: 0px 0px 5px -5px var(--box-shadow-color);
@@ -51,14 +122,15 @@
 /* below 400 px */
 @media (max-width: 800px) {
 	:root {
-		--margin-inline: 18px;
-		/* --margin-block: 9px; */
-		--min-height: 32px;
-		--gap: 6px;
+	--margin-inline: 18px;
+	/* --margin-block: 9px; */
+	--min-height: 36px;
+	--gap: 6px;
 
-		--header-height: 55px;
+	--header-height: 57px;
 
-		--margin-chat: 1vw;
+	--margin-chat: 1vw;
+	--body-height: calc(100dvh - var(--header-height));
 	}
 }
 
@@ -183,49 +255,70 @@ p, h1, h2, h3 {
 
 @keyframes shrinkDisappear {
 	0% {
-			/* width:	Start with the current width */
-			/* width: unset; */
-			min-width: 0;
-			/* opacity: 1; */
+		/* width:	Start with the current width */
+		/* width: unset; */
+		min-width: 0;
+		/* opacity: 1; */
 	}
 	70% {
-		/* opacity: 0; */
+	/* opacity: 0; */
 	}
 	90% {
-			width: 0%; /* Reduce width to 0 */
-			min-width: 0;
-			/* opacity: 0; Start fading out */
+		width: 0%; /* Reduce width to 0 */
+		min-width: 0;
+		/* opacity: 0; Start fading out */
 	}
 	100% {
-		width: 0px; /* Reduce width to 0 */
-		max-width: 0px;
-		min-width: 0px;
+	width: 0px; /* Reduce width to 0 */
+	max-width: 0px;
+	min-width: 0px;
 
-			/* display: none; Element completely disappears */
-			/* opacity: 0; */
+		/* display: none; Element completely disappears */
+		/* opacity: 0; */
 	}
 }
 
 @keyframes opacityDisappear {
 	0% {
-			opacity: 1;
+		opacity: 1;
 	}
 	70% {
-		opacity: 0;
+	opacity: 0;
 	}
 	90% {
-		opacity: 0;
+	opacity: 0;
 	}
 	100% {
-			opacity: 0;
+		opacity: 0;
 	}
 }
 
 @keyframes growAppear {
 	0% {
-			width: 0; /* Start with the current width */
-			min-width: 0;
-			/* opacity: 0; */
+		width: 0; /* Start with the current width */
+		min-width: 0;
+		/* opacity: 0; */
+	}
+	30% {
+	/* opacity: 0.2; */
+	}
+	70% {
+	/* opacity: 1; */
+	}
+	100% {
+	min-width: 275px;
+	/* display: block; Element completely disappears */
+	/* opacity: 1; */
+	}
+}
+
+/* width smaller then 400 */
+@media (max-width: 800px) {
+	@keyframes growAppear {
+	0% {
+		width: 0; /* Start with the current width */
+		min-width: 0;
+		/* opacity: 0; */
 	}
 	30% {
 		/* opacity: 0.2; */
@@ -234,52 +327,31 @@ p, h1, h2, h3 {
 		/* opacity: 1; */
 	}
 	100% {
-		min-width: 275px;
+		width: 100%;
+		min-width: 100%;
 		/* display: block; Element completely disappears */
 		/* opacity: 1; */
 	}
-}
-
-/* width smaller then 400 */
-@media (max-width: 800px) {
-	@keyframes growAppear {
-		0% {
-			width: 0; /* Start with the current width */
-			min-width: 0;
-			/* opacity: 0; */
-		}
-		30% {
-			/* opacity: 0.2; */
-		}
-		70% {
-			/* opacity: 1; */
-		}
-		100% {
-			width: 100%;
-			min-width: 100%;
-			/* display: block; Element completely disappears */
-			/* opacity: 1; */
-		}
 	}
 }
 
 @keyframes opacityAppear {
 	0% {
-		opacity: 0;
+	opacity: 0;
 	}
 	30% {
-		opacity: 0.2;
+	opacity: 0.2;
 	}
 	70% {
-		opacity: 1
+	opacity: 1
 	}
 	70% {
-		/* background: linear-gradient(90deg, var(--background-color), var(--secondary-color)); */
+	/* background: linear-gradient(90deg, var(--background-color), var(--secondary-color)); */
 	}
 	100% {
-		opacity: 1;
+	opacity: 1;
 
-		background: transparent;
+	background: transparent;
 	}
 }
 
@@ -381,23 +453,23 @@ body > div > main {
 
 @keyframes heartBeatCustom {
 	0% {
-		-webkit-transform: scale(1);
-		transform: scale(1);
+	-webkit-transform: scale(1);
+	transform: scale(1);
 	}
 
 	14% {
-		-webkit-transform: scale(var(--scale-to));
-		transform: scale(var(--scale-to));
+	-webkit-transform: scale(var(--scale-to));
+	transform: scale(var(--scale-to));
 	}
 
 	28% {
-		-webkit-transform: scale(1);
-		transform: scale(1);
+	-webkit-transform: scale(1);
+	transform: scale(1);
 	}
 
 	100% {
-		-webkit-transform: scale(1);
-		transform: scale(1);
+	-webkit-transform: scale(1);
+	transform: scale(1);
 	}
 }
 
@@ -456,7 +528,7 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 
 @keyframes dash-animation {
 	to {
-		stroke-dashoffset: -10;
+	stroke-dashoffset: -10;
 	}
 }
 
@@ -1391,7 +1463,7 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 #chat-collapse-sidebar {
-	z-index: 10000000000000000000000;
+	z-index: 1000;
 	top: calc(var(--header-height) + var(--margin-block) + 2px);
 }
 
@@ -1402,35 +1474,35 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 /* if under 400 width */
 @media (max-width: 800px) {
 	.cl-card.cl-signIn-start {
-		padding-block: 25px;
-		padding-inline: 18px;
+	padding-block: 25px;
+	padding-inline: 18px;
 	} 
 
 	.cl-modalContent {
-		height: initial;
+	height: initial;
 	}
 
 	#login-theme {
-		top: var(--gap);
-		right: var(--gap);
-		width: calc(var(--min-height) * 0.7) !important;
-		height: calc(var(--min-height) * 0.7) !important;
+	top: var(--gap);
+	right: var(--gap);
+	width: calc(var(--min-height) * 0.7) !important;
+	height: calc(var(--min-height) * 0.7) !important;
 	}
 
 	#chat-collapse-sidebar {
-		display: none !important;
+	display: none !important;
 	}
 
 	#mobile-toggle-sidebar {
-		display: flex;
+	display: flex;
 	}
 
 	/* #toggle-theme {
-		display: none;
+	display: none;
 	}
 
 	#logout {
-		display: none;
+	display: none;
 	} */
 	
 }

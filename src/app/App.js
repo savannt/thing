@@ -31,8 +31,13 @@ import useMobile from "@/providers/Mobile/useMobile"
 import tryUntilSuccess from "@/client/tryUntilSuccess"
 import toggleTheme from "@/client/toggleTheme"
 
+import fetchChat from "@/client/chat"
 
 function ThingApp ({ enterpriseId, group, setGroup, groups, setGroups, chat, chats, setChats, setChat, userId, onLogout, onBack, onHome, onChatDelete}) {
+
+	const hasChat = chat && chat?.chatId && group && group?.groupId && chat?.groupId === group?.groupId;
+
+	
 	return (
 		<>
 			<button id="update-chats" style={{
@@ -78,8 +83,8 @@ function ThingApp ({ enterpriseId, group, setGroup, groups, setGroups, chat, cha
 			}}>
 				<Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
 				<SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
-				{ chat && chat?.chatId && <Chat	userId={userId} enterpriseId={enterpriseId} group={group} chat={chat} setChat={setChat} /> }
-				{ !chat && !chat?.chatId && <NoChat /> }
+				{ hasChat && <Chat	userId={userId} enterpriseId={enterpriseId} group={group} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} /> }
+				{ !hasChat && <NoChat /> }
 			</div>
 		</>
 	)
@@ -123,7 +128,7 @@ export default function App ({ page }) {
 	const [chat, _setChat] = useState(false);
 	const [chats, setChats] = useState(false);
 	const [group, setGroup] = useState(false);
-	const [groups, setGroups] = useState([]);
+	const [groups, setGroups] = useState(false);
 	
 	const [title, setTitle] = useState(false);
 
@@ -182,6 +187,15 @@ export default function App ({ page }) {
 			});
 		}
 
+		// set ?chatId=chatId, silently
+		router.push({
+			pathname: "/",
+			query: {
+				chatId: chat.chatId
+			}
+		}, undefined, { shallow: true });
+
+
 		// add "animate__heartBeat" to #chat
 		setTimeout(() => {
 			const chatElement = document.getElementById("chat");
@@ -190,6 +204,30 @@ export default function App ({ page }) {
 
 		return value;
 	}
+
+	// if chatId in query, set chat
+	useEffect(() => {
+		if(router.query.chatId) {
+			const chatId = router.query.chatId;
+			
+			if(chats) {
+				const _chat = chats.find(_chat => _chat.chatId === chatId);
+				if(_chat) {
+					setChat(_chat);
+				}
+			}
+
+			if(groups) {
+				fetchChat(chatId, enterpriseId).then(_chat => {
+					const _group = groups.find(group => group.groupId === _chat.groupId);
+					if(_group) {
+						setGroup(_group);
+						_setChat(_chat);
+					}
+				});
+			}
+		}
+	}, [router.query.chatId, groups, enterpriseId]);
 
 	useEffect(() => {		
 		if(enterpriseId) {

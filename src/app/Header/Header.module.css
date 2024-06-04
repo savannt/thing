@@ -1,69 +1,75 @@
 .Header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 
 
-		border-bottom: var(--border);
+	border-bottom: var(--border);
 
-		padding-inline: var(--margin-inline);
-		/* padding-block: var(--margin-block); */
+	padding-inline: var(--margin-inline);
+	/* padding-block: var(--margin-block); */
 
 
-		height: var(--header-height);
-		min-height: var(--header-height);
+	height: var(--header-height);
+	min-height: var(--header-height);
 }
 
 
 .Header__Start, .Header__End {
-		display: flex;
+	display: flex;
 
-		flex-direction: row;
-		align-items: center;
+	flex-direction: row;
+	align-items: center;
 
-		gap: var(--gap);
+	gap: var(--gap);
 
 
-		height: 100%;
+	height: 100%;
 }
 
 .Header__End > div {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 
-		gap: var(--gap);
+	gap: var(--gap);
 }
 
 .Header__Start {
-		margin-right: var(--gap);
+	margin-right: var(--gap);
 }
 
 .Header__Start h2 {
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .Header__Title {
-		font-family: '__Source_Code_Pro_ceb1b8';
+	font-family: '__Source_Code_Pro_ceb1b8';
 
-		font-size: 140%;
+	font-size: 140%;
 }
 
+
+.Header__Start h3 {
+	white-space: pre;
+}
 @media (max-width: 800px) {
-		.Header__Start {
-				width: -webkit-fill-available !important;
-				max-width: -webkit-fill-available !important;
-		}
+	.Header__Start {
+		width: -webkit-fill-available !important;
+		max-width: -webkit-fill-available !important;
+	}
 
-		.Header__Start h3 {
-				overflow: visible;
-				color: var(--primary-text-color);
-				opacity: 0.8;
+	.Header__Start h3 {
+		overflow: visible;
+		color: var(--primary-text-color);
+		opacity: 0.8;
 
-				font-weight: 400;
-				font-size: 90%;
-		}
+		font-weight: 400;
+		font-size: 90%;
+
+		white-space: pre;
+	}
 }

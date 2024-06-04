@@ -41,4 +41,8 @@ export default class Tools {
 
         this.tools.push(tool);
     }
+
+    static empty () {
+        return new Tools();
+    }
 }

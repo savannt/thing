@@ -4,6 +4,8 @@
     border-radius: var(--border-radius-large) !important;
     flex-direction: row; /* Default to row direction */
     background-color: var(--secondary-color);
+
+    backdrop-filter: blur(var(--blur));
 }
 
 .VerticalNode {
@@ -46,8 +48,8 @@
     padding-inline: calc(var(--margin-inline) * 1.1);
     background: var(--hover-color);
 
-    border-top-left-radius: calc(var(--border-radius-large) * 0.85);
-    border-top-right-radius: calc(var(--border-radius-large) * 0.85);
+    border-top-left-radius: calc(var(--border-radius-large) * 0.7);
+    border-top-right-radius: calc(var(--border-radius-large) * 0.7);
 }
 
 .Node__Header__NoLeft {
