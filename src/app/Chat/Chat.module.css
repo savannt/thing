@@ -263,7 +263,8 @@
         /* min-height: calc(var(--body-height) - var(--header-height)) !important; */
 
 
-
+        height: -webkit-fill-available !important;
+        max-height: calc(100dvh - var(--header-height)) !important;
 
         overflow: visible;
     }
