@@ -11,6 +11,7 @@ import { chatNew } from "@/client/chat";
 import { useRouter } from "next/router";
 
 import stringSimilarity from "string-similarity";
+import useMobile from "@/providers/Mobile/useMobile";
 
 export const TEXT_WIDTH = 12.95;
 export const LINE_HEIGHT = 20;
@@ -52,6 +53,8 @@ function BorderInputRow ({ type = "inputRow", onNewLine, onLineDelete, onSend, v
 }
 
 function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDelete, onSend, value, onChange }) {
+    const isMobile = useMobile();
+
     const ref = createRef();
     const mobileInputRef = createRef();
 
@@ -105,11 +108,33 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
         <Row style={{
             alignItems: "flex-end"
         }}>
-            <input ref={mobileInputRef} value={value} onChange={onChange} style={{
-                display: "none",
+            <input ref={mobileInputRef} value={value} onFocus={() => {
+                setIsFocused(true)
+            }} onBlur={() => {
+                // setIsFocused(false);
+            }} onChange={(e) => {
+                let value = e.target.value;
+                if(onChange) onChange(value);
+            }} onKeyDown={(e) => {
+                if(e.key === "Enter") {
+                    if(onSend) onSend(e.target.value);
+                    return e.preventDefault();
+                } 
+            }} style={{
+                // display: "none",
+                // opacity: 0,
+                // visibility: "hidden",
+                position: "absolute",
+                left: "-1000px",
+            }} onClick={(e) => {
+                return e.stopPropagation();
             }}></input>
             <p id={id} type={type} onFocus={() => {
                 setIsFocused(true);
+                if(isMobile) {
+                    mobileInputRef.current.focus();
+                    return;
+                }
             }} onBlur={() => {
                 setIsFocused(false);
             }} ref={ref} onDoubleClick={(e) => {
@@ -158,7 +183,7 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
                lineHeight: LINE_HEIGHT + "px",
             }} onMouseUp={(e) => {
                 setIsSelecting(false);
-            }} tabIndex={0} aria-pressed={false} autoFocus={true} onChange={onChange} className={styles.ConsoleChat__Input} onKeyDown={(e) => {
+            }} tabIndex={0} aria-pressed={false} autoFocus={true} className={styles.ConsoleChat__Input} onKeyDown={(e) => {
 
                 // if ctrl + a
                 if(e.key === "a" && e.ctrlKey) {
@@ -375,7 +400,9 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
 
                 height: LINE_HEIGHT + "px",
 
-                mixBlendMode: "difference"
+                mixBlendMode: "difference",
+
+                visibility: isFocused ? "visible" : "hidden",
             }} onMouseDown={() => {
                 setSelectionPosition(false);
                 mobileInputRef.current.focus();
@@ -536,10 +563,12 @@ function PressAnyKey ({ onClick }) {
         
         setTimeout(() => {
             document.addEventListener("keydown", onKeyDown);
+            document.addEventListener("click", onKeyDown);
         }, 50);
 
         return () => {
             document.removeEventListener("keydown", onKeyDown);
+            document.removeEventListener("click", onKeyDown);
         }
     })
 
@@ -639,6 +668,24 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
         }
     }
 
+    function Row ({ children }) {
+        return (
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                maxWidth: "40dvw",
+                overflow: "hidden",
+                /* allow flex wrap */
+                flexWrap: "wrap",
+                gap: "var(--gap)",
+            }}>
+                { children }
+            </div>
+        )
+    }
+
     return (
         <div className={styles.ConsoleChat} onClick={() => {
             // click first p[type='consoleInput']
@@ -668,10 +715,12 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
                             </tr>
                             <tr>
                                 <td>
-                                    <span className={styles.Border}>!exit</span>
-                                    <span className={styles.Border}>!quit</span>
-                                    <span className={styles.Border}>!back</span>
-                                    <span className={styles.Border}>!leave</span>
+                                    <Row>
+                                        <span className={styles.Border}>!exit</span>
+                                        <span className={styles.Border}>!quit</span>
+                                        <span className={styles.Border}>!back</span>
+                                        <span className={styles.Border}>!leave</span>
+                                    </Row>
                                 </td>
                                 <td>leave the terminal</td>
                             </tr>
@@ -683,7 +732,9 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
                             </tr>
                             <tr>
                                 <td>
-                                    <span className={styles.Border}>!stage &lt;name&gt;</span>
+                                    <Row>
+                                        <span className={styles.Border}>!stage &lt;name&gt;</span>
+                                    </Row>
                                 </td>
                                 <td>stage a 𝑡ℎ𝑖𝑛𝑔 given a name</td>
                             </tr>

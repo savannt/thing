@@ -429,7 +429,7 @@
 
 .Blinker {
     animation: blinker 1s step-start infinite;
-    visibility: hidden;
+    /* visibility: hidden; */
     width: 6px;
     height: var(--line-height);
     background-color: var(--primary-text-color);
@@ -701,6 +701,7 @@ div:has(> .ConsoleLogo) {
   color: var(--secondary-text-color);
   padding-block: calc(var(--margin-block) * 0.5);
   text-align: left;
+  max-width: 10% !important;
 }
 
 .ConsoleContainer td:first-child {
@@ -714,4 +715,18 @@ div:has(> .ConsoleLogo) {
 
 .ConsoleContainer td > * {
   margin-right: 3px;
+}
+
+
+@media (max-width: 800px) {
+  .Screen {
+    border: none;
+  }
+  .Monitor {
+    padding: 0px;
+  }
+
+  .CRT {
+    width: 100vw;
+  }
 }

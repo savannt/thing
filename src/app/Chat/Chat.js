@@ -116,7 +116,11 @@ export default function Chat ({ graph: showChatGraph, setGraph: setShowChatGraph
     
     return (
         <>
-
+            <input id="toggle-terminal" style={{
+                display: "none"
+            }} onClick={() => {
+                setConsoleOpen(prev => !prev);
+            }}></input>
             { consoleOpen && <Console onBack={() => {
                 setConsoleOpen(false);
             }} chat={chat} group={group} groups={groups} setGroups={setGroups} enterpriseId={enterpriseId} /> }

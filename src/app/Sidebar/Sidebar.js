@@ -29,7 +29,7 @@ import { useRouter } from "next/router";
 
 function SidebarResult ({ id, active = false, disabled = false, image, color, title, description, prefix = "", onClick, showDelete, onDelete }) {
     return (
-        <div id={id} className={styles.Sidebar__Result} onClick={onClick} style={{
+        <div id={id} className={styles.Sidebar__Result} onPointerUp={onClick} onClick={onClick} style={{
             cursor: disabled ? "not-allowed" : "pointer",
             opacity: disabled ? 0.5 : 1,
             background: active ? "var(--hover-active-color)" : ""
