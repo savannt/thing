@@ -44,9 +44,9 @@
         max-width: 100vw;
         min-width: 100vw;
 
-        height: 100dvh !important;
-        min-height: 100dvh !important;
-        max-height: 100dvh !important;
+        height: calc(--body-height) !important;
+        min-height: calc(--body-height) !important;
+        max-height: calc(--body-height) !important;
     }
 
     .Sidebar__Sidebar {
@@ -346,7 +346,7 @@
 @media (max-width: 800px) {
     .Sidebar {
         background-color: var(--background-color);
-        position: absolute !important;
+        /* position: absolute !important; */
         top: 0;
         left: 0;
         width: 100vw;

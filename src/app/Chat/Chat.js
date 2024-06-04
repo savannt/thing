@@ -22,7 +22,7 @@ import ChatInput from "@/app/Chat/ChatInput/ChatInput"
 import Console from "@/app/Chat/Console/Console"
 import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapsed"
 
-export default function Chat ({ userId, enterpriseId, chat, group, groups, setGroups }) {
+export default function Chat ({ graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, groups, setGroups }) {
     const hasChat = !!chat && chat?.chatId;
 
     const isMobile = useMobile();
@@ -99,7 +99,6 @@ export default function Chat ({ userId, enterpriseId, chat, group, groups, setGr
     let showNoMessages = chatMessages.length === 0;
 
     const [showVideo, setShowVideo] = useState(false);
-    const [showChatGraph, setShowChatGraph] = useState(false);
     const [videoAnimation, setVideoAnimation] = useState("");
     const [chatAnimation, setChatAnimation] = useState("");
     const [chatGraphAnimation, setChatGraphAnimation] = useState("");
@@ -208,7 +207,7 @@ export default function Chat ({ userId, enterpriseId, chat, group, groups, setGr
                 <div className={styles.Chat__Bar} style={{
                     // if chat, flex, else none
                     // but if isMoile and isSidebarCollapsed, none
-                    display: chat ? ((isMobile && !isSidebarCollapsed) ? "none" : "flex") : "none"
+                    display: chat ? ((isMobile && (!isSidebarCollapsed && !isSidebarCollapsing)) ? "none" : "flex") : "none"
                 }}>
                     <SquareButton className={styles.Chat__Bar__InputRow__Console} image="/images/icons/console.png" background={false} onClick={() => {
                         setConsoleOpen(true);

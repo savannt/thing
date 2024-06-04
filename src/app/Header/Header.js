@@ -10,7 +10,7 @@ import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapse
 import { useEffect, useState } from "react";
 import toggleTheme from "@/client/toggleTheme";
 
-export default function Header ({ group, chat, onBack, onHome, onLogout, onChatDelete }) {
+export default function Header ({ graph, group, chat, onBack, onHome, onLogout, onChatDelete }) {
 	const isMobile = useMobile();
 	const {
 		collapsed: isSidebarCollapsed,
@@ -54,7 +54,7 @@ export default function Header ({ group, chat, onBack, onHome, onLogout, onChatD
 	return (
 		<div id="header" className={styles.Header}>
 			<div id="header-start" className={styles.Header__Start}>
-				{ !isMobile && group && <>
+				{ ((!isMobile && group) || graph) && <>
 					<SquareButton image="/images/icons/caret/caret_left.svg" onClick={() => onBack()} />
 					{/* <h2>{group.title}</h2> */}
 				</> }

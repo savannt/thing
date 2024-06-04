@@ -92,7 +92,12 @@ export default function NewChat ({ enterpriseId, chat, setChat, setChats, group,
                         setDropdownLockout(true);
                         chatNew(enterpriseId, group?.groupId || false).then((newChat) => {
                             if(newChat) {
-                                setChat(newChat, true);
+                                setTimeout(() => {
+                                    setChats((prev) => {
+                                        return [...prev, newChat];
+                                    });
+                                }, 150)
+                                setChat(newChat);
                             } else {
                                 error("Failed to create chat");
                             }

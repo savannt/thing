@@ -33,7 +33,7 @@ import toggleTheme from "@/client/toggleTheme"
 
 import fetchChat from "@/client/chat"
 
-function ThingApp ({ enterpriseId, group, setGroup, groups, setGroups, chat, chats, setChats, setChat, userId, onLogout, onBack, onHome, onChatDelete}) {
+function ThingApp ({ enterpriseId, graph, setGraph, group, setGroup, groups, setGroups, chat, chats, setChats, setChat, userId, onLogout, onBack, onHome, onChatDelete}) {
 
 	const hasChat = chat && chat?.chatId && group && group?.groupId && chat?.groupId === group?.groupId;
 
@@ -77,13 +77,13 @@ function ThingApp ({ enterpriseId, group, setGroup, groups, setGroups, chat, cha
 				});
 			}} />
 
-			<Header		userId={userId}															 group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} onChatDelete={onChatDelete} />
+			<Header	userId={userId}	graph={graph} setGraph={setGraph} group={group} chat={chat} onLogout={onLogout} onBack={onBack} onHome={onHome} onChatDelete={onChatDelete} />
 			<div id="main" style={{
 				// overflow: "hidden",
 			}}>
 				<Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
 				<SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
-				{ hasChat && <Chat	userId={userId} enterpriseId={enterpriseId} group={group} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} /> }
+				{ hasChat && <Chat userId={userId} enterpriseId={enterpriseId} graph={graph} setGraph={setGraph} group={group} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} /> }
 				{ !hasChat && <NoChat /> }
 			</div>
 		</>
@@ -129,7 +129,8 @@ export default function App ({ page }) {
 	const [chats, setChats] = useState(false);
 	const [group, setGroup] = useState(false);
 	const [groups, setGroups] = useState(false);
-	
+	const [graph, setGraph] = useState(false);
+
 	const [title, setTitle] = useState(false);
 
 
@@ -170,21 +171,10 @@ export default function App ({ page }) {
 	// }, [chat]);
 
 
-	function setChat (chat, doPushIsNew = false) {
+	function setChat (chat) {
 		const value = _setChat(chat);
 		if(isMobile) {
-			setTimeout(() => {
-				toggleSidebar();
-			}, 250);
-		}
-		if(doPushIsNew) {
-			setChats((prev) => {
-				if(prev) {
-					return [chat, ...prev];
-				} else {
-					return [chat];
-				}
-			});
+			toggleSidebar();
 		}
 
 		// set ?chatId=chatId, silently
@@ -342,6 +332,8 @@ export default function App ({ page }) {
 					setGroups={setGroups}
 					chat={chat}
 					chats={chats}
+					graph={graph}
+					setGraph={setGraph}
 					setChats={setChats}
 					setChat={setChat}
 					userId={userId}
