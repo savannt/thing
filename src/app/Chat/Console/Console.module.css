@@ -129,7 +129,9 @@
     position: absolute;
     pointer-events: all;
 
-    height: 100%;
+    height: calc(100% - var(--margin-block));
+    max-height: calc(100% - var(--margin-block));
+
     /* max-width: 49%; */
 
     /* --secondary-color: transparent; */

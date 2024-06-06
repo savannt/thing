@@ -1384,7 +1384,7 @@ export default function Console ({ messages, onBack: _onBack, chat, group, group
 
     const [showGraph, setShowGraph] = useState(false);
     const [showChat, setShowChat] = useState(true);
-
+    
     const onBack = () => {
         // remove ?terminal= from url
         router.push({
@@ -1405,8 +1405,6 @@ export default function Console ({ messages, onBack: _onBack, chat, group, group
                 <div className={styles.Screen}>
                     <div className={styles.CRT}>
                         <div className={styles.Content}>
-                            {/* <p>Test</p> */}
-
                             { showChat      && <ConsoleChat messages={messages} setShowGraph={setShowGraph} setShowChat={setShowChat} showGraph={showGraph} onBack={onBack} enterpriseId={enterpriseId} chat={chat} group={group} groups={groups} setGroups={setGroups} /> }
                             { showGraph     && <ChatGraph onEscape={() => {
                                 if(document.querySelector("#consoleInput")) {

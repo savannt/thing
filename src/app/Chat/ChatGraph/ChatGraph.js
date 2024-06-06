@@ -22,6 +22,7 @@ import SearchMenu, { SearchMenuRow } from "@/components/SearchMenu/SearchMenu";
 import ContextMenu from "@/app/Chat/ChatGraph/ContextMenu/ContextMenu";
 
 import SaveIcon from "@/app/Chat/ChatGraph/SaveIcon/SaveIcon";
+import SliderButton from "@/components/Button/SliderButton";
 import { groupUpdate } from "@/client/group";
 
 import error from "@/client/error";
@@ -101,6 +102,8 @@ export default function ChatGraph({
 	const [saveTimeout, setSaveTimeout] = useState(null);
 	const [saving, setSaving] = useState(false);
 	const [saved, setSaved] = useState(true);
+
+    const [speed, setSpeed] = useState(5);
 
 	const enableNodeMenu = () => {
 		setShowNodeMenu(true);
@@ -324,7 +327,7 @@ export default function ChatGraph({
 	};
 
 	useEffect(() => {
-		setSaveIteration((prev) => prev + 1);
+		// setSaveIteration((prev) => prev + 1);
 	}, [nodes, edges]);
 
 	const onPaneContextMenu = (event) => {
@@ -972,6 +975,23 @@ export default function ChatGraph({
 					}}
 				/>
 			</div>
+
+			<div className={styles.ChatGraph__Footer}>
+				<SliderButton
+					text="Speed"
+					minText="Slow"
+					maxText="Realtime"
+					min={1}
+					max={5}
+					value={speed}
+					onChange={(e) => {
+						// set cookie THING_KING_PLAYBACK_SPEED
+						document.cookie = `THING_KING_PLAYBACK_SPEED=${e.target.value}; path=/; max-age=31536000`;
+						setSpeed(e.target.value)
+					}}
+				/>
+			</div>
+
 
 			<ContextMenu
 				id="context-menu"

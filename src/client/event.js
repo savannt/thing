@@ -1,6 +1,19 @@
-export default async function event(chatId = false, eventName, payload = {}, silent = false) {
+export default async function event(chatId = false, eventName, payload = {}, silent = false, speed = false) {
+    if(!speed) {
+        // try and get THING_KING_PLAYBACK_SPEED cookie
+        const cookie = document.cookie.split(";").find(c => c.trim().startsWith("THING_KING_PLAYBACK_SPEED"));
+        if(cookie) {
+            const _speed = cookie.split("=")[1];
+            if(_speed) {
+                speed = parseFloat(_speed);
+            }
+        }
+
+        if(!speed) speed = 5;
+    }
+
     if(!chatId) throw new Error("Chat ID is required");
-    const response = await fetch(`/api/event/${eventName}?chatId=${chatId}&silent=${silent}`, {
+    const response = await fetch(`/api/event/${eventName}?chatId=${chatId}&silent=${silent}&speed=${speed}`, {
         method: "POST",
         body: JSON.stringify(payload),
     });

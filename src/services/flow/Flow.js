@@ -87,43 +87,43 @@ export default class Flow {
 	}
 
 	async handleExecute (nodeId, defaultOutputValues = {}) {
-		if(this._onExecute) this._onExecute(nodeId, defaultOutputValues);
+		if(this._onExecute) await this._onExecute(nodeId, defaultOutputValues);
 		console.log("Starting execution".gray, nodeId, "with default output values".gray, defaultOutputValues);
 	}
 
 	async handleExecuteResponse (nodeId, outputValues) {
-		if(this._onExecuteResponse) this._onExecuteResponse(nodeId, outputValues);
+		if(this._onExecuteResponse) await this._onExecuteResponse(nodeId, outputValues);
 		console.log("Executed".gray.italic, nodeId, "with output values".gray.italic, JSON.stringify(outputValues));
 	}
 
 	async handleEdgeExecute (edgeId) {
-		if(this._onEdgeExecute) this._onEdgeExecute(edgeId);
+		if(this._onEdgeExecute) await this._onEdgeExecute(edgeId);
 		console.log("Edge executed".blue, edgeId);
 	}
 
 	async handleEdgeExecuteResponse (edgeId, value) {
-		if(this._onEdgeExecuteResponse) this._onEdgeExecuteResponse(edgeId, value);
+		if(this._onEdgeExecuteResponse) await this._onEdgeExecuteResponse(edgeId, value);
 		console.log("Edge executed response".blue.italic, edgeId, "with value".blue.italic, JSON.stringify(value));
 	}
 
 	async handleEdgeBackwards (edgeId) {
-		if(this._onEdgeBackwards) this._onEdgeBackwards(edgeId);
+		if(this._onEdgeBackwards) await this._onEdgeBackwards(edgeId);
 		console.log("Edge backwards".yellow, edgeId);
 	}
 
 	async handleBackwards (nodeId) {
-		if(this._onBackwards) this._onBackwards(nodeId);
+		if(this._onBackwards) await this._onBackwards(nodeId);
 		console.log("Backwards".yellow, nodeId);
 	}
 	
 	async handleStart () {
-		if(this._onStart) this._onStart();
+		if(this._onStart) await this._onStart();
 		console.log("Flow started".green.bold);
 	}
 
 	async handleFinish (success) {
 		if(typeof success === "undefined") success = this.errors.length === 0;
-		if(this._onFinish) this._onFinish(success);
+		if(this._onFinish) await this._onFinish(success);
 		if(success) console.log("Flow successfully finished".green.bold.italic);
 		else {
 			console.log("Flow finished with errors".red.bold.italic);

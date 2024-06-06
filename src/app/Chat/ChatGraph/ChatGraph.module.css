@@ -19,8 +19,30 @@
     left: 0;
     right: 0;
     top: calc(var(--header-height));
-    height: var(--header-height);
+    height: var(--header-height) !important;
+    max-height: var(--header-height) !important;
 
+    overflow: hidden;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: var(--gap);
+
+    padding-inline: var(--margin-inline);
+}
+
+.ChatGraph__Footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height) !important;
+    max-height: var(--header-height) !important;
+
+    overflow: hidden;
+    
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -32,6 +54,11 @@
 
 div[type="console-graph"] .ChatGraph__Header {
     top: 0px !important;
+}
+
+div[type="console-graph"] .ChatGraph__Header {
+    top: 75px !important;
+    right: var(--margin-block);
 }
 
 .NewNode {

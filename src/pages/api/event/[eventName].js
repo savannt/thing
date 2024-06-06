@@ -11,6 +11,7 @@ export default async function handler(req, res) {
     const eventName = req.query.eventName;
     const chatId = req.query.chatId || false;
     const silent = req.query.silent === "true" || false;
+    const speed = parseInt(req.query.speed || "5");
 
     if(!eventName) return res.status(400).json({ message: "Event name is required" });
     // get body, if not a JSON object throw error
@@ -27,6 +28,6 @@ export default async function handler(req, res) {
     // return res.status(200).json({ message: "Event executed", response });
 
 
-    executeFlowEvent(chatId, payload, eventName, silent)
+    executeFlowEvent(chatId, payload, eventName, silent, speed)
     return res.status(200).json({ message: "Event executed" });
 }
