@@ -14,14 +14,15 @@ export async function onUserMessage (chatId, message) {
 }
 
 export async function onChatCreated (chatId) {
-	return await executeFlowEvent(chatId, {}, "OnChatCreated");
+	return await executeFlowEvent(chatId, {}, "OnChatCreated", true);
 }
 
-export default async function executeFlowEvent (chatId, values = {}, eventName = "OnUserMessage") {
+export default async function executeFlowEvent (chatId, values = {}, eventName = "OnUserMessage", silent = false) {
 	const { db } = await mongo();
 	const flowChannel = ably.channels.get(`flow-${chatId}`);
 	
 	const handleError = async (title, message, options) => {
+		if(silent) return;
 		await flowChannel.publish("error", {
 			title,
 			message,
@@ -49,8 +50,11 @@ export default async function executeFlowEvent (chatId, values = {}, eventName =
 	const handleBackwards = async (nodeId) => {
 		await flowChannel.publish("execute_backwards", { nodeId });
 	}
-	const handleFinish = async () => {
-		await flowChannel.publish("finish", {});
+	const handleStart = async () => {
+		await flowChannel.publish("start", {});
+	}
+	const handleFinish = async (success) => {
+		await flowChannel.publish("finish", { success });
 	}
 
 	const chats = db.collection("chats");
@@ -85,6 +89,8 @@ export default async function executeFlowEvent (chatId, values = {}, eventName =
 
 
 	const flow = new Flow({ nodes, edges });
+	flow.setGlobals({ chatId, enterpriseId, groupId });
+	flow.onStart(() => handleStart());
 	flow.onError((title, message, options) => handleError(title, message, options));
 	flow.onLog((...messages) => handleLog(...messages));
 	flow.onExecute((nodeId, defaultOutputValues) => handleExecute(nodeId, defaultOutputValues));
@@ -93,7 +99,7 @@ export default async function executeFlowEvent (chatId, values = {}, eventName =
 	flow.onEdgeExecuteResponse((edgeId, value) => handleEdgeExecuteResponse(edgeId, value));
 	flow.onEdgeBackwards((edgeId) => handleEdgeBackwards(edgeId));
 	flow.onBackwards((nodeId) => handleBackwards(nodeId));
-	flow.onFinish(() => handleFinish());
+	flow.onFinish((success) => handleFinish(success));
 	
 	await flow.updateNodesData();
 	const outputValues = await flow.executeFlowEvent(eventName, values);

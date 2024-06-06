@@ -4,6 +4,9 @@ import mongo from "@/services/mongodb";
 import { ChatCompletion, Assistant, Messages, Message, Tools, Tool } from "@/services/openai/OpenAI";
 
 
+// TODO: Verify input and output types-
+// let's ideally create some "master parser" object which has validators for each type
+
 const error = (title, ...messages) => {
 	return {
 		error: {
@@ -35,6 +38,9 @@ export default {
                 messages: message
             }
         });
+
+		const chatChannel = ably.channels.get(`chat-${chatId}`);
+		chatChannel.publish("message", { message });
         
         return {};
 	},
@@ -92,7 +98,6 @@ export default {
 		if(Array.isArray(messages)) messages = Messages.from(messages);
 		if(!messages instanceof Messages) return error("Messages is not an instance of Messages");
 		if(!message instanceof Message) return error("Message is not an instance of Message");
-		// console.log("messag", message);
 
 		messages.add(message);
 

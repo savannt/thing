@@ -26,7 +26,7 @@ export function NodeGroup ({ data, style }) {
 			</div>
 			{
 				out && Object.entries(out).map(([name, data]) => {
-					return <MasterValue data={{ name, ...data, input: false, output: true }} />
+					return <MasterValue key={name} data={{ name, ...data, input: false, output: true }} />
 				})
 			}
 		</div>

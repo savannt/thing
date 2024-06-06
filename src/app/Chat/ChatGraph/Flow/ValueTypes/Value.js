@@ -62,20 +62,32 @@ export default function Value ({ data, style, children }) {
         setHasSourceConnection(true);
     }
 
+    const isOptional = data.optional || data.required === false || false;
+    handleStyle.opacity = isOptional ? 0.5 : 1
+
     return (
         <div className={`${styles.Value} ${input ? styles.Value__Input : ""} ${output ? styles.Value__Output : ""}`} style={style} >
             <div className={styles.Value__Header} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
                 { input && <Handle type="target" position="left" id={`${type}:${name}`} style={handleStyle} onConnect={onTargetConnect} />}
+
+
                 {
                     name && <p style={{
                         textAlign: data.input ? "left" : "right",
-                        color: hasTargetConnection || hasSourceConnection ? secondaryColor : tertiaryColor
+                        color: hasTargetConnection || hasSourceConnection ? secondaryColor : tertiaryColor,
+                        // make italic
+                        fontStyle: isOptional ? "italic" : "normal",
+                        opacity: isOptional ? 0.5 : 1
                     }}>{data.name || "unknown"}</p>
                 }
+
                 { showTooltip && <div className={styles.Value__Header__Tooltip}>
                     <p style={{ color: primaryColor }}>{type}</p>
                     <p>{description || "No description available"}</p>
+                    { isOptional && <p><b>Optional</b></p>}
                 </div> }
+
+
                 { output && <Handle type="source" position="right" id={`${type}:${name}`} style={handleStyle} onConnect={onSourceConnection} />}
             </div>
             <div className={styles.Value__Content}>

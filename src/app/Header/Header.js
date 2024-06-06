@@ -77,8 +77,10 @@ export default function Header ({ graph, group, chat, onBack, onHome, onLogout, 
 					display: hideActions ? "none" : "flex"
 				}}>
 					{/* <SquareButton id="logout" image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/> */}
-					{ chat && <SquareButton id="terminal" image="/images/icons/console.png" onClick={() => {
-						document.getElementById("toggle-terminal").click();
+					{ chat && group && <SquareButton id="terminal" image="/images/icons/console.png" onClick={() => {
+						if(document.getElementById("toggle-terminal")) {
+							document.getElementById("toggle-terminal").click();
+						}
 					}} /> }
 					<SquareButton id="toggle-theme" image="/images/icons/ic_theme.svg" onClick={() => toggleTheme() }/>
 				</div>

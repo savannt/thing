@@ -1,0 +1,32 @@
+import mongo from "@/services/mongodb";
+
+import authenticate from "@/services/authenticateRequest";
+
+import executeFlowEvent from "@/services/executeFlow";
+
+export default async function handler(req, res) {
+    const { userId } = await authenticate(req, res);
+    if(!userId) return;
+
+    const eventName = req.query.eventName;
+    const chatId = req.query.chatId || false;
+    const silent = req.query.silent === "true" || false;
+
+    if(!eventName) return res.status(400).json({ message: "Event name is required" });
+    // get body, if not a JSON object throw error
+
+    let payload;
+    try {
+        payload = JSON.parse(req.body);
+    } catch (err) { return res.status(400).json({ message: "Invalid Payload" }); }
+
+
+    // const response = await executeFlowEvent(chatId, payload, eventName, silent);
+    // if(!response) return res.status(400).json({ message: "Error executing event" });
+    
+    // return res.status(200).json({ message: "Event executed", response });
+
+
+    executeFlowEvent(chatId, payload, eventName, silent)
+    return res.status(200).json({ message: "Event executed" });
+}

@@ -57,10 +57,6 @@ export default {
 		type: "FunctionNode",
 		data: {
 			displayName: "Save Message",
-			category: "Function",
-
-			label: "Save Message",
-			details: "function",
 
 			in: {
 				message: {
@@ -69,7 +65,8 @@ export default {
 				},
 				chatId: {
 					type: "chatId",
-					description: "Chat ID to Save Message To"
+					description: "Chat ID to Save Message To",
+					required: false,
 				}
 			},
 		},

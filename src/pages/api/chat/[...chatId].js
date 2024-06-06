@@ -2,7 +2,7 @@ import mongo  from "@/services/mongodb";
 import { generateChatId } from "@/services/generator";
 
 import authenticate from "@/services/authenticateRequest";
-import executeFlowEvent, { onUserMessage, onChatCreated } from "@/services/executeFlow";
+import { onChatCreated } from "@/services/executeFlow";
 
 export default async function handler(req, res) {
     const didAuthenticate = await authenticate(req, res);
@@ -67,50 +67,6 @@ export default async function handler(req, res) {
 
         res.status(200).json({ message: "OK" });
         return;
-    } else if(operation === "message") {
-        // add message
-        const chats = db.collection("chats");
-        const chat = await chats.findOne({ chatId, deleted: false });
-        if(chat.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
-
-        if(!req.body) return res.status(400).json({ message: "Invalid message" });
-        try { JSON.parse(req.body); } catch(e) { return res.status(400).json({ message: "Invalid message" }); }
-        const body = JSON.parse(req.body);
-        if(!body.message) return res.status(400).json({ message: "Invalid message" });
-        const bodyMessage = body.message;
-        const bodyFiles   = body.files || [];
-
-
-
-        const message = {
-            userId,
-            message: bodyMessage,
-            files: bodyFiles,
-            timestamp: new Date(),
-        };
-
-        // await chats.updateOne({ chatId }, { $push: { messages: message }, $set: { lastMessage: message.timestamp } });
-        await chats.updateOne({ chatId }, {
-            $push: {
-                messages: message,
-                // rawMessages: message
-            },
-            $set: {
-                lastMessage: message.timestamp
-            }
-        });
-
-        // userSentMessage(chatId, bodyMessage, bodyFiles);
-
-        // update(chatId);
-
-
-        onUserMessage(chatId, {
-            role: "user",
-            content: bodyMessage,
-        });
-
-        res.status(200).json({ message: "OK" });
     } else {
         res.status(400).json({ message: "Invalid operation" });
         return;

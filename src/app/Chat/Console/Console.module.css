@@ -1,22 +1,21 @@
 /* global variables */
 .ConsoleContainer {
     /* --padding: 3vmin 5.5vmin 3.5vmin 5.5vmin; */
-    --padding-inline: 5.5vmin;
-    --padding-block: 5vmin;
+    --padding-inline: 30px;
+    --padding-block: 30px;
 
-    --bezel-color: #3f3933;
+    --bezel-color: #14110e;
 
 
     --background-color: rgba(26, 26, 26, 0.476);
     --secondary-color: rgba(33, 33, 33, 0.462);
-    --action-color: rgba(0, 180, 0, 0.3);
 
     --border-radius: 3px;
 
     --line-height: 15px;
 
     
-    --min-width: 49%;
+    --min-width: 100%;
 
     overflow: hidden;
 }
@@ -64,7 +63,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: #3f3933;
+    background: var(--bezel-color);
     border-radius: 0.5rem;
 
     overflow: hidden;
@@ -122,7 +121,7 @@
 }
 
 .Content > div[type="console-graph"] {
-    position: relative;
+    position: absolute;
     pointer-events: all;
 
     height: 100%;
@@ -463,6 +462,27 @@ div:has(> .ConsoleLogo) {
   margin-bottom: var(--gap);
 }
 
+.ConsoleLogos {
+  z-index: 100000000;
+}
+
+.PageLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+
+  gap: calc(var(--gap) * 0.2);
+
+  margin-left: auto;
+  
+  z-index: 100000000;
+}
+
+.PageLogo p {
+  opacity: 0.6;
+}
+
 .ConsoleLogo__Header {
   display: flex;
   flex-direction: row;
@@ -729,4 +749,119 @@ div:has(> .ConsoleLogo) {
   .CRT {
     width: 100vw;
   }
+}
+
+
+.Error {
+  color: var(--red) !important;
+
+  margin-bottom: var(--gap);
+}
+
+.Error b {
+  color: var(--red) !important;
+}
+
+.Error i {
+  color: var(--red) !important;
+}
+
+.CenterContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+}
+
+.ConsoleBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap);
+
+  width: -webkit-fill-available;
+
+
+  border-radius: var(--border-radius-large);
+
+  
+  z-index: 100000000;
+  /* margin-inline: var(--padding-inline); */
+}
+
+.ConsoleBody__Graph {
+  pointer-events: none;
+
+  width: fit-content !important;
+  
+  background: var(--box-shadow-color-light);
+  box-shadow: var(--box-shadow);
+
+  padding-block: var(--padding-block);
+  padding-inline: var(--padding-inline);
+  padding-bottom: var(--padding-block);
+
+  min-width: 25vw;
+
+  backdrop-filter: blur(1px);
+}
+
+.Blinker_Error {
+  background-color: var(--red);
+
+  /* shake a few times then stop */
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-10px);
+  }
+  20% {
+    transform: translateX(10px);
+  }
+  30% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+  60% {
+    transform: translateX(10px);
+  }
+  70% {
+    transform: translateX(-10px);
+  }
+  80% {
+    transform: translateX(10px);
+  }
+  90% {
+    transform: translateX(-10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.LoaderMenu {
+  width: -webkit-fill-available;
+}
+
+.InputRow {
+  width: -webkit-fill-available;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }

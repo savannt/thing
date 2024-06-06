@@ -22,7 +22,7 @@ import ChatInput from "@/app/Chat/ChatInput/ChatInput"
 import Console from "@/app/Chat/Console/Console"
 import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapsed"
 
-export default function Chat ({ graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, groups, setGroups }) {
+export default function Chat ({ console: showConsole, setConsole, graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, groups, setGroups }) {
     const hasChat = !!chat && chat?.chatId;
 
     const isMobile = useMobile();
@@ -103,27 +103,66 @@ export default function Chat ({ graph: showChatGraph, setGraph: setShowChatGraph
     const [chatAnimation, setChatAnimation] = useState("");
     const [chatGraphAnimation, setChatGraphAnimation] = useState("");
 
-    const [consoleOpen, setConsoleOpen] = useState(false);
-
 
 
     // if path is /?terminal=true then open console
     useEffect(() => {
         if(router.query.terminal) {
-            setConsoleOpen(true);
+            setConsole(true);
         }
     }, [router.query.terminal]);
     
+
+
+    useEffect(() => {
+        setChatMessages(chat.messages || []);
+    }, [chat])
+
+    useChannel(`chat-${chat.chatId}`, "message", (msg) => {
+        const { message } = msg.data;
+        if(!message) throw new Error("No message in message event");
+
+
+        let content = "no text content";
+        if(message && message.content) content = message.content;
+        // notification("New message", content, "blue");
+
+
+        // append message to chatmessages
+        setChatMessages(prev => {
+            if(!prev) prev = [];
+            prev.push(message);
+            return prev;
+        });
+    });
+
+
+
+    useChannel(`flow-${chat.chatId}`, "error", (msg) => {
+		const data = msg.data;
+
+        if(!showConsole) notification(data.title, data.message, "red");
+	});
+
+	useChannel(`flow-${chat.chatId}`, "log", (msg) => {
+		const { messages } = msg.data;
+
+		const formattedMessages = messages.map((message) => (typeof message !== "string" ? JSON.stringify(message) : message));
+		console.log("[Flow Log]", formattedMessages.join("\n"));
+	});
+
+
+
     return (
         <>
             <input id="toggle-terminal" style={{
                 display: "none"
             }} onClick={() => {
-                setConsoleOpen(prev => !prev);
+                setConsole(prev => !prev);
             }}></input>
-            { consoleOpen && <Console onBack={() => {
-                setConsoleOpen(false);
-            }} chat={chat} group={group} groups={groups} setGroups={setGroups} enterpriseId={enterpriseId} /> }
+            { showConsole && <Console onBack={() => {
+                setConsole(false);
+            }} chat={chat} group={group} groups={groups} setGroups={setGroups} enterpriseId={enterpriseId} messages={chatMessages} /> }
 
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
@@ -192,20 +231,13 @@ export default function Chat ({ graph: showChatGraph, setGraph: setShowChatGraph
                         showNoMessages && <p className={styles.Chat__Main__NoMessages}>{!chat ? "No chat selected" : "No messages to show" }</p>
                     }
 
-                    {chatMessages.map((messageObject, index) => {
-                        const {
-                            userId,
-                            message,
-                            files,
-                            timestamp
-                        } = messageObject;
-
-                        return (
-                            <ChatMessage key={index} userId={userId} message={messageObject} />
-                        )
-                    })}
-
-
+                    {
+                        chatMessages.map((message, index) => {
+                            return (
+                                <ChatMessage key={index} message={message} />
+                            )
+                        })
+                    }
 
                 </div>
                 <div className={styles.Chat__Bar} style={{
@@ -214,7 +246,7 @@ export default function Chat ({ graph: showChatGraph, setGraph: setShowChatGraph
                     display: chat ? ((isMobile && (!isSidebarCollapsed && !isSidebarCollapsing)) ? "none" : "flex") : "none"
                 }}>
                     <SquareButton className={styles.Chat__Bar__InputRow__Console} image="/images/icons/console.png" background={false} onClick={() => {
-                        setConsoleOpen(true);
+                        setConsole(true);
                     }} />
                     <SquareButton className={styles.Chat__Bar__InputRow__Graph} image="/images/icons/nodes.png" background={false} onClick={() => {
                         setChatAnimation("chat_graph animate__fadeOut");

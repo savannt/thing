@@ -109,7 +109,7 @@
 	--scale-to: 0.975;
 
 	
-	--blur: 3px;
+	--blur: 5px;
 
 	--box-shadow: 0px 0px 20px 0px var(--box-shadow-color);
 	--box-shadow-light: 0px 0px 10px -10px var(--box-shadow-color);
@@ -672,7 +672,7 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 .react-flow__node:has(.error) {
-	outline: 2px solid var(--red) !important;
+	outline: 4px double var(--red) !important;
 	outline-offset: 2px;
 }
 
@@ -696,6 +696,9 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 	pointer-events: none !important;
 }
 
+*[type='console-graph'] .react-flow__controls {
+	margin-bottom: 30px;
+}
 
 .react-flow__edgeupdater {
 	stroke: none !important;

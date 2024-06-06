@@ -37,7 +37,7 @@ import { useChannel } from "ably/react";
 import useMobile from "@/providers/Mobile/useMobile";
 
 export const SAVE_TIMEOUT = 1000;
-export const ERROR_TIMEOUT = 5000;
+export const ERROR_TIMEOUT = 15000;
 
 export default function ChatGraph({
 	showHeader = true,
@@ -441,6 +441,15 @@ export default function ChatGraph({
 		);
 	};
 
+	const clearAllEffects = () => {
+		setNodes((nodes) =>
+			nodes.map((node) => ({
+				...node,
+				data: { ...node.data, animate: false, animateBackwards: false, error: false, copying: false, selected: false },
+			}))
+		);
+	}
+
 	useEffect(() => {
 		const handleKeyDown = (e) => {
 			if (e.ctrlKey && e.key === "c") {
@@ -590,27 +599,33 @@ export default function ChatGraph({
 			edges.map((edge) => ({ ...edge, data: { ...edge.data, animate: false, animateBackwards: false } }))
 		);
 	};
-
+	
+	useChannel("notifications", "notification", (msg) => {
+		const { title, content } = msg.data;
+		notification(title, content, "purple");
+	});
+	
 	useChannel(`flow-${chat.chatId}`, "error", (msg) => {
 		const data = msg.data;
-		notification(data.title, data.message, "red");
 
+		// Handled in <Chat />
+		// notification(data.title, data.message, "red");
+	
 		if (data.options) {
 			if (data.options.nodeId) animateError(data.options.nodeId, data.options.valueName);
 			if (data.options.edgeId) animateError(data.options.edgeId, data.options.valueName);
 		}
 	});
 
-	useChannel("notifications", "notification", (msg) => {
-		const { title, content } = msg.data;
-		notification(title, content, "purple");
-	});
-
 	useChannel(`flow-${chat.chatId}`, "log", (msg) => {
 		const { messages } = msg.data;
 
 		const formattedMessages = messages.map((message) => (typeof message !== "string" ? JSON.stringify(message) : message));
-		console.log("[Flow Log]", formattedMessages.join("\n"));
+		console.log("[ChatGraph] [Flow Log]", formattedMessages.join("\n"));
+	});
+
+	useChannel(`flow-${chat.chatId}`, "start", (msg) => {
+		clearAllEffects();
 	});
 
 	useChannel(`flow-${chat.chatId}`, "execute", (msg) => {
@@ -648,8 +663,14 @@ export default function ChatGraph({
 		animateEdgeExecutionBackwards(edgeId);
 	});
 
-	useChannel(`flow-${chat.chatId}`, "finish", () => {
-		notification("", "Flow execution finished", "var(--active-color)");
+	useChannel(`flow-${chat.chatId}`, "finish", (msg) => {
+		const { success } = msg.data;
+
+		if(success) {
+			notification("", "Flow execution ended", "var(--active-color)");
+		} else {
+			notification("Flow execution failed", "Flow contained errors", "red");
+		}
 		resetAllNodeStyles();
 	});
 
@@ -727,10 +748,8 @@ export default function ChatGraph({
 	useEffect(() => {
 			// on key down if escape call onEscape
 		const handleKeyDown = (e) => {
-			if (e.key === "Escape" || e.key === "t") {
-				if (onEscape) {
-					onEscape();
-				}
+			if(document.activeElement.tagName === "BODY") {
+				if (onEscape) onEscape();
 			}
 		}
 

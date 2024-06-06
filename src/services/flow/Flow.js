@@ -17,6 +17,7 @@ export default class Flow {
 		this.edges = nodesObject.edges;
 
 		this.context = {};
+		this.errors = [];
 	}
 
 	async getExecutionFlowsForType (type) {
@@ -65,8 +66,13 @@ export default class Flow {
 		this._onFinish = callback;
 	}
 
+	async onStart (callback) {
+		this._onStart = callback;
+	}
+
 	// message that sends error to client
 	async handleError (title, message, options) {
+		this.errors.push({ title, message, options });
 		if(this._onError) await this._onError(title, message, options);
 		console.error(title + ":	", message);
 		return false;
@@ -109,9 +115,16 @@ export default class Flow {
 		console.log("Backwards".yellow, nodeId);
 	}
 	
-	async handleFinish () {
-		if(this._onFinish) await this._onFinish();
-		console.log("Flow finished".green.bold.italic);
+	async handleStart () {
+		if(this._onStart) await this._onStart();
+		console.log("Flow started".green.bold);
+	}
+
+	async handleFinish (success) {
+		if(typeof success === "undefined") success = this.errors && this.errors.length !== 0;
+		if(this._onFinish) await this._onFinish(success);
+		if(success) console.log("Flow successfully finished".green.bold.italic);
+		else console.log("Flow finished with errors".red.bold.italic);
 	}
 
 	async updateNodesData () {
@@ -128,7 +141,10 @@ export default class Flow {
 				name: node.name
 			};
 		}
+	}
 
+	clearErrors () {
+		this.errors = [];
 	}
 
 	getInputExecutionEdges (node) {
@@ -161,7 +177,7 @@ export default class Flow {
 		const outputExecutionEdges = this.getOutputExecutionEdges(node);
 
 		for(const key in inputs) {
-			const required = inputs[key].required || DEFAULT_INPUTS_REQUIRED;
+			const required = typeof inputs[key].required !== "undefined" ? inputs[key].required : DEFAULT_INPUTS_REQUIRED;
 			const type = inputs[key].type;
 			const edge = inputEdges.find(edge => {
 				if(!edge.data.type.includes(":")) return edge.data.type === type;	
@@ -249,6 +265,10 @@ export default class Flow {
 		return true;
 	}
 
+	setGlobals (globals) {
+		this.globals = globals;
+	}
+
 	async executeNode (id, defaultOutputValues = {}, isBackwards = false) {
 		const node = this.nodes.find(node => node.id === id);
 		if(!node) return await this.handleError("Node not found", `Node ${id} not found`);
@@ -259,7 +279,6 @@ export default class Flow {
 		} else {
 			await this.handleExecute(id, defaultOutputValues);
 		}
-		// 
 
 
 		// verify node is valid
@@ -299,7 +318,7 @@ export default class Flow {
 				// execute the source node
 				await this.executeNode(sourceNode.id, {}, true);
 				// now it's value should be in contexts
-				if(!this.context[edgeId]) return await this.handleError("Node failed to generate input", backwardsParamName, { edgeId, nodeId: node.id });
+				if(!this.context[edgeId]) return await this.handleError(`${sourceNode.name} failed to generate input`, backwardsParamName, { edgeId, nodeId: node.id });
 			}
 			
 			// console.log(edge);
@@ -345,7 +364,10 @@ export default class Flow {
 			}, HANDLER_TIMEOUT);
 
 			try {
-				const outputValues = await handler(inputValues);
+				const outputValues = await handler({
+					...inputValues,
+					...this.globals
+				});
 				clearTimeout(handlerTimeout);
 				resolve(outputValues);
 			} catch (error) {
@@ -371,7 +393,7 @@ export default class Flow {
 			return await this.handleError(title, messagesStr, { nodeId: node.id });
 		}
 
-		if(!outputValues) return await this.handleError("Handler failed to generate output", "No output values generated", { nodeId: node.id });
+		if(!outputValues) return await this.handleError(`${node.name}'s handler failed to produce an output`, "No output values generated", { nodeId: node.id });
 
 
 
@@ -407,15 +429,11 @@ export default class Flow {
 					// console.log("OUTPUTS", key, outputValues);
 					const required = typeof outputs[key].required === "undefined" ? DEFAULT_OUTPUTS_REQUIRED : outputs[key].required;
 					if (!outputValues[key] && required) await this.handleLog("Handler", handler.toString(), "failed to generate output", key, outputValues);
-					if (!outputValues[key] && required) return await this.handleError("Handler failed to generate output", `${key}`, { nodeId: node.id });
-	
-					const outputEdge = outputEdges.find(edge => edge.data.type.split(":")[1] === key);
-					if (outputEdge) {
-						// TODO: only execute this edge if our next node = otuputEdge.target
-						// const nextNode = await this.nextNode(node);
-						// if (nextNode && nextNode.id === outputEdge.target) {
-							// await this.handleEdgeExecute(outputEdge.id, outputValues[key]);
-						// }
+					if (!outputValues[key] && required) return await this.handleError(`${node.name}'s handler failed to produce an output`, `${key}`, { nodeId: node.id });
+
+					const thisOutputEdges = outputEdges.filter(edge => edge.data.type.split(":")[1] === key);
+					for(const outputEdge of thisOutputEdges) {
+						// TODO: very confident this is incorrect, this handleEdgeExecute-
 						await this.handleEdgeExecute(outputEdge.id, outputValues[key]);
 						this.context[outputEdge.id] = outputValues[key];
 					}
@@ -457,46 +475,6 @@ export default class Flow {
 		}
 	
 		return true;
-
-
-
-		// // check output values against outputs keyName: { type, required, description }
-		// for(const key in outputs) {
-		//	 const type = outputs[key].type;
-		//	 const required = typeof outputs[key].required === "undefined" ? DEFAULT_OUTPUTS_REQUIRED : outputs[key].required;
-
-		//	 if(!outputValues[key] && required) await this.handleLog("Handler", handler.toString(), "failed to generate output", key, outputValues);
-		//	 if(!outputValues[key] && required) return await this.handleError("Handler failed to generate output", `${key}`, { nodeId: node.id });
-		// }
-
-		// // save output values to this.context[outputEdgeId]
-		// for(const key in outputs) {
-		//	 // console.log("key", key);
-
-			
-		//	 const outputEdge = outputEdges.find(edge => {
-		//		 return edge.data.type.split(":")[1] === key;
-		//	 });
-		//	 if(outputEdge) {
-		//		 await this.handleEdgeExecute(outputEdge.id, outputValues[key]);
-		//		 this.context[outputEdge.id] = outputValues[key];
-		//	 }
-		//	 // console.log("outputEdge", outputEdge);
-		//	 // this.context[outputEdge.id] = outputValues[key];
-		// }
-
-
-		// await this.handleExecuteResponse(node.id, outputValues);
-		
-		// // for each output edges set response
-		// for(const edge of outputEdges) {
-		//	 const edgeId = edge.id;
-		//	 await this.handleEdgeExecuteResponse(edgeId, outputValues[edge.data.type.split(":")[1]]);
-		// }
-
-		// // console.log("context", this.context);
-
-		// return true;
 	}
 
 	async nextNode (node, eventName = false) {
@@ -570,6 +548,9 @@ export default class Flow {
 	}
 
 	async executeFlowEvent (eventName, eventValues) {
+		await this.handleStart();
+		this.clearErrors();
+
 		const eventNode = this.nodes.find(node => node.name === eventName);
 		if(!eventNode) return await this.handleError("Event node not found", `Event node ${eventName} not found`);
 

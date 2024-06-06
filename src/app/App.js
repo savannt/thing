@@ -33,7 +33,7 @@ import toggleTheme from "@/client/toggleTheme"
 
 import fetchChat from "@/client/chat"
 
-function ThingApp ({ enterpriseId, graph, setGraph, group, setGroup, groups, setGroups, chat, chats, setChats, setChat, userId, onLogout, onBack, onHome, onChatDelete}) {
+function ThingApp ({ enterpriseId, console, setConsole, graph, setGraph, group, setGroup, groups, setGroups, chat, chats, setChats, setChat, userId, onLogout, onBack, onHome, onChatDelete}) {
 
 	const hasChat = chat && chat?.chatId && group && group?.groupId && chat?.groupId === group?.groupId;
 
@@ -83,7 +83,7 @@ function ThingApp ({ enterpriseId, graph, setGraph, group, setGroup, groups, set
 			}}>
 				<Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
 				<SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
-				{ hasChat && <Chat userId={userId} enterpriseId={enterpriseId} graph={graph} setGraph={setGraph} group={group} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} /> }
+				{ hasChat && <Chat userId={userId} enterpriseId={enterpriseId} console={console} setConsole={setConsole} graph={graph} setGraph={setGraph} group={group} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} /> }
 				{ !hasChat && <NoChat /> }
 			</div>
 		</>
@@ -130,6 +130,19 @@ export default function App ({ page }) {
 	const [group, setGroup] = useState(false);
 	const [groups, setGroups] = useState(false);
 	const [graph, setGraph] = useState(false);
+	const [console, _setConsole] = useState(false);
+	const setConsole = (console) => {
+		const value = _setConsole(console);
+		if(console) {
+			router.push({
+				pathname: "/",
+				query: {
+					terminal: true,
+					chatId: chat.chatId
+				}
+			}, undefined, { shallow: true });
+		}
+	}
 
 	const [title, setTitle] = useState(false);
 
@@ -338,19 +351,17 @@ export default function App ({ page }) {
 					setChat={setChat}
 					userId={userId}
 
+					console={console}
+					setConsole={setConsole}
+
 					onLogout={onLogout}
 					onBack={onBack}
 					onHome={onHome}
 					onChatDelete={onChatDelete}
 				/> }
 			</SignedIn>
-
-			{/* {
-				authLoaded && (FAKE_LOGIN || isGuest) && <ThingApp />
-			} */}
-
-			<Notifications />
 			
+			{ !console && <Notifications /> }
 		</>
 	)
 }

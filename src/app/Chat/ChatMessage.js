@@ -10,27 +10,26 @@ import rehypeStringify from "rehype-stringify";
 
 import { useEffect, useState } from "react";
 
-export default function ChatMessage ({ userId: myUserId, message }) {
+export default function ChatMessage ({ message }) {
     const {
-        userId,
-        message: messageStr,
-        files,
+        role,
+        content,
         timestamp
     } = message;
 
-    if(!userId) throw new Error("ChatMessage: userId is required");
-    if(!messageStr) throw new Error("ChatMessage: message is required");
-    if(!timestamp) throw new Error("ChatMessage: timestamp is required");
+    console.log("message!", message);
+
+    if(!role) throw new Error("ChatMessage: role is required");
 
     // Nov 14, 2023, 2:13 PM
-    let _formattedTimestamp = new Date(timestamp).toLocaleString("en-US", {
+    let _formattedTimestamp = timestamp ? new Date(timestamp).toLocaleString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
         hour: "numeric",
         minute: "numeric",
         hour12: true
-    });
+    }) : "";
 
 
 
@@ -42,14 +41,14 @@ export default function ChatMessage ({ userId: myUserId, message }) {
             .use(remarkRehype)
             .use(rehypeHighlight)
             .use(rehypeStringify)
-            .process(messageStr, (err, file) => {
+            .process(content, (err, file) => {
                 if(err) throw err;
                 setHtml(String(file));
             })
-    }, [messageStr]);
+    }, [content]);
 
 
-    let parsedUserId = userId === myUserId ? "You" : userId;
+    let parsedUserId = role;
 
 
     return (

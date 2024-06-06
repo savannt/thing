@@ -10,8 +10,16 @@ import { chatNew } from "@/client/chat";
 
 import { useRouter } from "next/router";
 
+import { useChannel } from "ably/react";
+
 import stringSimilarity from "string-similarity";
 import useMobile from "@/providers/Mobile/useMobile";
+
+import error from "@/client/error";
+
+import event, { onUserMessage, onChatCreated } from "@/client/event";
+import Notifications from "@/app/Notifications/Notifications";
+import notification from "@/client/notification";
 
 export const TEXT_WIDTH = 12.95;
 export const LINE_HEIGHT = 20;
@@ -36,7 +44,6 @@ function BorderInputRow ({ type = "inputRow", onNewLine, onLineDelete, onSend, v
 
     return (
         <div className={styles.Input} onClick={(e) => {
-            console.log("CLICKED YO!");
             // get e query selector p
             let p = e.target;
             if(p.tagName !== "P") {
@@ -52,7 +59,7 @@ function BorderInputRow ({ type = "inputRow", onNewLine, onLineDelete, onSend, v
     )
 }
 
-function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDelete, onSend, value, onChange }) {
+function InputRow ({ id, error = false, onErrorFinish, onFocus, onBlur, border = false, type = "inputRow", onNewLine, onLineDelete, onSend, value, onChange }) {
     const isMobile = useMobile();
 
     const ref = createRef();
@@ -109,8 +116,10 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
             alignItems: "flex-end"
         }}>
             <input ref={mobileInputRef} value={value} onFocus={() => {
-                setIsFocused(true)
+                setIsFocused(true);
+                if(onFocus) onFocus();
             }} onBlur={() => {
+                if(onBlur) onBlur();
                 // setIsFocused(false);
             }} onChange={(e) => {
                 let value = e.target.value;
@@ -125,7 +134,7 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
                 // opacity: 0,
                 // visibility: "hidden",
                 position: "absolute",
-                left: "-1000px",
+                left: "-10000000px",
             }} onClick={(e) => {
                 return e.stopPropagation();
             }}></input>
@@ -135,8 +144,10 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
                     mobileInputRef.current.focus();
                     return;
                 }
+                if(onFocus) onFocus();
             }} onBlur={() => {
                 setIsFocused(false);
+                if(onBlur) onBlur();
             }} ref={ref} onDoubleClick={(e) => {
                 // get position
                 let left = e.clientX - ref.current.getBoundingClientRect().left;
@@ -184,6 +195,16 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
             }} onMouseUp={(e) => {
                 setIsSelecting(false);
             }} tabIndex={0} aria-pressed={false} autoFocus={true} className={styles.ConsoleChat__Input} onKeyDown={(e) => {
+                if(e.key === "Escape") {
+                    // loose focus
+                    
+                    // remove focus from ref
+                    document.activeElement.blur();
+                    document.activeElement.blur();
+
+                    return e.stopPropagation();
+                }
+
 
                 // if ctrl + a
                 if(e.key === "a" && e.ctrlKey) {
@@ -391,8 +412,10 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
                         return [prev[0] + 1, prev[0] + 1];
                     });
                 }
-            }}>{value}</p>
-            <span className={styles.Blinker} style={{
+            }}>{!value && !isFocused ? `＿` : value}</p>
+            <span className={`${styles.Blinker} ${error ? styles.Blinker_Error : ""}`} onAnimationEnd={() => {
+                if(onErrorFinish) onErrorFinish();
+            }} style={{
                 position: selectionPosition ? "absolute" : "relative",
                 left: selectionPosition ? (selectionPosition[0] * TEXT_WIDTH) : "0px",
                 width: selectionPosition ? ((selectionPosition[1] - selectionPosition[0]) * TEXT_WIDTH) + 1 : undefined,
@@ -411,9 +434,9 @@ function InputRow ({ id, border = false, type = "inputRow", onNewLine, onLineDel
     )
 }
 
-function ConsoleLogo ({ page = false }) {
+function ConsoleLogo ({ page = false, pageDescription = false }) {
     return (
-        <ConsoleRegion inline={true}>
+        <ConsoleRegion inline={true} className={styles.ConsoleLogos}>
             <div className={styles.ConsoleLogo}>
                 <div className={styles.ConsoleLogo__Header}>
                     <h1>thing</h1>
@@ -425,15 +448,18 @@ function ConsoleLogo ({ page = false }) {
                 </div>
             </div>
 
-            { page && <h2 className={styles.ConsoleLogo__Page}>{page}</h2> }
+            <div className={styles.PageLogo}>
+                { page && <h2 className={styles.ConsoleLogo__Page}>{page}</h2> }
+                { pageDescription && <p className={styles.ConsoleLogo__PageDescription}>{pageDescription}</p> }
+            </div>
         </ConsoleRegion>
     )
 }
 
 
-function ConsoleRegion ({ gap = false, onHeaderButtonClick, headerButton = false, headerButtonImage = false, disabled = false, header = false, border = false, children, inline = false }) {
+function ConsoleRegion ({ className, gap = false, onHeaderButtonClick, headerButton = false, headerButtonImage = false, disabled = false, header = false, border = false, children, inline = false }) {
     return (
-        <div className={`${styles.Region} ${disabled ? styles.Disabled : ""}`} style={{
+        <div className={`${styles.Region} ${disabled ? styles.Disabled : ""} ${className}`} style={{
             border: border ? "var(--border)" : undefined,
             borderRadius: border ? "var(--border-radius)" : undefined,
             minWidth: "var(--min-width)",
@@ -481,7 +507,7 @@ function ConsoleButtonRow ({ disabled = false, showDelete = false, onDelete, onC
     )
 }
 
-function DisappearingText ({ className, text }) {
+function DisappearingText ({ className, text, onDisappear }) {
     const DISAPPEAR_TIME = 5000;
     const DISAPPEAR_INTERVAL = 100;
 
@@ -497,7 +523,10 @@ function DisappearingText ({ className, text }) {
 
             let time = DISAPPEAR_INTERVAL;
             const removeLast = () => {
-                if(!textValue) return;
+                if(!textValue) {
+                    onDisappear();
+                    return;
+                }
                 if(textValue.length === 0) {
                     setTextValue(false);
                     return;
@@ -525,6 +554,10 @@ function DisappearingText ({ className, text }) {
                 return prev - UPDATE_EVERY;
             });
         }, UPDATE_EVERY);
+
+        return () => {
+            clearInterval(interval);
+        }
     }, []);
 
     if(!textValue) return null;
@@ -578,7 +611,220 @@ function PressAnyKey ({ onClick }) {
     }}>Press <i>&lt;any&gt;</i> key to continue.</p>)
 }
 
-function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterpriseId, group: _defaultGroup, groups, setGroups }) {
+
+function ThinkingText ({ visible = true, className }) {
+
+    const [content, setContent] = useState(visible ? "." : "");
+    const TIME_BETWEEN_CHANGE = 100;
+    const EXPONENTIAL_FACTOR = 0.85;
+
+    useEffect(() => {
+        let timeout;
+
+        if (!visible) {
+            let currentInterval = TIME_BETWEEN_CHANGE;
+
+            const removeCharacter = () => {
+                setContent((prev) => {
+                    if (prev.length === 0) {
+                        clearTimeout(timeout);
+                        return "";
+                    }
+                    return prev.slice(0, prev.length - 1);
+                });
+
+                if (content.length > 0) {
+                    currentInterval = currentInterval * EXPONENTIAL_FACTOR;
+                    timeout = setTimeout(removeCharacter, currentInterval);
+                }
+            };
+
+            timeout = setTimeout(removeCharacter, currentInterval);
+        } else {
+            const interval = setInterval(() => {
+                setContent((prev) => {
+                    return prev + ".";
+                });
+            }, TIME_BETWEEN_CHANGE);
+
+            return () => {
+                clearInterval(interval);
+            };
+        }
+
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [visible]);
+
+    const showCursor = content.length !== 0;
+
+    if(!content) return null;
+
+    return (
+        <Row style={{
+            alignItems: "flex-end"
+        }}>
+            <p className={className}>{content}</p>
+            <span className={styles.Blinker} style={{
+                position: "relative",
+                width: (0.8 * TEXT_WIDTH) + "px",
+                height: LINE_HEIGHT + "px",
+                mixBlendMode: "difference",
+                visibility: showCursor ? "visible" : "hidden",
+            }}></span>
+        </Row>
+    )
+
+}
+
+function LoadingText ({ visible = true, className, text = "... thinking ...", safeLength = 1 }) {
+    const [showPointer, setShowPointer] = useState(false);
+
+    const TIME_BETWEEN = 3000; // wait TIME_BETWEEN before deleting or adding
+    const TIME_BETWEEN_CHANGE = 100; // wait TIME_BETWEEN_CHANGE before changing a character
+    const LENGTH = text.length;
+    const ANIMATE_LENGTH = LENGTH - safeLength;
+
+    if(ANIMATE_LENGTH > LENGTH) throw new Error("ANIMATE_LENGTH must be less than LENGTH");
+
+    const [content, setContent] = useState(visible ? text.slice(0, safeLength) : "");
+
+    
+    // animate using the above "...", adding or removing
+    useEffect(() => {
+        if(!visible) {
+            // remove all characters in interval of TIME_BETWEEN_CHANGE
+            let remove = true;
+            setShowPointer(true);
+            const _interval = () => {
+                const call = () => {
+                    setContent((prev) => {
+                        return prev.slice(0, prev.length - 1);
+                    });
+                }
+
+                for(let i = 0; i < content.length; i++) {
+                    setTimeout(() => {
+                        call();
+                    }, TIME_BETWEEN_CHANGE * i);
+                }
+            }
+
+            const interval = setInterval(() => { _interval(); }, TIME_BETWEEN);
+            _interval();
+
+            setTimeout(() => {
+                setShowPointer(false);
+            }, TIME_BETWEEN_CHANGE * content.length)
+
+            return () => {
+                clearInterval(interval);
+            }
+
+        }
+        if(visible && content === "") {
+            setContent(text.slice(0, safeLength));
+        }
+        
+        let remove = true;
+
+        const _interval = () => {
+
+            const call = () => {
+                setContent((prev) => {
+                    if(remove) {
+                        return prev.slice(0, prev.length - 1);
+                    } else {
+                        // find prev in initialContent and add next character
+                        let index = text.indexOf(prev);
+                        if(index === -1) {
+                            return prev;
+                        }
+                        let next = text[index + prev.length];
+                        return prev + next;
+
+                    }
+                })
+            }
+
+            setShowPointer(true);
+
+            for(let i = 0; i < ANIMATE_LENGTH; i++) {
+                setTimeout(() => {
+                    call();
+                }, TIME_BETWEEN_CHANGE * i);
+            }
+            setTimeout(() => {
+                setShowPointer(false);
+            }, TIME_BETWEEN_CHANGE * ANIMATE_LENGTH);
+
+            remove = !remove;
+        }
+
+        
+        const interval = setInterval(() => { _interval(); }, TIME_BETWEEN);
+        _interval();
+
+        return () => {
+            clearInterval(interval);
+        }
+    }, [visible]);
+
+    let showCursor = false;
+    if(showPointer) showCursor = true;
+    if(content.length !== text.length) showCursor = true;
+    // if(!showPointer) showCursor = false;
+    if(content.length === 0) showCursor = false;
+
+    if(!content) return null;
+
+    return (
+        <Row style={{
+            alignItems: "flex-end"
+        }}>
+            <p className={className}>{content}</p>
+            <span className={styles.Blinker} style={{
+                position: "relative",
+                // left: selectionPosition ? (selectionPosition[0] * TEXT_WIDTH) : "0px",
+                width: (0.8 * TEXT_WIDTH) + "px",
+                height: LINE_HEIGHT + "px",
+                mixBlendMode: "difference",
+                visibility: showCursor ? "visible" : "hidden",
+                animation: content.length !== safeLength ? "none" : undefined,
+            }}></span>
+        </Row>
+    )
+}
+
+function Message ({ message }) {
+    if(!message) throw new Error("Message must be defined");
+    const { content, role } = message;
+    
+
+    if(role === "user") {
+        return (
+            <p style={{
+                marginBottom: "var(--gap)",
+                color: "var(--secondary-text-color)"
+            }}>
+                {content} 
+            </p>
+        )
+    } else {
+        return (
+            <p>
+                <b style={{
+                    fontWeight: "900",
+                    fontFamily: 'Perfect DOS VGA 437 Win',
+                    color: "var(--secondary-text-color)"
+                }}>&gt; </b> {content}
+            </p>
+        )
+    }
+}
+
+function ConsoleChat ({ messages, setShowChat, setShowGraph, showGraph, onBack, enterpriseId, group: _defaultGroup, chat, groups, setGroups }) {
     const [inputLines, setInputLines] = useState([""]);
 
     const groupsResults = groups || [];
@@ -591,24 +837,98 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
     const [groupsDisabled, setGroupsDisabled] = useState(false);
     const [disabledGroups, setDisabledGroups] = useState([]);
 
+    const [firstAppear, setFirstAppear] = useState(false);
+    useEffect(() => {
+        // if we don't have THING_KING_LAST_VISIT cookie, set firstAppear- then set that cookie
+        let hasCookie = document.cookie.split(";").filter((item) => {
+            return item.trim().startsWith("THING_KING_LAST_VISIT=");
+        }).length > 0;
+
+        if(!hasCookie) {
+            setFirstAppear(true);
+        }
+
+        document.cookie = "THING_KING_LAST_VISIT=true; max-age=31536000; path=/";
+    }, []);
+
+
+
+
     const [showHelp, setShowHelp] = useState(false);
+
+    const [thinking, setThinking] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+
+    const [inputError, setInputError] = useState(false);
+
+    const [inputFocus, setInputFocus] = useState(false);
+
+    const [screenContent, setScreenContent] = useState([]);
+    const pushContent = (content) => {
+        setScreenContent((prev) => {
+            // get current index
+            const index = messages.length;
+            if(!prev[index]) prev[index] = [];
+            prev[index].push(content);
+            return prev;
+        });
+    }
+    useEffect(() => {
+        setScreenContent([]);
+    }, [chat]);
+
+
+    useChannel(`flow-${chat.chatId}`, "error", (msg) => {
+		const data = msg.data;
+
+        if(data.message) {
+            pushContent(<p className={styles.Error}><b>An error occured.</b> {data.title}: <i>{data.message}</i></p>);
+        } else {
+            pushContent(<p className={styles.Error}><b>An error occured.</b> {data.title}</p>);
+        }
+	});
+
+    useChannel(`flow-${chat.chatId}`, "finish", (msg) => {
+        const { success } = msg.data;
+
+        setThinking(false);
+    })
+
+
+    useEffect(() => {
+        setLoading(false);
+    }, [chat]);
 
     const onSend = (text) => {
         const lowerCaseText = text.toLowerCase();
 
-        if(lowerCaseText === "!stage") {
-            setGroup(false);
-            setShowGraph(false);
+        if([
+            "!stage",
+            "!home"
+        ].includes(lowerCaseText)) {
+            if(!group) {
+                setInputError(true);
+            } else {
+                setGroup(false);
+                setShowGraph(false);
+            }
             return;
         } else if(lowerCaseText === "!edit") {
-            if(group) {
+            if(group && chat) {
                 setShowGraph((prev) => {
                     return !prev;
                 });
+            } else {
+                setInputError(true);
             }
         } else if(lowerCaseText === "!save" || lowerCaseText === "!back") {
-            setShowGraph(false);
-            setShowChat(true);
+            if(!group) {
+                setInputError(true);
+            } else {
+                setShowGraph(false);
+                setShowChat(true);
+            }
         } else if([
             "!exit",
             "!back",
@@ -619,6 +939,22 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
             return;
         } else if(lowerCaseText === "!help") {
             setShowHelp("test");
+        } else if([
+            "!new",
+            "!clear",
+            "!empty"
+        ].includes(lowerCaseText)) {
+            if(!group) {
+                setInputError(true);
+            } else {
+                if(document.getElementById("newChat")) {
+                    document.getElementById("newChat").click();
+                    setLoading(true);
+                    return;
+                } else {
+                    error("Failed to create new chat");
+                }
+            }
         } else if(lowerCaseText.startsWith("!")) {
             let cmd = false;
             let content = text.slice(1);
@@ -628,16 +964,19 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
             }
 
             if(cmd === "new") {
+                setLoading(true);
                 groupNew(enterpriseId, content).then((group) => {
                     if(!group) {
                         error("Failed to create group");
+                        setLoading(false);
                     } else {
-                        chatNew(enterpriseId, group.id).then((chat) => {
+                        chatNew(enterpriseId, group.groupId).then((chat) => {
                             if(!chat) {
                                 error("Failed to create chat");
                             } else {
                                 setGroup(group);
                             }
+                            setLoading(false);
                         });
                     }
                 });
@@ -664,7 +1003,23 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
                 if(cmd === "edit") {
                     setShowGraph(true);
                 }
+            } else {
+                setInputError(true);
             }
+        } else {
+            if(!chat || !group) {
+                setInputError(true);
+                return;
+            }
+
+            setThinking(true);
+            onUserMessage(chat.chatId, {
+                content: text,
+                role: "user",
+            }).then((response) => {
+                if(!response) error("OnUserMessage Event Failed");
+            });
+
         }
     }
 
@@ -686,6 +1041,21 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
         )
     }
 
+    let content = messages.map((message, index) => {
+        const _content = screenContent[index];
+        return {
+            message,
+            content: _content
+        }
+    });
+    // add any screenContent that is longer then messages length
+    for(let i = messages.length; i < screenContent.length; i++) {
+        content.push({
+            message: false,
+            content: screenContent[i]
+        });
+    }
+
     return (
         <div className={styles.ConsoleChat} onClick={() => {
             // click first p[type='consoleInput']
@@ -694,242 +1064,303 @@ function ConsoleChat ({ setShowChat, setShowGraph, showGraph, onBack, enterprise
                 firstInput.focus();
             }
         }}>
+            <Notifications />
 
-
-            <ConsoleLogo page={showHelp ? "help ❓" : (!group ? "stage ⋆" : `${group?.title} ⬢`)} />
-
+            <ConsoleLogo page={showHelp ? "help ❓" : (!group ? "stage ⋆" : `${group?.title} ⬢`)} pageDescription={chat?.title} />
+                
+            
             {
-                showHelp ? <>
-                    { /* Table with two columns, commands, and description */ }
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>command</th>
-                                <th>description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span className={styles.Border}>!help</span></td>
-                                <td>show this help</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <Row>
-                                        <span className={styles.Border}>!exit</span>
-                                        <span className={styles.Border}>!quit</span>
-                                        <span className={styles.Border}>!back</span>
-                                        <span className={styles.Border}>!leave</span>
-                                    </Row>
-                                </td>
-                                <td>leave the terminal</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className={styles.Border}>!stage</span>
-                                </td>
-                                <td>return to the 𝑡ℎ𝑖𝑛𝑔 𝑠𝑡𝑎𝑔𝑒</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <Row>
-                                        <span className={styles.Border}>!stage &lt;name&gt;</span>
-                                    </Row>
-                                </td>
-                                <td>stage a 𝑡ℎ𝑖𝑛𝑔 given a name</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className={styles.Border}>!new</span>
-                                </td>
-                                <td>opens new 𝑡ℎ𝑖𝑛𝑔 menu</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className={styles.Border}>!new &lt;name&gt;</span>
-                                </td>
-                                <td>creates a new 𝑡ℎ𝑖𝑛𝑔 given a name</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className={styles.Border}>!edit</span>
-                                </td>
-                                <td>edits the current 𝑡ℎ𝑖𝑛𝑔</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className={styles.Border}>!edit &lt;name&gt;</span>
-                                </td>
-                                <td>edits a 𝑡ℎ𝑖𝑛𝑔 given a name</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <PressAnyKey onClick={() => {
-                        setShowHelp(false);
-                    }} />
+                loading ? <>
+                <div className={styles.CenterContainer}>
+                    <LoadingText className={styles.Light} text="... console is loading ..." />
+                </div>
                 </> : <>
                     {
-                        group && !showGraph && <DisappearingText className={styles.Light} text={`Note: to return to the 𝑡ℎ𝑖𝑛𝑔 𝑠𝑡𝑎𝑔𝑒, type \`!stage\` at anytime.`} />
-                    }
-
-                    {
-                        group && showGraph && <DisappearingText className={styles.Light} text={`Note: to return, type \`!back\` at anytime.`} />
-                    }
-
-                    { 
-                        !group && <>
-                            <ConsoleRegion>
-                                <p className={styles.Bold}>Welcome to the 𝑠𝑡𝑎𝑔𝑒 !</p>
-                                <p className={styles.Light}>Select a 𝑡ℎ𝑖𝑛𝑔 from list to load the act.</p>
-                            </ConsoleRegion>
-                        
-                            <ConsoleRegion disabled={groupsDisabled} border={true} header={"𝑙𝑜𝑎𝑑𝑒𝑟"} headerButton="New" onHeaderButtonClick={(e) => {
-                                setShowNewGroup(true);
-                                setGroupsDisabled(true);
-                            }}>
-                                {
-                                    (!groupsResults || groupsResults.length === 0) && <p className={styles.Light} style={{
-                                        width: "100%",
-                                        textAlign: "center"
-                                    }}>No 𝑡ℎ𝑖𝑛𝑔 found.</p>
-                                }
-                                {
-                                    groupsResults.map((group, index) => {
-                                        const disabled = disabledGroups.includes(group.groupId);
-                                        return (
-                                            <ConsoleButtonRow key={index} disabled={disabled} text={group.title} style={{
-                                                marginInline: "calc(var(--margin-inline) * -1)",
-                                                paddingInline: "calc(var(--margin-inline))",
-                                                paddingBlock: "calc(var(--margin-block) / 2)",
-                                                marginRight: "calc(var(--margin-block) * -1)",
-                                                paddingRight: "calc(var(--margin-block) * 1)",
-                                            }} onClick={() => {
-                                                setGroup(group);
-                                            }} showDelete={true} onDelete={() => {
-                                                // delete group
-                                                setDisabledGroups((prev) => {
-                                                    return [...prev, group.groupId];
-                                                });
-                                                groupDelete(group.groupId).then((res) => {
-                                                    if(res) {
-                                                        // remove group from groups
-                                                        setGroup(false);
-                                                        setGroups((groups) => {
-                                                            return groups.filter((g) => {
-                                                                return g.groupId !== group.groupId;
-                                                            });
-                                                        });
-                                                        setDisabledGroups((prev) => {
-                                                            return prev.filter((g) => {
-                                                                return g !== group.groupId;
-                                                            });
-                                                        });
-                                                    } else {
-                                                        // error
-                                                        error("Failed to delete group");
-                                                    }
-                                                });
-                                            }} />
-                                        )
-                                    })
-                                }
-                            </ConsoleRegion>
-                        </>
-                    }
-                
-
-                    {
-                        // new thing in special text: 𝑛𝑒𝑤 𝑡ℎ𝑖𝑛𝑔
-                        showNewGroup && <ConsoleRegion disabled={newGroupDisabled} header="𝑛𝑒𝑤 𝑡ℎ𝑖𝑛𝑔" headerButton="Cancel" onHeaderButtonClick={(e) => {
-                            setShowNewGroup(false);
-                            setGroupsDisabled(false);
-                        }} border={true} inline={true}>
-                            <h4>name: </h4>
-                            <BorderInputRow type="newGroupInput" value={newGroupValue} onChange={(newValue) => {
-                                setNewGroupValue(newValue);
-                            }} onSend={() => {
-                                if(document.querySelector("#newGroupSend")) {
-                                    document.querySelector("#newGroupSend").click();
-                                }
+                        showHelp ? <>
+                            { /* Table with two columns, commands, and description */ }
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>command</th>
+                                        <th>description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span className={styles.Border}>!help</span></td>
+                                        <td>show this help</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <Row>
+                                                <span className={styles.Border}>!exit</span>
+                                                <span className={styles.Border}>!quit</span>
+                                                <span className={styles.Border}>!back</span>
+                                                <span className={styles.Border}>!leave</span>
+                                            </Row>
+                                        </td>
+                                        <td>leave the terminal</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span className={styles.Border}>!stage</span>
+                                        </td>
+                                        <td>return to the 𝑡ℎ𝑖𝑛𝑔 𝑠𝑡𝑎𝑔𝑒</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <Row>
+                                                <span className={styles.Border}>!stage &lt;name&gt;</span>
+                                            </Row>
+                                        </td>
+                                        <td>stage a 𝑡ℎ𝑖𝑛𝑔 given a name</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span className={styles.Border}>!new</span>
+                                        </td>
+                                        <td>opens new 𝑡ℎ𝑖𝑛𝑔 menu</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span className={styles.Border}>!new &lt;name&gt;</span>
+                                        </td>
+                                        <td>creates a new 𝑡ℎ𝑖𝑛𝑔 given a name</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span className={styles.Border}>!edit</span>
+                                        </td>
+                                        <td>edits the current 𝑡ℎ𝑖𝑛𝑔</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span className={styles.Border}>!edit &lt;name&gt;</span>
+                                        </td>
+                                        <td>edits a 𝑡ℎ𝑖𝑛𝑔 given a name</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <Row>
+                                                <span className={styles.Border}>!new</span>
+                                                <span className={styles.Border}>!clear</span>
+                                                <span className={styles.Border}>!empty</span>
+                                            </Row>
+                                        </td>
+                                        <td>starts a new chat</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+        
+                            <PressAnyKey onClick={() => {
+                                setShowHelp(false);
                             }} />
-                            <Button id="newGroupSend" className={styles.Button} text="Create" onClick={() => {
-                                setNewGroupDisabled(true);
-
-                                groupNew(enterpriseId, newGroupValue).then((group) => {
-                                    if(!group) {
-                                        error("Failed to create group");
-                                    } else {
-                                        chatNew(enterpriseId, group.id).then((chat) => {
-                                            if(!chat) {
-                                                error("Failed to create chat");
+                        </> : <div className={`${styles.ConsoleBody} ${showGraph ? styles.ConsoleBody__Graph : ""} animate__animated ${showGraph && !inputFocus ? "animate__fadeOut" : ""}`}>
+                            
+                            
+                            {
+                                group && !showGraph && firstAppear && <DisappearingText className={styles.Light} text={`Note: to return to the 𝑡ℎ𝑖𝑛𝑔 𝑠𝑡𝑎𝑔𝑒, type \`!stage\` at anytime.`} onDisappear={() => setFirstAppear(false)} />
+                            }
+        
+                            {
+                                group && showGraph && firstAppear && <DisappearingText className={styles.Light} text={`Note: to return, type \`!back\` at anytime.`} onDisappear={() => setFirstAppear(false)} />
+                            }
+        
+                            { 
+                                !group && <>
+                                    <ConsoleRegion>
+                                        <p className={styles.Bold}>Welcome to the 𝑠𝑡𝑎𝑔𝑒 !</p>
+                                        <p className={styles.Light}>Select a 𝑡ℎ𝑖𝑛𝑔 from list to load the act.</p>
+                                    </ConsoleRegion>
+                                
+                                    <ConsoleRegion className={styles.LoaderMenu} disabled={groupsDisabled} border={true} header={"𝑙𝑜𝑎𝑑𝑒𝑟"} headerButton="New" onHeaderButtonClick={(e) => {
+                                        setShowNewGroup(true);
+                                        setGroupsDisabled(true);
+                                    }}>
+                                        {
+                                            (!groupsResults || groupsResults.length === 0) && <p className={styles.Light} style={{
+                                                width: "100%",
+                                                textAlign: "center"
+                                            }}>No 𝑡ℎ𝑖𝑛𝑔 found.</p>
+                                        }
+                                        {
+                                            groupsResults.map((group, index) => {
+                                                const disabled = disabledGroups.includes(group.groupId);
+                                                return (
+                                                    <ConsoleButtonRow key={index} disabled={disabled} text={group.title} style={{
+                                                        marginInline: "calc(var(--margin-inline) * -1)",
+                                                        paddingInline: "calc(var(--margin-inline))",
+                                                        paddingBlock: "calc(var(--margin-block) / 2)",
+                                                        marginRight: "calc(var(--margin-block) * -1)",
+                                                        paddingRight: "calc(var(--margin-block) * 1)",
+                                                    }} onClick={() => {
+                                                        setGroup(group);
+                                                    }} showDelete={true} onDelete={() => {
+                                                        // delete group
+                                                        setDisabledGroups((prev) => {
+                                                            return [...prev, group.groupId];
+                                                        });
+                                                        groupDelete(group.groupId).then((res) => {
+                                                            if(res) {
+                                                                // remove group from groups
+                                                                setGroup(false);
+                                                                setGroups((groups) => {
+                                                                    return groups.filter((g) => {
+                                                                        return g.groupId !== group.groupId;
+                                                                    });
+                                                                });
+                                                                setDisabledGroups((prev) => {
+                                                                    return prev.filter((g) => {
+                                                                        return g !== group.groupId;
+                                                                    });
+                                                                });
+                                                            } else {
+                                                                // error
+                                                                error("Failed to delete group");
+                                                            }
+                                                        });
+                                                    }} />
+                                                )
+                                            })
+                                        }
+                                    </ConsoleRegion>
+                                </>
+                            }
+                        
+        
+                            {
+                                // new thing in special text: 𝑛𝑒𝑤 𝑡ℎ𝑖𝑛𝑔
+                                showNewGroup && <ConsoleRegion disabled={newGroupDisabled} header="𝑛𝑒𝑤 𝑡ℎ𝑖𝑛𝑔" headerButton="Cancel" onHeaderButtonClick={(e) => {
+                                    setShowNewGroup(false);
+                                    setGroupsDisabled(false);
+                                }} border={true} inline={true}>
+                                    <h4>name: </h4>
+                                    <BorderInputRow type="newGroupInput" value={newGroupValue} onChange={(newValue) => {
+                                        setNewGroupValue(newValue);
+                                    }} onSend={() => {
+                                        if(document.querySelector("#newGroupSend")) {
+                                            document.querySelector("#newGroupSend").click();
+                                        }
+                                    }} />
+                                    <Button id="newGroupSend" className={styles.Button} text="Create" onClick={() => {
+                                        setNewGroupDisabled(true);
+        
+                                        groupNew(enterpriseId, newGroupValue).then((group) => {
+                                            if(!group) {
+                                                error("Failed to create group");
                                             } else {
-                                                setGroup(group);
-                                                setShowNewGroup(false);
-                                                setGroupsDisabled(false);
-                                                setNewGroupDisabled(false);
-                                                setGroups((groups) => {
-                                                    return [...groups, group];
+                                                chatNew(enterpriseId, group.id).then((chat) => {
+                                                    if(!chat) {
+                                                        error("Failed to create chat");
+                                                    } else {
+                                                        setGroup(group);
+                                                        setShowNewGroup(false);
+                                                        setGroupsDisabled(false);
+                                                        setNewGroupDisabled(false);
+                                                        setGroups((groups) => {
+                                                            return [...groups, group];
+                                                        });
+                                                    }
                                                 });
                                             }
                                         });
-                                    }
-                                });
-                                // TODO: Create new group with name
+                                        // TODO: Create new group with name
+        
+        
+                                    }} />
+                                </ConsoleRegion>
+                            }
+        
+        
+                            {
+                                // "Note: to return to thingking, type !exit at anytime."
+                                !group && firstAppear && <ConsoleRegion>
+                                    <DisappearingText className={styles.Light} text={`Note: to return to default application, type \`!exit\` at anytime.`}></DisappearingText>
+                                </ConsoleRegion>
+                            }
+        
+
+                            <ConsoleRegion>
+                                {
+                                    // 
 
 
-                            }} />
-                        </ConsoleRegion>
+                                    group && chat && <>
+            
+                                        {
+                                            // messages is an array
+                                            // screenContent is an array- same length as messages- but can be mostly undefined-
+                                            // i need to somehow combine both arrays at the same index's
+
+                                            
+                                            content.map(({ message, content: _content }, index) => {
+                                                return (
+                                                    <>
+                                                        { message && <Message key={index} message={message} /> }
+                                                        {_content && _content.map((content, index) => {
+                                                            return content;   
+                                                        })}
+                                                    </>
+                                                )
+                                            })
+                                        }
+            
+                                    </>
+                                }
+                            </ConsoleRegion>
+        
+                            <div className={styles.InputRow}>
+                                <ThinkingText visible={thinking} className={styles.Light} />
+            
+                                {
+                                    !thinking && inputLines.map((line, index) => {
+                                        let id = "";
+                                        // if first line, set id to consoleInput
+                                        if(index === 0) id = "consoleInput";
+                                        else id = `consoleInput${index}`;
+                                        return (
+                                            <InputRow error={inputError} onErrorFinish={() => {
+                                                setInputError(false);
+                                            }} id={id} key={index} type="consoleInput" value={line} onChange={(newValue) => {
+                                                setInputLines((lines) => {
+                                                    lines[index] = newValue;
+                                                    return [...lines];
+                                                });
+                                            }} onNewLine={(newLine) => {
+                                                console.log("New Line", newLine);
+                                                setInputLines((lines) => {
+                                                    return [...lines, ""];
+                                                });
+                                            }} onLineDelete={() => {
+                                                // if this is the last line, ignore
+                                                if(inputLines.length === 1) return;
+            
+                                                setInputLines((lines) => {
+                                                    // remove only this line
+                                                    lines.splice(index, 1);
+                                                    return [...lines];
+                                                });
+                                            }} onSend={(text) => {
+                                                onSend(text);
+                                                setInputLines([""]);
+                                            }} onFocus={() => {
+                                                setInputFocus(true);
+                                            }} onBlur={() => {
+                                                setInputFocus(false);
+                                            }} />
+                                        )
+                                    })
+                                }   
+                            </div>
+                        </div>
                     }
-
-
-                    {
-                        // "Note: to return to thingking, type !exit at anytime."
-                        !group && <ConsoleRegion>
-                            <p className={styles.Light}>Note: to return to default application, type <span className={styles.Border}>!exit</span> at anytime.</p>
-                        </ConsoleRegion>
-                    }
-
-                    {
-                        inputLines.map((line, index) => {
-                            let id = "";
-                            // if first line, set id to consoleInput
-                            if(index === 0) id = "consoleInput";
-                            else id = `consoleInput${index}`;
-                            return (
-                                <InputRow id={id} key={index} type="consoleInput" value={line} onChange={(newValue) => {
-                                    setInputLines((lines) => {
-                                        lines[index] = newValue;
-                                        return [...lines];
-                                    });
-                                }} onNewLine={(newLine) => {
-                                    console.log("New Line", newLine);
-                                    setInputLines((lines) => {
-                                        return [...lines, ""];
-                                    });
-                                }} onLineDelete={() => {
-                                    // if this is the last line, ignore
-                                    if(inputLines.length === 1) return;
-
-                                    setInputLines((lines) => {
-                                        // remove only this line
-                                        lines.splice(index, 1);
-                                        return [...lines];
-                                    });
-                                }} onSend={(text) => {
-                                    onSend(text);
-                                    setInputLines([""]);
-                                }} />
-                            )
-                        })
-                    }   
                 </>
             }
         </div>
     )
 }
 
-export default function Console ({ onBack: _onBack, chat, group, groups, setGroups, enterpriseId }) {
+export default function Console ({ messages, onBack: _onBack, chat, group, groups, setGroups, enterpriseId }) {
     const router = useRouter();
 
     const [showGraph, setShowGraph] = useState(false);
@@ -957,15 +1388,11 @@ export default function Console ({ onBack: _onBack, chat, group, groups, setGrou
                         <div className={styles.Content}>
                             {/* <p>Test</p> */}
 
-                            { showChat      && <ConsoleChat setShowGraph={setShowGraph} setShowChat={setShowChat} showGraph={showGraph} onBack={onBack} enterpriseId={enterpriseId} group={group} groups={groups} setGroups={setGroups} /> }
+                            { showChat      && <ConsoleChat messages={messages} setShowGraph={setShowGraph} setShowChat={setShowChat} showGraph={showGraph} onBack={onBack} enterpriseId={enterpriseId} chat={chat} group={group} groups={groups} setGroups={setGroups} /> }
                             { showGraph     && <ChatGraph onEscape={() => {
                                 if(document.querySelector("#consoleInput")) {
                                     // if it already has focus, loose it's focus
-                                    if(document.activeElement === document.querySelector("#consoleInput")) {
-                                        document.querySelector("body").click();
-                                    } else {
-                                        document.querySelector("#consoleInput").focus();
-                                    }
+                                    document.querySelector("#consoleInput").focus();
                                 }
                             }} showHeader={false} type="console-graph" chat={chat} group={group} enterpriseId={enterpriseId} /> }
                         </div>

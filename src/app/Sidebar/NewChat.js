@@ -14,6 +14,7 @@ import { chatNew } from "@/client/chat";
 import useMobile from "@/providers/Mobile/useMobile";
 import toggleSidebar from "@/client/toggleSidebar";
 import SearchMenu, { SearchMenuRow } from "@/components/SearchMenu/SearchMenu";
+import notification from "@/client/notification";
 
 
 export default function NewChat ({ enterpriseId, chat, setChat, setChats, group, setGroup, disabledGroups, groups, setGroups, onDeleteGroup }) {
@@ -98,6 +99,7 @@ export default function NewChat ({ enterpriseId, chat, setChat, setChats, group,
                                     });
                                 }, 150)
                                 setChat(newChat);
+                                notification("Chat created", "", "var(--active-color)");
                             } else {
                                 error("Failed to create chat");
                             }
