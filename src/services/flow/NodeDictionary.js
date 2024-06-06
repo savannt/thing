@@ -71,6 +71,28 @@ export default {
 			},
 		},
 	},
+	"SaveMessageStream": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Save Message Stream",
+
+			in: {
+				message: {
+					type: "message",
+					description: "Message to save"
+				},
+				messageId: {
+					type: "number",
+					description: "Message ID",
+				},
+				chatId: {
+					type: "chatId",
+					description: "Chat ID to Save Message To",
+					required: false,
+				}
+			}
+		}
+	},
 	"OnUserMessage": {
 		type: "EventNode",
 		data: {
@@ -84,6 +106,11 @@ export default {
 				chatId: {
 					type: "chatId",
 					description: "Chat ID",
+					required: false
+				},
+				files: {
+					type: "files",
+					description: "Files",
 					required: false
 				}
 			}
@@ -742,10 +769,6 @@ export default {
 		type: "FunctionNode",
 		data: {
 			displayName: "On Message Stream",
-			category: "Run",
-
-			label: "onMessageStream",
-			details: "run/onMessageStream",
 
 			in: {
 				run: {
@@ -762,13 +785,14 @@ export default {
 					description: "On message stream event",
 
 					out: {
-						messageId: {
-							type: "number",
-							description: "Message ID"
-						},
 						message: {
 							type: "message",
 							description: "Message, content will be streamed"
+						},
+						messageId: {
+							type: "number",
+							description: "Message ID",
+							required: false
 						}
 					}
 				}

@@ -5,6 +5,7 @@ export const DEFAULT_OUTPUTS_REQUIRED = true;
 
 export const HANDLER_TIMEOUT = 10000;
 
+import Event from "./Event.js";
 import NodeDictionary from "./NodeDictionary.js";
 import NodeHandlerDictionary from "./NodeHandlerDictionary.js";
 
@@ -28,7 +29,7 @@ export default class Flow {
 		if(type === "EndNode") return { input: true, output: false };
 	
 		return handleError("Unknown node type", type);
-	}
+	} 
 
 	async onLog (callback) {
 		this._onLog = callback;
@@ -79,52 +80,58 @@ export default class Flow {
 	}
 
 	async handleLog (...args) {
-		if(this._onLog) await this._onLog(...args);
+		if(this._onLog) this._onLog(...args);
 		// if any args is json, stringify it inline
 		// console.log(...args);
 		console.log(...args.map(arg => typeof arg === "object" ? JSON.stringify(arg) : arg));
 	}
 
 	async handleExecute (nodeId, defaultOutputValues = {}) {
-		if(this._onExecute) await this._onExecute(nodeId, defaultOutputValues);
+		if(this._onExecute) this._onExecute(nodeId, defaultOutputValues);
 		console.log("Starting execution".gray, nodeId, "with default output values".gray, defaultOutputValues);
 	}
 
 	async handleExecuteResponse (nodeId, outputValues) {
-		if(this._onExecuteResponse) await this._onExecuteResponse(nodeId, outputValues);
+		if(this._onExecuteResponse) this._onExecuteResponse(nodeId, outputValues);
 		console.log("Executed".gray.italic, nodeId, "with output values".gray.italic, JSON.stringify(outputValues));
 	}
 
 	async handleEdgeExecute (edgeId) {
-		if(this._onEdgeExecute) await this._onEdgeExecute(edgeId);
+		if(this._onEdgeExecute) this._onEdgeExecute(edgeId);
 		console.log("Edge executed".blue, edgeId);
 	}
 
 	async handleEdgeExecuteResponse (edgeId, value) {
-		if(this._onEdgeExecuteResponse) await this._onEdgeExecuteResponse(edgeId, value);
+		if(this._onEdgeExecuteResponse) this._onEdgeExecuteResponse(edgeId, value);
 		console.log("Edge executed response".blue.italic, edgeId, "with value".blue.italic, JSON.stringify(value));
 	}
 
 	async handleEdgeBackwards (edgeId) {
-		if(this._onEdgeBackwards) await this._onEdgeBackwards(edgeId);
+		if(this._onEdgeBackwards) this._onEdgeBackwards(edgeId);
 		console.log("Edge backwards".yellow, edgeId);
 	}
 
 	async handleBackwards (nodeId) {
-		if(this._onBackwards) await this._onBackwards(nodeId);
+		if(this._onBackwards) this._onBackwards(nodeId);
 		console.log("Backwards".yellow, nodeId);
 	}
 	
 	async handleStart () {
-		if(this._onStart) await this._onStart();
+		if(this._onStart) this._onStart();
 		console.log("Flow started".green.bold);
 	}
 
 	async handleFinish (success) {
-		if(typeof success === "undefined") success = this.errors && this.errors.length !== 0;
-		if(this._onFinish) await this._onFinish(success);
+		if(typeof success === "undefined") success = this.errors.length === 0;
+		if(this._onFinish) this._onFinish(success);
 		if(success) console.log("Flow successfully finished".green.bold.italic);
-		else console.log("Flow finished with errors".red.bold.italic);
+		else {
+			console.log("Flow finished with errors".red.bold.italic);
+			console.log("---------------------------------------------");
+			for(const error of this.errors) {
+				console.log(error.title.red.bold, error.message.red);
+			}
+		}
 	}
 
 	async updateNodesData () {
@@ -372,17 +379,14 @@ export default class Flow {
 				resolve(outputValues);
 			} catch (error) {
 				clearTimeout(handlerTimeout);
-				reject(error);
+				resolve({ error: { title: error.name, messages: [error.message] } });
 			}
 		});
 
 		const outputValues = await handlerPromise;
-		if(!outputValues) {
-			return await this.handleError("Handler timeout", `Handler for node ${node.name} timed out`, { nodeId: node.id });
-		}
-
-
-
+		
+		if(typeof outputValues === "undefined") return await this.handleError(`${node.name}'s handler failed to produce an output`, `No output values generated`, { nodeId: node.id });
+		if(!outputValues) return await this.handleError("Handler timeout", `Handler for node ${node.name} timed out`, { nodeId: node.id });
 
 
 		if(outputValues && outputValues.error) {
@@ -400,31 +404,48 @@ export default class Flow {
 		const handleOutputs = async (node, outputs, outputValues) => {
 			for (const key in outputs) {
 				const type = outputs[key].type;
+				const value = outputValues[key];
 	
-				if (type === "group") {
-					const groupOutputs = outputs[key].out || {};
-					// console.log("HANDLING GROUP", key, groupOutputs, outputValues);
-					const handledGroupOutputs = await handleOutputs(node, groupOutputs, outputValues);
-					if (!handledGroupOutputs) return false;
-	
-					const groupHasFlow = outputs[key].flow || false;
-					if (groupHasFlow) {
-						// look for handle "execution-[key]"
-						const groupFlowEdge = this.edges.filter(edge => edge.source === node.id && edge.data.type === `execution-${key}`);
-						if (!groupFlowEdge) {
-							return await this.handleError("Missing required group flow output", `${key}`, {
-								nodeId: node.id,
-							});
+				// if value is an instanceof Event
+				if (value instanceof Event) {
+					
+					console.log("OUTPUT IS EVENT");
+
+					let didError = false;
+					value.on(async (groupOutputValues) => {
+						if(didError) return;
+
+
+						const groupOutputs = outputs[key].out || {};
+						const handledGroupOutputs = await handleOutputs(node, groupOutputs, groupOutputValues);
+						if(!handledGroupOutputs) {
+							didError = true;
 						}
 
+						const eventHasFlow = outputs[key].flow || false;
+						if(eventHasFlow) {
+							// look for handle "execution-[key]"
+							const eventFlowEdge = this.edges.filter(edge => edge.source === node.id && edge.data.type === `execution-${key}`);
+							if(!eventFlowEdge) { 
+								didError = true;
+								return this.handleError(`${node.name} missing required ${key} flow output`);
+							}
+	
+							// execute this flow
+							const eventFlowEdgeId = eventFlowEdge[0].id;
+							await this.handleEdgeExecute(eventFlowEdgeId);
 
-						// // execute this flow
-						// const groupFlowEdgeId = groupFlowEdge[0].id;
-						// await this.handleEdgeExecute(groupFlowEdgeId, outputValues[key]);
+							// execute the event flow node
+							const response = await this._executeFlowEvent(node, key, {});
+							if(!response) {
+								console.log("EXECUTE FLOW RESPONSE NO RESPONSE");
+								didError = true;
+							}
+							console.log("EXECUTE FLOW RESPONSE", response);
+						}
 
-						// execute the group flow node
-						await this._executeFlowEvent(node, key, {});
-					}
+					});
+
 				} else {
 					// console.log("OUTPUTS", key, outputValues);
 					const required = typeof outputs[key].required === "undefined" ? DEFAULT_OUTPUTS_REQUIRED : outputs[key].required;
@@ -438,6 +459,32 @@ export default class Flow {
 						this.context[outputEdge.id] = outputValues[key];
 					}
 				}
+
+				// if (type === "group") {
+				// 	const groupOutputs = outputs[key].out || {};
+				// 	// console.log("HANDLING GROUP", key, groupOutputs, outputValues);
+				// 	const handledGroupOutputs = await handleOutputs(node, groupOutputs, outputValues);
+				// 	if (!handledGroupOutputs) return false;
+	
+				// 	const groupHasFlow = outputs[key].flow || false;
+				// 	if (groupHasFlow) {
+				// 		// look for handle "execution-[key]"
+				// 		const groupFlowEdge = this.edges.filter(edge => edge.source === node.id && edge.data.type === `execution-${key}`);
+				// 		if (!groupFlowEdge) {
+				// 			return await this.handleError("Missing required group flow output", `${key}`, {
+				// 				nodeId: node.id,
+				// 			});
+				// 		}
+
+
+				// 		// // execute this flow
+				// 		// const groupFlowEdgeId = groupFlowEdge[0].id;
+				// 		// await this.handleEdgeExecute(groupFlowEdgeId, outputValues[key]);
+
+				// 		// execute the group flow node
+				// 		await this._executeFlowEvent(node, key, {});
+				// 	}
+				// }
 			}
 	
 			return true;

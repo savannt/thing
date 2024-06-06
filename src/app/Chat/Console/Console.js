@@ -21,8 +21,17 @@ import event, { onUserMessage, onChatCreated } from "@/client/event";
 import Notifications from "@/app/Notifications/Notifications";
 import notification from "@/client/notification";
 
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeHighlight from "rehype-highlight";
+import rehypeStringify from "rehype-stringify";
+
+
 export const TEXT_WIDTH = 12.95;
 export const LINE_HEIGHT = 20;
+
 
 function Row ({ className, children, style = {} }) {
     return (
@@ -802,6 +811,22 @@ function Message ({ message }) {
     const { content, role } = message;
     
 
+    const [html, setHtml] = useState("");
+    useEffect(() => {
+        if(message && message.content) {
+            unified()
+                .use(remarkParse)
+                .use(remarkGfm)
+                .use(remarkRehype)
+                .use(rehypeHighlight)
+                .use(rehypeStringify)
+                .process("**>** " + message.content, (err, file) => {
+                    if(err) throw err;
+                    setHtml(String(file));
+                })
+        }
+    }, [message?.content]);
+
     if(role === "user") {
         return (
             <p style={{
@@ -813,13 +838,7 @@ function Message ({ message }) {
         )
     } else {
         return (
-            <p>
-                <b style={{
-                    fontWeight: "900",
-                    fontFamily: 'Perfect DOS VGA 437 Win',
-                    color: "var(--secondary-text-color)"
-                }}>&gt; </b> {content}
-            </p>
+            <p dangerouslySetInnerHTML={{ __html: html }} />
         )
     }
 }
@@ -1280,7 +1299,7 @@ function ConsoleChat ({ messages, setShowChat, setShowGraph, showGraph, onBack, 
                             }
         
 
-                            <ConsoleRegion>
+                            <ConsoleRegion className={styles.MessagesBody}>
                                 {
                                     // 
 

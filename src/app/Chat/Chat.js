@@ -21,6 +21,7 @@ import ChatInput from "@/app/Chat/ChatInput/ChatInput"
 
 import Console from "@/app/Chat/Console/Console"
 import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapsed"
+import { onUserMessage } from "@/client/event"
 
 export default function Chat ({ console: showConsole, setConsole, graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, groups, setGroups }) {
     const hasChat = !!chat && chat?.chatId;
@@ -71,24 +72,27 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
         });
     }
 
-    function send () {
+    function onSend () {
         if(allowSend) {
             let _inputText = inputText;
             let _inputFiles = inputFiles;
 
+            
+            onUserMessage(chat.chatId, {
+                role: "user",
+                content: inputText,
+            }, inputFiles === [] ? undefined : inputFiles).then(data => {
+                if(!data) {
+                    notification("Failed to send message", "Please try again", "red");
+                    return;
+                }
+            });
+
+            
             setAllowSend(false);
             setInputText("");
             setInputFiles([]);
             setInputRows(1);
-
-
-            chatMessage(chat.chatId, enterpriseId, _inputText, _inputFiles).then(data => {
-                if(data) {
-                    
-                } else {
-                    error("Failed to send message");
-                }
-            });
         }
     }
 
@@ -122,18 +126,38 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
         const { message } = msg.data;
         if(!message) throw new Error("No message in message event");
 
+        const messageId = message.messageId;
 
         let content = "no text content";
         if(message && message.content) content = message.content;
         // notification("New message", content, "blue");
 
+        console.log("NEW MESSAGE", message)
 
-        // append message to chatmessages
+
+        if(message.messageId) {
+            // if there is a chatmessage with the same messageId already
+            const existingMessage = chatMessages.find(m => m.messageId === messageId);
+    
+            if(existingMessage) {
+                setChatMessages(prev => {
+                    // do the above in a more concise way- somehow the above is not triggering the dom to re-render
+                    return prev.map(m => {
+                        if(messageId && m.messageId === messageId) {
+                            m.content = content;
+                        }
+        
+                        return m;
+                    });
+                });
+                return;
+            }
+        }
         setChatMessages(prev => {
-            if(!prev) prev = [];
             prev.push(message);
             return prev;
         });
+        // append message to chatmessages
     });
 
 
@@ -289,7 +313,7 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
                             if (e.target.files.length > 0) {
                                 setAllowSend(true);
                             }
-                        }} />
+                        }} onSend={onSend} />
                     </div>
                 </div>
             </div> }

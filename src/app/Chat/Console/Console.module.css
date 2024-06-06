@@ -4,7 +4,7 @@
     --padding-inline: 30px;
     --padding-block: 30px;
 
-    --bezel-color: #14110e;
+    --bezel-color: #332d27;
 
 
     --background-color: rgba(26, 26, 26, 0.476);
@@ -45,7 +45,7 @@
     top: 0px;
     bottom: 0px;
 
-    background-color: black;
+    background-color: var(--bezel-color);
 
     z-index: 10000;
 
@@ -58,7 +58,7 @@
 
 .Monitor {
     margin: 0px;
-    padding: var(--padding-inline) var(--padding-block);
+    /* padding: var(--padding-inline) var(--padding-block); */
     width: min-content;
     display: flex;
     flex-direction: column;
@@ -110,6 +110,9 @@
     padding-inline: calc(var(--padding-inline) * 0.3);
     padding-block: calc(var(--padding-block) * 0.3);
 
+    height: calc(100dvh - (var(--padding-block) * 0.6));
+    max-height: calc(100dvh - (var(--padding-block) * 0.6));
+
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -117,6 +120,8 @@
 
     width: -webkit-fill-available;
     height: -webkit-fill-available;
+    overflow: hidden;
+
     /* z-index: 100000000000000000000000000; */
 }
 
@@ -135,12 +140,17 @@
     background: #05321e;
     background-image: radial-gradient(ellipse, #05321e 0%, #050505 90%);
     animation: txt-shadow 1.6s infinite;
+
     width: calc(100vw - var(--padding-inline) * 2);
-    height: calc(100vh - var(--padding-block) * 2);
+    height: calc(100vh - (var(--padding-block) * 2));
+    max-height: calc(100vh - (var(--padding-block) * 2));
+
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
+    overflow: hidden;
+
   }
   
   .CRT::before {
@@ -398,6 +408,8 @@
 
     gap: var(--margin-inline);
     /* max-width: 49%; */
+
+    overflow: hidden;
 }
 
 .ConsoleChat * {
@@ -864,4 +876,10 @@ div:has(> .ConsoleLogo) {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+
+.MessagesBody .Region__Body {
+  max-height: calc(100dvh - 225px - (2 * var(--margin-block)));
+  overflow-x: hidden;
+  overflow-y: scroll;
 }

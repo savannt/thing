@@ -1,6 +1,8 @@
 import ably from "@/services/ably";
 import mongo from "@/services/mongodb";
 
+import Event from "@/services/flow/Event";
+
 import { ChatCompletion, Assistant, Messages, Message, Tools, Tool } from "@/services/openai/OpenAI";
 
 
@@ -15,6 +17,7 @@ const error = (title, ...messages) => {
 		}
 	}
 }
+
 
 export default {
 	"StringConstant": function String ({ value }) {
@@ -43,6 +46,37 @@ export default {
 		chatChannel.publish("message", { message });
         
         return {};
+	},
+	"SaveMessageStream": async function SaveMessageStream ({ message, messageId, chatId }) {
+		const { db } = await mongo();
+		const chats = db.collection("chats");
+
+		const chat = await chats.findOne({ chatId });
+		if(!chat) return error("Chat not found", chatId);
+
+		// if chat.messages has not an object with messageId === messageId
+		// then push message to chat.messages
+		// otherwise, only update the "content" of the message
+		message.messageId = messageId;
+		const messageIndex = chat.messages.findIndex(m => m.messageId === messageId);
+		if(messageIndex === -1) {
+			await chats.updateOne({ chatId }, {
+				$push: {
+					messages: message
+				}
+			});
+		} else {
+			await chats.updateOne({ chatId }, {
+				$set: {
+					[`messages.${messageIndex}.content`]: message.content
+				}
+			});
+		}
+
+		const chatChannel = ably.channels.get(`chat-${chatId}`);
+		chatChannel.publish("message", { message });
+		
+		return {};
 	},
 	"OnUserMessage": function OnUserMessage ({ message, chatId }) {
 		return { message, chatId };
@@ -147,20 +181,36 @@ export default {
 	},
 
 	"Run/OnMessage": async function RunOnMessage ({ run }) {
+		const onMessageEvent = new Event("onMessageEvent");
+		
 		if(run.choices && run.choices.length > 0) {
-			return {
+			await onMessageEvent.handle({
 				message: run.choices[0],
 				index: 0,
-			}
+			});
 		}
-		return new Promise(resolve => {
-			run.on("end", ({ index, message }) => {
-				resolve({
-					message,
-					index
-				});
+		run.on("end", async ({ index, message }) => {
+			await onMessageEvent.handle({
+				message,
+				index
 			});
 		});
+		return { onMessageEvent }
+	},
+
+	"Run/OnMessageStream": async function RunOnMessageStream ({ run }) {
+		const onMessageStreamEvent = new Event("onMessageStreamEvent");
+		const messageId = Math.random().toString(36).substring(7);
+		run.on("delta", async (message) => {
+			
+			
+			await onMessageStreamEvent.handle({
+				message,
+				messageId
+			});
+		});
+
+		return { onMessageStreamEvent }
 	},
 
 	"Assistant/Create": async function AssistantCreate ({ name, instructions, tools }) {

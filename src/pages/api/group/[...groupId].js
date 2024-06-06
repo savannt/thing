@@ -4,6 +4,8 @@ import { generateGroupId } from "@/services/generator";
 
 import authenticate from "@/services/authenticateRequest";
 
+import DefaultFlow from "@/services/flow/templates/DefaultFlow";
+
 export default async function handler(req, res) {
     const didAuthenticate = await authenticate(req, res);
     if(!didAuthenticate) return;
@@ -37,8 +39,8 @@ export default async function handler(req, res) {
             deleted: false,
             lastTime: new Date(),
 
-            nodes: [],
-            edges: []
+            nodes: DefaultFlow.nodes,
+            edges: DefaultFlow.edges
         };
 
         const groups = db.collection("groups");

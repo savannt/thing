@@ -532,6 +532,18 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 	}
 }
 
+* {
+	color: var(--primary-text-color);
+}
+
+p {
+	
+}
+
+.hljs * {
+	color: var(--primary-text-color);
+}
+
 .react-flow__nodesselection-rect {
 	border-radius: var(--border-radius-large);
 	transform: translateX(-1px) translateY(-1px);

@@ -17,8 +17,6 @@ export default function ChatMessage ({ message }) {
         timestamp
     } = message;
 
-    console.log("message!", message);
-
     if(!role) throw new Error("ChatMessage: role is required");
 
     // Nov 14, 2023, 2:13 PM
@@ -50,10 +48,15 @@ export default function ChatMessage ({ message }) {
 
     let parsedUserId = role;
 
+    const showHeader = false;
 
     return (
-        <div className={styles.ChatMessage}>
-            <div className={styles.ChatMessage__Header}>
+        <div className={styles.ChatMessage} style={{
+            backgroundColor: role !== "user" ? "transparent" : undefined
+        }}>
+            <div className={styles.ChatMessage__Header} style={{
+                display: showHeader ? "flex" : "none"
+            }}>
                 <div className={styles.ChatMessage__Header__Start}>
                     <h1>{parsedUserId || ""}</h1>
                     <h2 suppressHydrationWarning>{_formattedTimestamp || ""}</h2>

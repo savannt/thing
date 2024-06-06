@@ -346,6 +346,7 @@ export default function ChatGraph({
 			{
 				title: "Copy All",
 				onClick: () => {
+					clearAllEffects();
 					const newClonedScene = {
 						nodes,
 						edges,
@@ -365,6 +366,7 @@ export default function ChatGraph({
 			{
 				title: "Copy All",
 				onClick: () => {
+					clearAllEffects();
 					const newClonedScene = {
 						nodes,
 						edges,
@@ -717,6 +719,7 @@ export default function ChatGraph({
 		{
 			title: "Copy All",
 			onClick: () => {
+				clearAllEffects();
 				const newClonedScene = { nodes, edges };
 				setClonedScene(newClonedScene);
 				navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
@@ -732,6 +735,7 @@ export default function ChatGraph({
 		{
 			title: "Copy All",
 			onClick: () => {
+				clearAllEffects();
 				const newClonedScene = { nodes, edges };
 				setClonedScene(newClonedScene);
 				navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
