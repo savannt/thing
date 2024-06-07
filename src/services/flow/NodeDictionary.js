@@ -984,5 +984,44 @@ export default {
 				}
 			}
 		}
+	},
+	
+
+	
+	"Terminal/SetTerminalColor": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Set Terminal Color",
+			
+			in: {
+				color: {
+					type: "color"
+				}
+			}
+		}
+	},
+	"Terminal/SetTerminalHasBorder": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Set Terminal Has Border",
+
+			in: {
+				hasBorder: {
+					type: "boolean"
+				}
+			}
+		}
+	},
+	"Terminal/SetTerminalHasGlow": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Set Terminal Has Glow",
+
+			in: {
+				hasGlow: {
+					type: "boolean"
+				}
+			}
+		}
 	}
 }

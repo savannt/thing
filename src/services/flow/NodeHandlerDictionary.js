@@ -250,5 +250,16 @@ export default {
 		channel.publish("notification", { title, content });
 
 		return {};
+	},
+
+
+	"Terminal/SetTerminalColor": function TermianlSetTerminalColor ({ color }) {
+		return {};
+	},
+	"Terminal/SetTerminalHasBorder": function TerminalSetTerminalHasBorder ({ hasBorder }) {
+		return {};
+	},
+	"Terminal/SetTerminalHasGlow": function TerminalSetTerminalHasGlow ({ hasGlow }) {
+		return {};
 	}
 }

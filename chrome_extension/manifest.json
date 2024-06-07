@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "𝘁𝗵𝗶𝗻𝗴 𝑘𝑖𝑛𝑔 extension",
+    "version": "1.0",
+    "description": "the 𝘁𝗵𝗶𝗻𝗴 𝑘𝑖𝑛𝑔 official chrome extension",
+    "permissions": [
+      "activeTab",
+      "storage"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"],
+        "css": ["style.css"]
+      }
+    ]
+  }
+  
