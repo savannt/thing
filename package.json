@@ -10,7 +10,8 @@
 		"lint": "next lint",
 		"desktop": "concurrently \"npm run dev\" \"npm run start --prefix ./desktop\"",
 		"ai-test": "node ./src/services/openai/test/index.js",
-		"flow-test": "node ./src/services/flow/test/index.js"
+		"flow-test": "node ./src/services/flow/test/index.js",
+		"build-extension": "cd chrome_extension/src && zip -r ../releases/thing_king_chrome_extension_latest.zip * && cp ../releases/thing_king_chrome_extension_latest.zip ../../public/extension/releases/"
 	},
 	"dependencies": {
 		"@clerk/clerk-sdk-node": "^5.0.4",
