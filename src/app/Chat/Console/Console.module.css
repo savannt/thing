@@ -7,6 +7,10 @@
     --bezel-color: #332d27;
 
 
+    --primary-text-color: #ececec;
+    --secondary-text-color: #b3b3b3;
+    --tertiary-text-color: #333;
+
     --background-color: rgba(26, 26, 26, 0.476);
     --secondary-color: rgba(33, 33, 33, 0.462);
 
@@ -15,6 +19,9 @@
     --line-height: 15px;
 
     
+
+
+
     --min-width: 100%;
 
     overflow: hidden;
@@ -23,6 +30,8 @@
 @media (max-width: 800px) {
     .ConsoleContainer {
         --min-width: 100%;
+        --padding-inline: 6px;
+        --padding-block: 0px;
     }
 }
 
@@ -64,7 +73,7 @@
     flex-direction: column;
     align-items: center;
     background: var(--bezel-color);
-    border-radius: 0.5rem;
+    /* border-radius: 0.5rem; */
 
     overflow: hidden;
 }

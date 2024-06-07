@@ -113,16 +113,16 @@ export default async function executeFlowEvent (chatId, values = {}, eventName =
 	const flow = new Flow({ nodes, edges });
 	flow.setGlobals({ chatId, enterpriseId, groupId });
 
-	// flow.onStart(() => handleStart());
-	// flow.onError((title, message, options) => handleError(title, message, options));
-	// flow.onLog((...messages) => handleLog(...messages));
-	// flow.onExecute((nodeId, defaultOutputValues) => handleExecute(nodeId, defaultOutputValues));
-	// flow.onExecuteResponse((nodeId, outputValues) => handleExecuteResponse(nodeId, outputValues));
-	// flow.onEdgeExecute((edgeId) => handleEdgeExecute(edgeId));
-	// flow.onEdgeExecuteResponse((edgeId, value) => handleEdgeExecuteResponse(edgeId, value));
-	// flow.onEdgeBackwards((edgeId) => handleEdgeBackwards(edgeId));
-	// flow.onBackwards((nodeId) => handleBackwards(nodeId));
-	// flow.onFinish((success) => handleFinish(success));
+	flow.onStart(() => handleStart());
+	flow.onError((title, message, options) => handleError(title, message, options));
+	flow.onLog((...messages) => handleLog(...messages));
+	flow.onExecute((nodeId, defaultOutputValues) => handleExecute(nodeId, defaultOutputValues));
+	flow.onExecuteResponse((nodeId, outputValues) => handleExecuteResponse(nodeId, outputValues));
+	flow.onEdgeExecute((edgeId) => handleEdgeExecute(edgeId));
+	flow.onEdgeExecuteResponse((edgeId, value) => handleEdgeExecuteResponse(edgeId, value));
+	flow.onEdgeBackwards((edgeId) => handleEdgeBackwards(edgeId));
+	flow.onBackwards((nodeId) => handleBackwards(nodeId));
+	flow.onFinish((success) => handleFinish(success));
 	
 	await flow.updateNodesData();
 	const outputValues = await flow.executeFlowEvent(eventName, values);

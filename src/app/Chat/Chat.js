@@ -22,11 +22,14 @@ import ChatInput from "@/app/Chat/ChatInput/ChatInput"
 import Console from "@/app/Chat/Console/Console"
 import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapsed"
 import { onUserMessage } from "@/client/event"
+import useStandalone from "@/providers/Standalone/useStandalone"
 
 export default function Chat ({ console: showConsole, setConsole, graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, groups, setGroups }) {
     const hasChat = !!chat && chat?.chatId;
 
     const isMobile = useMobile();
+    const isStandalone = useStandalone();
+
     const {
 		collapsed: isSidebarCollapsed,
 		collapsing: isSidebarCollapsing
@@ -88,7 +91,7 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
                 }
             });
 
-            
+
             setAllowSend(false);
             setInputText("");
             setInputFiles([]);
@@ -234,7 +237,7 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
                 setVideoAnimation("animate__fadeOutRight");
             }} /> }
             
-            { ((!showVideo && !showChatGraph) || chatAnimation) && <div id="chat" className={`${styles.Chat} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
+            { ((!showVideo && !showChatGraph) || chatAnimation) && <div id="chat" className={`${styles.Chat} ${isStandalone ? styles.Chat___Standalone : ""} animate__animated ${chatAnimation}`} onAnimationEnd={() => {
                 if(chatAnimation.includes("chat_graph")) {
                     setShowChatGraph(true);
                     setChatGraphAnimation("animate__fadeIn");

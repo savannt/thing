@@ -229,7 +229,7 @@ p, h1, h2, h3 {
 }
 
 ::-webkit-scrollbar-thumb {
-	background: var(--hover-color);
+	background: var(--primary-text-color);
 	border-radius: 10px;
 
 	/* border-right: 4px solid transparent; */

@@ -48,13 +48,23 @@
         min-height: calc(--body-height) !important;
         max-height: calc(--body-height) !important;
     }
-
+    
     .Sidebar__Sidebar {
-        /* height: -webkit-fill-available !important; */
-        height: -webkit-fill-available !important;
-        min-height: -webkit-fill-available !important;
-        max-height: -webkit-fill-available !important;
+        height: calc(100dvh - var(--header-height) - var(--margin-block)) !important;
+        min-height: calc(100dvh - var(--header-height) - var(--margin-block)) !important;
+        max-height: calc(100dvh - var(--header-height) - var(--margin-block)) !important;
     }
+
+    .Sidebar__Sidebar___Standalone {
+        --gap: 18px;
+
+        height: calc(100dvh - var(--header-height) - var(--margin-block) - var(--gap)) !important;
+        min-height: calc(100dvh - var(--header-height) - var(--margin-block) - var(--gap)) !important;
+        max-height: calc(100dvh - var(--header-height) - var(--margin-block) - var(--gap)) !important;
+    }
+
+    /* if we are in a web app */
+
 }
 
 .Sidebar__Sidebar {

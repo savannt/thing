@@ -578,7 +578,7 @@ export default class Flow {
 			if(nextNode.data?.final) {
 				await this.handleLog("Next node is final, ending now...".green.italic.underline, nextNode.name);
 				return this.context;
-			}
+			}/*  */
 
 			// executeedge
 

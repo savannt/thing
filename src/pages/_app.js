@@ -18,6 +18,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import MobileProvider from "@/providers/Mobile/MobileProvider";
 import SidebarCollapsedProvider from "@/providers/SidebarCollapsed/SidebarCollapsedProvider";
 import { ReactFlowProvider } from "reactflow";
+import StandaloneProvider from "@/providers/Standalone/StandaloneProvider";
 
 
 const ably = new Ably.Realtime.Promise(`xdpTHA._Un85w:q_V6S2E3SGvDyH3Aop7wBmPMOuAlbx9vgNNGD3kJaB0`);
@@ -29,15 +30,17 @@ export default function App ({ Component, pageProps }) {
                 <AblyProvider client={ably}>
                     <SidebarCollapsedProvider>
                         <MobileProvider>
-                            <main className={`${comfortaa.className} ${sourceCodePro.className} ${figtree.className}`} style={{
-                                height: "100dvh",
-                                maxHeight: "100vh",
-                                minHeight: "100vh",
-                                overflow: "hidden",
-                                display: "flex",
-                            }}>
-                                <Component {...pageProps} />
-                            </main>
+                            <StandaloneProvider>
+                                <main className={`${comfortaa.className} ${sourceCodePro.className} ${figtree.className}`} style={{
+                                    height: "100dvh",
+                                    maxHeight: "100vh",
+                                    minHeight: "100vh",
+                                    overflow: "hidden",
+                                    display: "flex",
+                                }}>
+                                    <Component {...pageProps} />
+                                </main>
+                            </StandaloneProvider>
                         </MobileProvider>
                     </SidebarCollapsedProvider>
                 </AblyProvider>

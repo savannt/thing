@@ -26,6 +26,7 @@ import toggleSidebar from "@/client/toggleSidebar";
 import { useUser, UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 
 import { useRouter } from "next/router";
+import useStandalone from "@/providers/Standalone/useStandalone";
 
 function SidebarResult ({ id, active = false, disabled = false, image, color, title, description, prefix = "", onClick, showDelete, onDelete }) {
     return (
@@ -58,6 +59,8 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     
     const ref = createRef(null);
     const router = useRouter();
+
+    const isStandalone = useStandalone();
 
     const [disabledGroups, setDisabledGroups] = useState([]); // [groupId, groupId, groupId]
     const [disabledChats, setDisabledChats] = useState([]); // [chatId, chatId, chatId]
@@ -269,7 +272,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 }} >{chat ? (chat?.title || <DotsText color="var(--secondary-text-color)" ></DotsText>) : ""}</h3>
             }
 
-            <div className={`${styles.Sidebar__Sidebar} ${secondaryAnimation}`} style={{
+            <div className={`${styles.Sidebar__Sidebar} ${secondaryAnimation} ${isStandalone ? styles.Sidebar__Sidebar___Standalone : ""}`} style={{
                 display: isCollapsed ? "none" : "flex",
                 borderRight: isMobile && !collapsed && collapsedFinished ? "none" : "",
                 // height: `calc(100% - var(--min-height))`,
@@ -317,7 +320,8 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
                             let prefix;
                             let description;
-                            let icon = "/images/icons/chat.png";
+                            // let icon = "/images/icons/chat.png";
+                            let icon = false;
                             if(isGroup) {
                                 icon = "/images/icons/thing.png"
 

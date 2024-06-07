@@ -31,6 +31,8 @@
 
 	border-radius: var(--border-radius);
 
+
+	/* font-size: 150% !important; */
 	/* font-size: 110%; */
 }
 
@@ -61,6 +63,8 @@
 	resize: none;
 
 	min-height: var(--min-height);
+
+	font-size: 100%;
 }
 
 .Input textarea[rows="1"] {

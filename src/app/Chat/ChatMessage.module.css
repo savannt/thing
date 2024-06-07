@@ -12,6 +12,25 @@
     gap: calc(2 * var(--gap));
 }
 
+@media (max-width: 800px) {
+    .ChatMessage {
+        padding: var(--margin-block);
+    }
+}
+
+.ChatMessage:first-child {
+    margin-top: var(--margin-block);
+}
+
+.ChatMessage:last-child {
+    margin-bottom: 20px;
+}
+
+.ChatMessage * {
+    font-size: 100%;
+    line-height: 28px;
+}
+
 .ChatMessage__Header {
     display: flex;
     flex-direction: row;

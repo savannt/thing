@@ -5,10 +5,12 @@
     align-items: stretch;
 
     width: -webkit-fill-available;
-    height: -webkit-fill-available;
+    min-height: calc(100dvh - var(--header-height) - var(--gap)) !important;
+    height: calc(100dvh - var(--header-height) - var(--gap)) !important;
+    max-height: calc(100dvh - var(--header-height) - var(--gap)) !important;
 
     padding-inline: calc(4 * var(--margin-inline));
-    padding-block: calc(2 * var(--margin-block));
+    /* padding-block: calc(2 * var(--margin-block)); */
 
     gap: var(--gap);
 
@@ -265,10 +267,21 @@
         /* min-height: calc(var(--body-height) - var(--header-height)) !important; */
 
 
-        height: -webkit-fill-available !important;
-        max-height: calc(100dvh - var(--header-height)) !important;
+        min-height: calc(100dvh - var(--header-height) - var(--margin-block)) !important;
+        height: calc(100dvh - var(--header-height) - var(--margin-block)) !important;
+        max-height: calc(100dvh - var(--header-height) - var(--margin-block)) !important;
+    
 
         overflow: visible;
+    }
+
+    .Chat___Standalone {
+        --gap: 18px;
+
+        min-height: calc(100dvh - var(--header-height) - var(--margin-block) - var(--gap)) !important;
+        height: calc(100dvh - var(--header-height) - var(--margin-block) - var(--gap)) !important;
+        max-height: calc(100dvh - var(--header-height) - var(--margin-block) - var(--gap)) !important;
+    
     }
 
 }
