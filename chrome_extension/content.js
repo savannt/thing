@@ -18,12 +18,18 @@
 
     const buttons = document.createElement("div");
     const close = document.createElement("button");
+    close.appendChild(document.createElement("div"));
     const minimize = document.createElement("button");
+    minimize.appendChild(document.createElement("div"));
     const maximize = document.createElement("button");
+    maximize.appendChild(document.createElement("div"));
+    const duplicate = document.createElement("button");
+    duplicate.appendChild(document.createElement("div"));
 
     close.setAttribute("name", "close");
     minimize.setAttribute("name", "minimize");
     maximize.setAttribute("name", "maximize");
+    duplicate.setAttribute("name", "duplicate");
 
     close.onclick = () => {
 
@@ -50,6 +56,9 @@
             container.style.left = "0";
             container.style.top = "0";
         }
+    }
+    duplicate.onclick = () => {
+
     }
 
     // on mousedown, set dragging to true, on mouseup set dragging false-- if dragging is true, set the position of the container to the mouse position
@@ -103,6 +112,7 @@
     }
 
 
+    buttons.appendChild(duplicate);
     buttons.appendChild(minimize);
     buttons.appendChild(maximize);
     buttons.appendChild(close);

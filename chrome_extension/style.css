@@ -51,6 +51,8 @@ div[name="thingking-container"] > div > div {
 }
 
 div[name="thingking-container"] > div > div > button {
+    position: relative;
+    
     background-color: var(--secondary-color);
     border-radius: 100%;
 
@@ -65,18 +67,50 @@ div[name="thingking-container"] > div > div > button {
     outline: none;
     border: none;
 }
+div[name="thingking-container"] > div > div > button div {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    background-color: var(--primary-text-color);
+}
+
+div[name="thingking-container"] > div > div > button[name="close"] div {
+    -webkit-mask-image: url("https://thingking.org/extension/images/close.svg");
+    -webkit-mask-size: 50%;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+}
+
+div[name="thingking-container"] > div > div > button[name="maximize"] div {
+    -webkit-mask-image: url("https://thingking.org/extension/images/maximize.svg");
+    -webkit-mask-size: 60%;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+}
+
+div[name="thingking-container"] > div > div > button[name="minimize"] div {
+    -webkit-mask-image: url("https://thingking.org/extension/images/minimize.svg");
+    -webkit-mask-size: 60%;
+    -webkit-mask-position: bottom;
+    -webkit-mask-repeat: no-repeat;
+}
+
+div[name="thingking-container"] > div > div > button[name="duplicate"] div {
+    -webkit-mask-image: url("https://thingking.org/extension/images/duplicate.svg");
+    -webkit-mask-size: 60%;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+}
+
 div[name="thingking-container"] > div > div > button:hover {
     background-color: var(--hover-color);
 }
 div[name="thingking-container"] > div > div > button:active {
     background-color: var(--hover-active-color);
-}
-
-div[name="thingking-container"] > div > div > button[name="close"] {
-    background-image: url("close.svg");
-    background-size: 100%;
-    background-repeat: no-repeat;
-        
 }
 
 div[name="thingking-container"] iframe {
