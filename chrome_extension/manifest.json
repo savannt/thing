@@ -1,15 +1,12 @@
 {
     "manifest_version": 3,
-    "name": "𝘁𝗵𝗶𝗻𝗴 𝑘𝑖𝑛𝑔 extension",
+    "name": "𝘁𝗵𝗶𝗻𝗴 𝑘𝑖𝑛𝑔",
     "version": "1.0",
-    "description": "the 𝘁𝗵𝗶𝗻𝗴 𝑘𝑖𝑛𝑔 official chrome extension",
-    "permissions": [
-      "activeTab",
-      "storage"
-    ],
-    "background": {
-      "service_worker": "background.js"
+    "description": "The official 𝘁𝗵𝗶𝗻𝗴 𝑘𝑖𝑛𝑔 chrome extension adds a popout widget to every site you visit, allowing quick access.",
+    "icons": {
+        "128": "black_text_logo.png"
     },
+    "permissions": [],
     "content_scripts": [
       {
         "matches": ["<all_urls>"],

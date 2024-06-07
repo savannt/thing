@@ -106,6 +106,13 @@ div[name="thingking-container"] > div > div > button[name="duplicate"] div {
     -webkit-mask-repeat: no-repeat;
 }
 
+div[name="thingking-container"] > div > div > button[name="collapse"] div {
+    -webkit-mask-image: url("https://thingking.org/extension/images/collapse.svg");
+    -webkit-mask-size: 80%;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+}
+
 div[name="thingking-container"] > div > div > button:hover {
     background-color: var(--hover-color);
 }
@@ -156,3 +163,40 @@ body:has(div[name="thingking-container"][style*="height: 100%;" i][style*="width
     overflow: hidden;
 }
 
+
+#thing-king-open-button {
+    position: fixed;
+    bottom: 0;
+    right: var(--padding-inline);
+
+    color: var(--primary-text-color);
+    background: var(--hover-color);
+    padding-inline: var(--padding-inline);
+    padding-block: calc(0.5 * var(--padding-block));
+    border-radius: var(--border-radius);
+
+    z-index: 100000000000000000000000000;
+
+    user-select: none;
+    cursor: pointer;
+}
+
+#thing-king-open-button div {
+    background-color: var(--primary-text-color);
+    -webkit-mask-image: url("https://thingking.org/extension/images/lock.svg");
+    -webkit-mask-size: 100%;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+}
+
+#thing-king-open-button:hover {
+    outline: 2px solid var(--hover-color);
+    outline-offset: 2px;
+}
+
+#thing-king-open-button:active {
+    outline: 2px solid var(--hover-active-color);
+    outline-offset: 2px;
+}
