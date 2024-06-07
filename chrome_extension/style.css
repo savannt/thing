@@ -8,65 +8,51 @@
     --padding-inline: 16px;
     --header-height: 32px;
     --border-radius: 13px;
-
+    --min-width: 450px;
     --gap: 6px;
 }
 
 div[name="thingking-container"] * {
     margin: 0;
     padding: 0;
-
     color: var(--primary-text-color);
 }
 
 div[name="thingking-container"] > div {
     padding-inline: var(--padding-inline);
-    
     height: var(--header-height);
     min-height: var(--header-height);
     max-height: var(--header-height);
-
     background-color: var(--background);
-
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
-
     cursor: move;
     user-select: none;
-
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-
 div[name="thingking-container"] > div > div {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-
     gap: var(--gap);
 }
 
 div[name="thingking-container"] > div > div > button {
     position: relative;
-    
     background-color: var(--secondary-color);
     border-radius: 100%;
-
     width: 16px;
     height: 16px;
-
-    font-size: 80%;
-
     cursor: pointer;
-    /* font-family: 'Segoe MDL2 Assets'; */
-
     outline: none;
     border: none;
 }
+
 div[name="thingking-container"] > div > div > button div {
     content: "";
     position: absolute;
@@ -74,7 +60,6 @@ div[name="thingking-container"] > div > div > button div {
     right: 0;
     top: 0;
     bottom: 0;
-
     background-color: var(--primary-text-color);
 }
 
@@ -92,99 +77,73 @@ div[name="thingking-container"] > div > div > button[name="maximize"] div {
     -webkit-mask-repeat: no-repeat;
 }
 
-div[name="thingking-container"] > div > div > button[name="minimize"] div {
-    -webkit-mask-image: url("https://thingking.org/extension/images/minimize.svg");
-    -webkit-mask-size: 60%;
-    -webkit-mask-position: bottom;
-    -webkit-mask-repeat: no-repeat;
-}
-
-div[name="thingking-container"] > div > div > button[name="duplicate"] div {
-    -webkit-mask-image: url("https://thingking.org/extension/images/duplicate.svg");
-    -webkit-mask-size: 60%;
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-}
-
-div[name="thingking-container"] > div > div > button[name="collapse"] div {
-    -webkit-mask-image: url("https://thingking.org/extension/images/collapse.svg");
-    -webkit-mask-size: 80%;
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-}
-
 div[name="thingking-container"] > div > div > button:hover {
     background-color: var(--hover-color);
 }
+
 div[name="thingking-container"] > div > div > button:active {
     background-color: var(--hover-active-color);
 }
 
 div[name="thingking-container"] iframe {
     width: -webkit-fill-available;
-    height: calc(100% - var(--header-height));
-
+    margin-top: -1px;
+    height: calc(100% - var(--header-height) + 2px);
     border: none;
 }
 
-
 div[name="thingking-container"] {
     position: fixed;
-    
     bottom: 0;
     right: 0;
-    
-    min-width: 25dvw;
+    min-width: var(--min-width);
     max-width: 100dvw;
-    
-    aspect-ratio: 1/1;
-
+    aspect-ratio: 3/4;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-
     border-radius: var(--border-radius);
-
     z-index: 100000000000000000000000000;
-
     min-height: var(--header-height);
-
     resize: both;
     overflow: auto;
     overflow-y: hidden;
 }
 
-/* if div[name="thinking-container"] is 100% width- and height-wise set no border radius */
+/* Remove border-radius if container is full screen */
 div[name="thingking-container"][style*="height: 100%;" i][style*="width: 100%;" i] {
     border-radius: 0 !important;
 }
+
 div[name="thingking-container"][style*="height: 100%;" i][style*="width: 100%;" i] > div {
     border-radius: 0 !important;
 }
+
 body:has(div[name="thingking-container"][style*="height: 100%;" i][style*="width: 100%;" i]) {
     overflow: hidden;
 }
 
-
 #thing-king-open-button {
     position: fixed;
-    bottom: 0;
-    right: var(--padding-inline);
-
+    bottom: var(--padding-block);
+    right: var(--padding-block);
     color: var(--primary-text-color);
     background: var(--hover-color);
-    padding-inline: var(--padding-inline);
+    padding-inline: calc(0.4 * var(--padding-inline));
     padding-block: calc(0.5 * var(--padding-block));
     border-radius: var(--border-radius);
-
     z-index: 100000000000000000000000000;
-
     user-select: none;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
 }
 
 #thing-king-open-button div {
     background-color: var(--primary-text-color);
     -webkit-mask-image: url("https://thingking.org/extension/images/lock.svg");
-    -webkit-mask-size: 100%;
+    -webkit-mask-size: 150%;
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     width: 16px;
