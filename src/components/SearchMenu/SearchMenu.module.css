@@ -6,6 +6,13 @@
 	backdrop-filter: blur(10px);
 }
 
+@media (max-width: 800px) {
+	.SearchMenu {
+		top: var(--min-height) !important;
+		margin-inline: var(--margin-inline) !important;
+	}
+}
+
 .SearchMenu__Header {
 	min-height: var(--min-height);
 	height: var(--min-height);
@@ -88,6 +95,8 @@
 .SearchMenu__Row__Delete {
 	margin-left: auto;
 	opacity: 0 !important;
+
+	margin-right: calc(-1 * var(--margin-inline));
 }
 
 .SearchMenu__Row:hover .SearchMenu__Row__Delete {

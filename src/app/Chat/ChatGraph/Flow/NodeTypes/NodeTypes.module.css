@@ -37,7 +37,7 @@
 
 /* if Node__Outputs:empty, then set Node__Header borderradius */
 .Node:has(.Node__Outputs:empty) .Node__Header {
-    border-radius: calc(var(--border-radius-large) * 0.87);
+    border-radius: calc(var(--border-radius-large) * 0.85);
 }
 
 .Node .Node__Header {
@@ -48,8 +48,8 @@
     padding-inline: calc(var(--margin-inline) * 1.1);
     background: var(--hover-color);
 
-    border-top-left-radius: calc(var(--border-radius-large) * 0.7);
-    border-top-right-radius: calc(var(--border-radius-large) * 0.7);
+    border-top-left-radius: calc(var(--border-radius-large) * 0.85);
+    border-top-right-radius: calc(var(--border-radius-large) * 0.85);
 }
 
 .Node__Header__NoLeft {

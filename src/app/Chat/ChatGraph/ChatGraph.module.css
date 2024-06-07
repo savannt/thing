@@ -88,3 +88,14 @@ div[type="console-graph"] .ChatGraph__Header {
     align-items: center;
     gap: var(--gap);
 }
+
+@media (max-width: 800px) {
+	.ChatMenu {
+		top: var(--min-height);
+		margin-inline: var(--margin-inline) !important;
+	}
+
+    .ChatMenu textarea {
+        padding-inline: var(--margin-inline) !important;
+    }
+}

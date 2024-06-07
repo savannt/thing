@@ -30,10 +30,16 @@ import useStandalone from "@/providers/Standalone/useStandalone";
 
 function SidebarResult ({ id, active = false, disabled = false, image, color, title, description, prefix = "", onClick, showDelete, onDelete }) {
     return (
-        <div id={id} className={`${styles.Sidebar__Result} ${disabled ? styles.Sidebar__Result__Disabled : ""}`} onClick={(e) => {
+        <div id={id} className={`${styles.Sidebar__Result} ${disabled ? styles.Sidebar__Result__Disabled : ""} ${active ? styles.Sidebar__Result___Active : ""}`} onPointerUp={(e) => {
             const target = e.target;
             if(target.id === `${id}-delete`) return;
             onClick(e);
+            e.stopPropagation();
+        }} onClick={(e) => {
+            const target = e.target;
+            if(target.id === `${id}-delete`) return;
+            onClick(e);
+            e.stopPropagation();
         }} style={{
             cursor: disabled ? "not-allowed" : "pointer",
             opacity: disabled ? 0.5 : 1,
@@ -231,6 +237,24 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     }
 
 
+    const firstColumnStyle = {
+        fontWeight: "bold",
+        whiteSpace: "pre",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-start",
+        justifyContent: "flex-end",
+        width: "100%",
+        fontSize: "0.9125rem"
+    }
+
+    const secondColumnStyle = {
+        fontSize: "0.8125rem",
+        paddingLeft: "var(--gap)",
+        fontStyle: "italic",
+        whiteSpace: "pre"
+    }
+
     return (
         // on drag of styles.Sidebar::after resize sidebar
         <div id="sidebar" className={`${styles.Sidebar} ${animation}`} onAnimationStart={() => {
@@ -289,7 +313,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                     { isMobile && group && <SquareButton id="chat-back" image="/images/icons/caret/caret_left.svg" onClick={() => {
                         setGroup(false);
                     } }/> }
-                    <NewChat enterpriseId={enterpriseId} chat={chat} setChat={setChat} setChats={setChats} group={group} setGroup={setGroup} onDeleteGroup={onDeleteGroup} disabledGroups={disabledGroups} groups={groupsArray} setGroups={setGroups} />
+                    <NewChat disabled={groups === false} enterpriseId={enterpriseId} chat={chat} setChat={setChat} setChats={setChats} group={group} setGroup={setGroup} onDeleteGroup={onDeleteGroup} disabledGroups={disabledGroups} groups={groupsArray} setGroups={setGroups} />
                 </div>
                 {
                     !!group && <div className={styles.Sidebar__Row}>
@@ -297,98 +321,104 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                     </div>
                 }
                 
+                <div className={styles.Sidebar__ResultsContainer}>
+                    <div className={styles.Sidebar__ResultsOverlay}></div>
+                    <div className={styles.Sidebar__Results}>
+                        {
+                            loadingResults && <ColorImage className={styles.Sidebar__Loading} image="/gifs/loading.gif" />
+                        }
+                        
+                        {
+                            !loadingResults && noResults && <p style={{
+                                width: "-webkit-fill-available",
+                                textAlign: "center",
+                                color: "var(--secondary-text-color)",
+                                opacity: 0.6,
+                                marginTop: "calc(var(--margin-block))"
+                            }}>{noResultsMessage}</p>
+                        }
+                        {
+                            !noResults && results.map((item, index) => {
+                                const title = item.title;
+                                const isGroup = !!!group;
 
-                <div className={styles.Sidebar__Results}>
-                    {
-                        loadingResults && <ColorImage className={styles.Sidebar__Loading} image="/gifs/loading.gif" />
-                    }
-                    
-                    {
-                        !loadingResults && noResults && <p style={{
-                            width: "-webkit-fill-available",
-                            textAlign: "center",
-                            color: "var(--secondary-text-color)",
-                            opacity: 0.6,
-                            marginTop: "calc(var(--margin-block) / 2)"
-                        }}>{noResultsMessage}</p>
-                    }
-                    {
-                        !noResults && results.map((item, index) => {
-                            const title = item.title;
-                            const isGroup = !!!group;
 
+                                let prefix;
+                                let description;
+                                // let icon = "/images/icons/chat.png";
+                                let icon = false;
+                                if(isGroup) {
+                                    icon = "/images/icons/thing.png"
 
-                            let prefix;
-                            let description;
-                            // let icon = "/images/icons/chat.png";
-                            let icon = false;
-                            if(isGroup) {
-                                icon = "/images/icons/thing.png"
-
-                                description = "Group"
-                            } else {
-                                icon = "/images/icons/chat.png"
-                                
-                                if(item.messages && item.messages.length > 0) {
-                                    let lastMessage = item.messages[item.messages.length - 1];
-
-                                    let lastMessageText = lastMessage.message;
-                                    let lastMessageUser = lastMessage.userId;
-
-                                    description = lastMessageText;
-                                    prefix = lastMessageUser === userId ? "me: " : "";
+                                    description = "Group"
                                 } else {
-                                    description = "blank chat";
-                                }
-                            }
-                            // HARD OVERRIDE HERE
-                            prefix = "";
-                            description = "";
+                                    icon = "/images/icons/chat.png"
+                                    
+                                    if(item.messages && item.messages.length > 0) {
+                                        let lastMessage = item.messages[item.messages.length - 1];
 
-                            const isDisabled = item.chatId ? disabledChats.includes(item.chatId) : disabledGroups.includes(item.groupId);
-                            const isActive = chat && item.chatId && chat.chatId === item.chatId;
+                                        let lastMessageText = lastMessage.message;
+                                        let lastMessageUser = lastMessage.userId;
 
-                            return (
-                                <SidebarResult id={`${item.chatId ? `chat-${item.chatId}` : `group-${item.groupId}`}`} active={isActive} disabled={isDisabled} key={index} image={icon} title={title} description={description} prefix={prefix} onClick={() => {
-                                    let time = 0;
-                                    if(document && document.getElementById("back-chat-graph")) {
-                                        time = 650;
-                                        document.getElementById("back-chat-graph").click();
-                                    }
-                                    setTimeout(() => {
-                                        if(isGroup) {
-                                            setGroup(item);
-                                            setChats(false);
-                                        } else {
-                                            // setChat(item);
-                                            // push query ?chatId = item.chatId
-
-                                            router.push({
-                                                pathname: "/",
-                                                query: {
-                                                    chatId: item.chatId
-                                                }
-                                            }, undefined, { shallow: true });
-                                        }
-                                    }, time);
-                                }} showDelete={true} onDelete={() => {
-                                    if(isGroup) {
-                                        onDeleteGroup(item);
+                                        description = lastMessageText;
+                                        prefix = lastMessageUser === userId ? "me: " : "";
                                     } else {
-                                        onDeleteChat(item);
+                                        description = "blank chat";
                                     }
-                                }} />
-                            )
-                        })
-                    }
+                                }
+                                // HARD OVERRIDE HERE
+                                prefix = "";
+                                description = "";
+
+                                const isDisabled = item.chatId ? disabledChats.includes(item.chatId) : disabledGroups.includes(item.groupId);
+                                const isActive = chat && item.chatId && chat.chatId === item.chatId;
+
+                                return (
+                                    <SidebarResult id={`${item.chatId ? `chat-${item.chatId}` : `group-${item.groupId}`}`} active={isActive} disabled={isDisabled} key={index} image={icon} title={title} description={description} prefix={prefix} onClick={() => {
+                                        let time = 0;
+                                        if(document && document.getElementById("back-chat-graph")) {
+                                            time = 650;
+                                            document.getElementById("back-chat-graph").click();
+                                        }
+                                        setTimeout(() => {
+                                            if(isGroup) {
+                                                setGroup(item);
+                                                setChats(false);
+                                            } else {
+                                                // setChat(item);
+                                                // push query ?chatId = item.chatId
+
+                                                router.push({
+                                                    pathname: "/",
+                                                    query: {
+                                                        chatId: item.chatId
+                                                    }
+                                                }, undefined, { shallow: true });
+                                            }
+                                        }, time);
+                                    }} showDelete={true} onDelete={() => {
+                                        if(isGroup) {
+                                            onDeleteGroup(item);
+                                        } else {
+                                            onDeleteChat(item);
+                                        }
+                                    }} />
+                                )
+                            })
+                        }
+                    </div>
                 </div>
 
                 <div className={styles.Sidebar_Organization} onClick={(e) => {
-                    if(document.querySelector(".cl-organizationSwitcherTrigger")) {
-                        // document.querySelector(".cl-organizationSwitcherTrigger").focus();
-                        // document.querySelector(".cl-organizationSwitcherTrigger").click();
-                        // e.stopPropagation();
-                    }
+                    setTimeout(() => {
+                        if(e.target.tagName === "BUTTON") return;
+                        if(!document.querySelector(".cl-organizationSwitcherPopoverCard")) {
+                            if(document.querySelector(".cl-organizationSwitcherTrigger")) {
+                                document.querySelector(".cl-organizationSwitcherTrigger").click();
+                            }
+                        }
+                    }, 50);
+                    return e.stopPropagation();
                 }}>
                     <OrganizationSwitcher />
                 </div>
@@ -400,7 +430,41 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                     }
                 }}>
                
-                    <UserButton />
+                    <UserButton>
+                        <UserButton.UserProfileLink url="/redirect/stripe" label="Billing" labelIcon={<ColorImage image="/images/icons/billing.svg" />}/>
+                        <UserButton.UserProfilePage url="/membership" label="Membership" labelIcon={<ColorImage image="/images/icons/phone.svg" />}>
+                            <h1 style={{
+                                fontSize: "1.0625rem",
+                                fontWeight: "700",
+                            }}>Membership</h1>
+                            <p style={{
+                                fontSize: "0.8125rem"
+                            }}>You are currently using a Personal Demo Account.<br/><br/></p>
+                            <h4 style={{ fontWeight: "500", marginBottom: "calc(var(--gap) * 0.5)"}}>Upgrading grants access to:</h4>
+ 
+                            {/* <p>* <b>Organization & White-Labeling Features: </b>Gain the ability to create and manage organizations, invite team members, and customize the platform with your own branding.</p> */}
+                            {/* <p>* <b>Unrestricted Access: </b>Enjoy full-speed performance with no usage limits, ensuring optimal efficiency and productivity for your team.</p> */}
+                            {/* <p>* <b>Direct, Real Human Support: </b>Receive fast and on-hand support from our dedicated team of experts, ensuring you get the help you need when you need it.</p> */}
+                        
+                            { /* put the above in a table */ }
+                            <table style={{
+                                borderTop: "var(--border)"
+                            }}>
+                                <tr>
+                                    <td style={firstColumnStyle}>Organization Features</td>
+                                    <td style={secondColumnStyle}>Create and manage organizations, invite members, and customize branding</td>
+                                </tr>
+                                <tr>
+                                    <td style={firstColumnStyle}>Unrestricted Access</td>
+                                    <td style={secondColumnStyle}>Full-speed performance with no usage limits</td>
+                                </tr>
+                                <tr>
+                                    <td style={firstColumnStyle}>Direct Human Support</td>
+                                    <td style={secondColumnStyle}>Fast and dedicated support from our team</td>
+                                </tr>
+                            </table>
+                        </UserButton.UserProfilePage>
+                    </UserButton>
                     <p className={styles.Sidebar__Footer__DisplayName}>{displayName}</p>
                     <div className={styles.Sidebar__Footer__Footer}>
                         <SquareButton id="logout" background={false} image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/>

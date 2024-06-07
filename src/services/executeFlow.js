@@ -24,7 +24,6 @@ export default async function executeFlowEvent (chatId, values = {}, eventName =
 	const flowChannel = ably.channels.get(`flow-${chatId}`);
 	
 	const _throttle = async () => {
-		return;
 		let waitTime = (5 - speed) * 250;
 		if(waitTime === 0) return;
 		await new Promise(resolve => setTimeout(resolve, waitTime));

@@ -95,7 +95,7 @@ export default function Header ({ graph, group, chat, onBack, onHome, onLogout, 
 					</div>
 				}
 
-				<SquareButton disabled={isMobile && !chat} id="mobile-toggle-sidebar" image="/images/icons/sidebar.png" onClick={() => {
+				<SquareButton id="mobile-toggle-sidebar" image="/images/icons/sidebar.png" onClick={() => {
 					document.getElementById("toggle-sidebar").click();
 				}} />
 			</div>

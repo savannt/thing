@@ -19,7 +19,7 @@
 }
 
 .ChatMessage:first-child {
-    margin-top: var(--margin-block);
+    /* margin-top: var(--margin-block); */
 }
 
 .ChatMessage:last-child {

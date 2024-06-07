@@ -33,8 +33,11 @@ export default function App ({ Component, pageProps }) {
                             <StandaloneProvider>
                                 <main className={`${comfortaa.className} ${sourceCodePro.className} ${figtree.className}`} style={{
                                     height: "100dvh",
-                                    maxHeight: "100vh",
-                                    minHeight: "100vh",
+                                    maxHeight: "100dvh",
+                                    minHeight: "100dvh",
+                                    width: "100dvw",
+                                    maxWidth: "100dvw",
+                                    minWidth: "100dvw",
                                     overflow: "hidden",
                                     display: "flex",
                                 }}>

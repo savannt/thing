@@ -25,7 +25,7 @@ export function SearchMenuRow ({ disabled = false, id, image, text, onClick, sho
 			{ showDelete && <SquareButton className={styles.SearchMenu__Row__Delete} onClick={(e) => {
 				if(onDelete) onDelete();
 				e.stopPropagation();
-			}} image="/images/icons/trash.svg" color="var(--red)" background={false} /> }
+			}} image="/images/icons/trash.svg" color="var(--primary-text-color)" background={false} /> }
 		</div>
 	)
 }

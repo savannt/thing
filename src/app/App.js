@@ -130,7 +130,7 @@ export default function App ({ page }) {
 	const [group, setGroup] = useState(false);
 	const [groups, setGroups] = useState(false);
 	const [graph, setGraph] = useState(false);
-	const [console, _setConsole] = useState(false);
+	const [showConsole, _setConsole] = useState(false);
 	const setConsole = (console) => {
 		const value = _setConsole(console);
 		if(console) {
@@ -233,7 +233,10 @@ export default function App ({ page }) {
 	}, [router.query.chatId, groups, enterpriseId]);
 
 	useEffect(() => {		
-		if(enterpriseId) {
+		if(typeof enterpriseId !== "undefined") {
+			setGroups(false);
+			setGroup(false);
+			setChat(false);
 			fetchGroups(enterpriseId).then(_groups => {
 				setGroups(_groups);
 			});
@@ -351,7 +354,7 @@ export default function App ({ page }) {
 					setChat={setChat}
 					userId={userId}
 
-					console={console}
+					console={showConsole}
 					setConsole={setConsole}
 
 					onLogout={onLogout}

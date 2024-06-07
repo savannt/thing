@@ -12,7 +12,8 @@
     padding-inline: calc(4 * var(--margin-inline));
     /* padding-block: calc(2 * var(--margin-block)); */
 
-    gap: var(--gap);
+    /* gap: var(--gap); */
+    gap: 0px;
 
     animation-duration: 0.3s !important;
 
@@ -26,6 +27,23 @@
 }
 
 .Chat__Main {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+
+    overflow-x: visible;
+    overflow-y: hidden;
+}
+
+.Chat__Main__Messages {
+    position: relative;
+
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -36,9 +54,57 @@
 
     gap: var(--gap);
 
-    overflow: hidden;
+    overflow-x: visible !important;
     overflow-y: scroll;
+
+    padding-block: calc(1 * var(--margin-inline));
 }
+
+.Chat__Main__Fade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    pointer-events: none;
+}
+
+.Chat__Main__ScrollOverlay {
+    position: absolute;
+    top: 0;
+    right: 0px;
+    bottom: 0;
+
+    width: 5px;
+
+    background: var(--background-color);
+    z-index: 100000000;
+
+    pointer-events: none;
+}
+
+.Chat__Main__Fade::after, .Chat__Main__Fade::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px; /* Adjust the height for a larger or smaller fade effect */
+    pointer-events: none; /* Allows clicks to pass through */
+    z-index: 10;
+}
+
+
+.Chat__Main__Fade::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--background-color), transparent); /* Match your container's background color */
+}
+
+.Chat__Main__Fade::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--background-color), transparent); /* Match your container's background color */
+}
+
 
 .Chat__Bar {
     display: flex;
@@ -51,6 +117,13 @@
     overflow: visible;
 
     position: relative;
+}
+
+/* if above 800px width */
+@media (min-width: 800px) {
+    .Chat__Bar {
+        margin-bottom: var(--gap);
+    }
 }
 
 .Chat__Bar__InputRow {
@@ -72,39 +145,54 @@
     width: var(--min-height) !important;
 }
 
+.Chat__Bar__Buttons {
+    position: relative;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+
+    position: relative;
+
+    left: -7px;
+    /* bottom: 2px; */
+
+    z-index: 100;
+}
 
 .Chat__Bar__InputRow__Live {
-    position: absolute;
-    right: calc(100% + var(--gap));
+    /* position: absolute; */
+    /* right: calc(100% + var(--gap)); */
 }
 
 .Chat__Bar__InputRow__Console {
-    position: absolute;
-    right: calc(100% + var(--gap));
-    bottom: calc(200%);
+    /* position: absolute; */
+    /* right: calc(100% + var(--gap)); */
+    /* bottom: calc(200%); */
+    position: relative;
+    left: calc(-1 * var(--gap));
 }
 
 .Chat__Bar__InputRow__Graph {
-    position: absolute;
-    right: calc(100% + var(--gap));
-    bottom: calc(100%);
+    /* position: absolute; */
+    /* right: calc(100% + var(--gap)); */
+    /* bottom: calc(100%); */
+    position: relative;
+    left: calc(-0.5 * var(--gap));
 }
 
 @media (max-width: 800px) {
     .Chat__Bar__InputRow__Live {
-        /* left: 0px; */
-        left: 0px !important;
-        bottom: calc(100% + var(--gap));
+
     }
 
     .Chat__Bar__InputRow__Graph {
-        left: calc(var(--min-height));
-        bottom: calc(100% + var(--gap)); 
+
     }
 
     .Chat__Bar__InputRow__Console {
-        left: calc(2 * var(--min-height));
-        bottom: calc(100% + var(--gap));
+
     }
 
 

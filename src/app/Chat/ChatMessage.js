@@ -1,3 +1,4 @@
+import "animate.css";
 import styles from "@/app/Chat/ChatMessage.module.css";
 
 import { unified } from "unified";
@@ -51,7 +52,7 @@ export default function ChatMessage ({ message }) {
     const showHeader = false;
 
     return (
-        <div className={styles.ChatMessage} style={{
+        <div className={`${styles.ChatMessage} animate__animated animate__fadeIn`} style={{
             backgroundColor: role !== "user" ? "transparent" : undefined
         }}>
             <div className={styles.ChatMessage__Header} style={{

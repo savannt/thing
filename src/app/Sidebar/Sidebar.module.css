@@ -128,19 +128,77 @@
 }
 .Sidebar__Row:first-child { margin-top: 0; }
 
+.Sidebar__ResultsContainer {
+    position: relative;
 
-.Sidebar__Results {
     margin-top: calc(var(--margin-block) - var(--gap));
 
     /* padding-top: var(--margin-block); */
     margin-inline: calc(-1 * var(--margin-inline));
     margin-right:  calc(-1 * var(--margin-inline));
 
+    overflow: hidden;
+
+    /* height: 10%; */
+    height: -webkit-fill-available;
+}
+
+.Sidebar__Results {
     overflow-y: overlay;
 
     /* height: 10%; */
     height: -webkit-fill-available;
 }
+
+.Sidebar__ResultsOverlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    pointer-events: none;
+}
+
+
+
+
+.Sidebar__ResultsOverlay::after, .Sidebar__ResultsOverlay::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px; /* Adjust the height for a larger or smaller fade effect */
+    pointer-events: none; /* Allows clicks to pass through */
+    z-index: 10;
+}
+
+
+.Sidebar__ResultsOverlay::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--background-color), transparent); /* Match your container's background color */
+}
+
+.Sidebar__ResultsOverlay::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--background-color), transparent); /* Match your container's background color */
+}
+
+
+.Sidebar__ResultsContainer:has(.Sidebar__Result___Active:first-child) .Sidebar__ResultsOverlay::before {
+    height: 0px;
+}
+.Sidebar__ResultsContainer:has(.Sidebar__Result:first-child:hover) .Sidebar__ResultsOverlay::before {
+    height: 0px;
+}
+.Sidebar__ResultsContainer:has(.Sidebar__Result___Active:last-child) .Sidebar__ResultsOverlay::after {
+    height: 0px;
+}
+.Sidebar__ResultsContainer:has(.Sidebar__Result:last-child:hover) .Sidebar__ResultsOverlay::after {
+    height: 0px;
+}
+
+
 
 .Sidebar__Result {
     display: flex;
@@ -274,6 +332,8 @@
     padding-block: var(--margin-block);
 
     overflow: hidden;
+
+    user-select: none;
 }
 
 .Sidebar_Organization {
@@ -297,6 +357,7 @@
 
     margin-bottom: calc(-1 * var(--gap));
 
+    user-select: none;
 }
 
 

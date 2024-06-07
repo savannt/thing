@@ -9,7 +9,7 @@ import ChatGraph from "@/app/Chat/ChatGraph/ChatGraph"
 import Video from "@/app/Chat/Video"
 
 import { useChannel } from "ably/react";
-import { useState, useEffect } from "react"
+import { useState, useEffect, createRef } from "react"
 import { useRouter } from "next/router"
 
 import { chat, chatMessage } from "@/client/chat"
@@ -24,6 +24,8 @@ import useSidebarCollapsed from "@/providers/SidebarCollapsed/useSidebarCollapse
 import { onUserMessage } from "@/client/event"
 import useStandalone from "@/providers/Standalone/useStandalone"
 
+export const SCROLL_TIMEOUT = 1500;
+
 export default function Chat ({ console: showConsole, setConsole, graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, groups, setGroups }) {
     const hasChat = !!chat && chat?.chatId;
 
@@ -36,6 +38,17 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
 	} = useSidebarCollapsed();
     const router = useRouter();
 
+    const scrollRef = createRef();
+    const scrollToBottom = () => {
+        // scroll to bottom of #chat-main-messages
+        if(document.querySelector("#chat-main-messages")) {
+            document.querySelector("#chat-main-messages").scrollTo({
+                top: document.querySelector("#chat-main-messages").scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    }
+
 
     // Chat Properties
     const [chatMessages, setChatMessages] = useState(chat?.messages || []);
@@ -46,34 +59,6 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
     const [inputRows, setInputRows]   = useState(1);
     const [inputText, setInputText]   = useState("");
 
-    // Animation
-    // const [chatAnimation, setChatAnimation] = useState("");
-
-    // useEffect(() => {
-    //     if(chat && chat.chatId && chat.chatId !== chatId) {
-    //         setChatId(chat.chatId);
-    //         setChatMessages(chat.messages || []);
-    //         setChatAnimation("animate__heartBeat");
-    //     }
-    // }, [chat]);
-
-    function onMessageStart (message) {
-        setChatMessages(prev => {
-            if(!prev) prev = [];
-            prev.push(message);
-            return prev;
-        });
-    }
-
-    function onMessageDelta ({ id, message }) {
-        setChatMessages(prev => {
-            if(!prev) throw new Error("onMessageDelta: no messages in chat- yet we are trying to update one");
-            let index = prev.findIndex(m => m.id === id);
-            if(index === -1) throw new Error("onMessageDelta: message not found in chat- yet we are trying to update it");
-            prev[index].message = message;
-            return prev;
-        });
-    }
 
     function onSend () {
         if(allowSend) {
@@ -84,7 +69,7 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
             onUserMessage(chat.chatId, {
                 role: "user",
                 content: inputText,
-            }, inputFiles === [] ? undefined : inputFiles).then(data => {
+            }, inputFiles === [] ? undefined : inputFiles, 5).then(data => {
                 if(!data) {
                     notification("Failed to send message", "Please try again", "red");
                     return;
@@ -112,6 +97,7 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
 
 
 
+
     // if path is /?terminal=true then open console
     useEffect(() => {
         if(router.query.terminal) {
@@ -123,6 +109,7 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
 
     useEffect(() => {
         setChatMessages(chat.messages || []);
+        scrollToBottom();
     }, [chat])
 
     useChannel(`chat-${chat.chatId}`, "message", (msg) => {
@@ -138,6 +125,7 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
         console.log("NEW MESSAGE", message)
 
 
+        scrollToBottom();
         if(message.messageId) {
             // if there is a chatmessage with the same messageId already
             const existingMessage = chatMessages.find(m => m.messageId === messageId);
@@ -178,7 +166,31 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
 		console.log("[Flow Log]", formattedMessages.join("\n"));
 	});
 
+    const [scrollVisible, setScrollVisible] = useState(false);
+    const [scrollTimeout, setScrollTimeout] = useState(null);
+    useEffect(() => {
+        if(scrollRef && scrollRef.current) {
+            // bind to onscroll, set scrollVisible when we are scrolling
+            
+            const onScroll = () => {
+                setScrollVisible(true);
+                if(scrollTimeout) clearTimeout(scrollTimeout);
 
+                setScrollTimeout(setTimeout(() => {
+                    setScrollVisible(false);
+                    setScrollTimeout(null);
+                }, SCROLL_TIMEOUT))
+            }
+
+            scrollRef.current.addEventListener("scroll", onScroll);
+
+            return () => {
+                if(scrollRef && scrollRef.current) {
+                    scrollRef.current.removeEventListener("scroll", onScroll);
+                }
+            }
+        }
+    }, [scrollRef]);
 
     return (
         <>
@@ -253,39 +265,47 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
                 position: "relative"
             }}>
                 <div id="chat-main" className={styles.Chat__Main}>
+                    <div className={styles.Chat__Main__Fade}></div>
+                    <div className={`${styles.Chat__Main__ScrollOverlay} animate__animated ${!scrollVisible ? "animate__fadeIn" : "animate__fadeOut"}`}></div>
 
-                    {
-                        showNoMessages && <p className={styles.Chat__Main__NoMessages}>{!chat ? "No chat selected" : "No messages to show" }</p>
-                    }
 
-                    {
-                        chatMessages.map((message, index) => {
-                            return (
-                                <ChatMessage key={index} message={message} />
-                            )
-                        })
-                    }
+                    <div id="chat-main-messages" className={styles.Chat__Main__Messages}>
+                        {
+                            showNoMessages && <p className={styles.Chat__Main__NoMessages}>{!chat ? "No chat selected" : "No messages to show" }</p>
+                        }
 
+                        {
+                            chatMessages.map((message, index) => {
+                                return (
+                                    <ChatMessage key={index} message={message} />
+                                )
+                            })
+                        }
+                    </div>
                 </div>
+
+
                 <div className={styles.Chat__Bar} style={{
                     // if chat, flex, else none
                     // but if isMoile and isSidebarCollapsed, none
                     display: chat ? ((isMobile && (!isSidebarCollapsed && !isSidebarCollapsing)) ? "none" : "flex") : "none"
                 }}>
-                    <SquareButton className={styles.Chat__Bar__InputRow__Console} image="/images/icons/console.png" background={false} onClick={() => {
-                        setConsole(true);
-                    }} />
-                    <SquareButton className={styles.Chat__Bar__InputRow__Graph} image="/images/icons/nodes.png" background={false} onClick={() => {
-                        setChatAnimation("chat_graph animate__fadeOut");
-                        // setChatGraphAnimation("animate__fadeIn")
-                    }} />
-                    <SquareButton className={styles.Chat__Bar__InputRow__Live} image="/images/icons/facetime.png" background={false} onClick={() => {
-                        if(showVideo) {
-                            setVideoAnimation("animate__fadeOutRight");
-                        } else {
-                            setChatAnimation("video animate__fadeOutRight");
-                        }
-                    }} />
+                    <div className={styles.Chat__Bar__Buttons}>
+                        <SquareButton className={styles.Chat__Bar__InputRow__Live} image="/images/icons/facetime.png" background={false} onClick={() => {
+                            if(showVideo) {
+                                setVideoAnimation("animate__fadeOutRight");
+                            } else {
+                                setChatAnimation("video animate__fadeOutRight");
+                            }
+                        }} />
+                        <SquareButton className={styles.Chat__Bar__InputRow__Graph} image="/images/icons/nodes.png" background={false} onClick={() => {
+                            setChatAnimation("chat_graph animate__fadeOut");
+                            // setChatGraphAnimation("animate__fadeIn")
+                        }} />
+                        <SquareButton className={styles.Chat__Bar__InputRow__Console} image="/images/icons/console.png" background={false} onClick={() => {
+                            setConsole(true);
+                        }} />
+                    </div>
                     <div className={styles.Chat__Bar__InputRow}>
                         <ChatInput allowSend={allowSend} inputText={inputText} inputRows={inputRows} onChange={(e) => {
                             setInputText(e.target.value);

@@ -22,8 +22,8 @@ export default async function event(chatId = false, eventName, payload = {}, sil
     return data;
 }
 
-export async function onUserMessage (chatId, message, files) {
-    return await event(chatId, "OnUserMessage", { chatId, message, files });
+export async function onUserMessage (chatId, message, files, speed) {
+    return await event(chatId, "OnUserMessage", { chatId, message, files }, false, speed);
 }
 
 export async function onChatCreated (chatId) {

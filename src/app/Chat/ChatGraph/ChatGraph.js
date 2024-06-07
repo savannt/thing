@@ -36,6 +36,7 @@ import ChatInput from "@/app/Chat/ChatInput/ChatInput";
 import { chatMessage } from "@/client/chat";
 import { useChannel } from "ably/react";
 import useMobile from "@/providers/Mobile/useMobile";
+import { onUserMessage } from "@/client/event";
 
 export const SAVE_TIMEOUT = 1000;
 export const ERROR_TIMEOUT = 15000;
@@ -922,13 +923,21 @@ export default function ChatGraph({
 									if (!chat || !chat.chatId) {
 										notification("Error", "Chat not found", "red");
 									}
-									chatMessage(chat.chatId, enterpriseId, chatText, chatFiles).then((data) => {
-										if (!data) {
+									onUserMessage(chat.chatId, {
+										role: "user",
+										content: chatText
+									}, chatFiles).then((data) => {
+										if(!data) {
 											notification("Error", "Failed to send message", "red");
-										} else {
-											notification("", "Message Sent", "var(--action-color)");
 										}
-									});
+									})
+									// chatMessage(chat.chatId, enterpriseId, chatText, chatFiles).then((data) => {
+									// 	if (!data) {
+									// 		notification("Error", "Failed to send message", "red");
+									// 	} else {
+									// 		notification("", "Message Sent", "var(--action-color)");
+									// 	}
+									// });
 
 									setChatText("");
 									setChatRows(1);

@@ -24,6 +24,7 @@
 	/* only pointer-events mouse cursor */
 	opacity: 0.5 !important;
 	cursor: not-allowed !important;
+	outline: none !important;
 }
 
 .Button:hover {
