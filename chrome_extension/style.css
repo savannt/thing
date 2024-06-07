@@ -1,6 +1,124 @@
-/* Style for the injected iframe */
-iframe {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease-in-out;
+:root {
+    --background: #171717;
+    --secondary-color: #56565663;
+    --primary-text-color: white;
+    --hover-color: #6a6a6aa0;
+    --hover-active-color: #565656;
+    --padding-block: 6px;
+    --padding-inline: 16px;
+    --header-height: 32px;
+    --border-radius: 13px;
+
+    --gap: 6px;
 }
-  
+
+div[name="thingking-container"] * {
+    margin: 0;
+    padding: 0;
+
+    color: var(--primary-text-color);
+}
+
+div[name="thingking-container"] > div {
+    padding-inline: var(--padding-inline);
+    
+    height: var(--header-height);
+    min-height: var(--header-height);
+    max-height: var(--header-height);
+
+    background-color: var(--background);
+
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+
+    cursor: move;
+    user-select: none;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+div[name="thingking-container"] > div > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: var(--gap);
+}
+
+div[name="thingking-container"] > div > div > button {
+    background-color: var(--secondary-color);
+    border-radius: 100%;
+
+    width: 16px;
+    height: 16px;
+
+    font-size: 80%;
+
+    cursor: pointer;
+    /* font-family: 'Segoe MDL2 Assets'; */
+
+    outline: none;
+    border: none;
+}
+div[name="thingking-container"] > div > div > button:hover {
+    background-color: var(--hover-color);
+}
+div[name="thingking-container"] > div > div > button:active {
+    background-color: var(--hover-active-color);
+}
+
+div[name="thingking-container"] > div > div > button[name="close"] {
+    background-image: url("close.svg");
+    background-size: 100%;
+    background-repeat: no-repeat;
+        
+}
+
+div[name="thingking-container"] iframe {
+    width: -webkit-fill-available;
+    height: calc(100% - var(--header-height));
+
+    border: none;
+}
+
+
+div[name="thingking-container"] {
+    position: fixed;
+    
+    bottom: 0;
+    right: 0;
+    
+    min-width: 25dvw;
+    max-width: 100dvw;
+    
+    aspect-ratio: 1/1;
+
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+    border-radius: var(--border-radius);
+
+    z-index: 100000000000000000000000000;
+
+    min-height: var(--header-height);
+
+    resize: both;
+    overflow: auto;
+    overflow-y: hidden;
+}
+
+/* if div[name="thinking-container"] is 100% width- and height-wise set no border radius */
+div[name="thingking-container"][style*="height: 100%;" i][style*="width: 100%;" i] {
+    border-radius: 0 !important;
+}
+div[name="thingking-container"][style*="height: 100%;" i][style*="width: 100%;" i] > div {
+    border-radius: 0 !important;
+}
+body:has(div[name="thingking-container"][style*="height: 100%;" i][style*="width: 100%;" i]) {
+    overflow: hidden;
+}
+
