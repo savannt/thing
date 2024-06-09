@@ -1,5 +1,5 @@
 export default {
-	"StringConstant": {
+	"Constant/String": {
 		type: "ConstantNode",
 		data: {
 			displayName: "String Constant",
@@ -17,7 +17,7 @@ export default {
 			return { value }
 		}
 	},
-	"NumberConstant": {
+	"Constant/Number": {
 		type: "ConstantNode",
 		data: {
 			displayName: "Number Constant",
@@ -35,7 +35,7 @@ export default {
 			return { value }
 		}
 	},
-	"TextareaStringConstant": {
+	"Constant/LongString": {
 		type: "ConstantNode",
 		data: {
 			displayName: "Textarea String Constant",
@@ -53,7 +53,7 @@ export default {
 			return { value }
 		}
 	},
-	"SaveMessage": {
+	"Chat/SaveMessage": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Save Message",
@@ -71,7 +71,7 @@ export default {
 			},
 		},
 	},
-	"SaveMessageStream": {
+	"Chat/SaveMessageStream": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Save Message Stream",
@@ -93,7 +93,8 @@ export default {
 			}
 		}
 	},
-	"OnUserMessage": {
+
+	"Events/OnUserMessage": {
 		type: "EventNode",
 		data: {
 			displayName: "On User Message",
@@ -116,14 +117,10 @@ export default {
 			}
 		},
 	},
-	"OnChatCreated": {
+	"Events/OnChatCreated": {
 		type: "EventNode",
 		data: {
 			displayName: "On Chat Created",
-			category: "Event",
-
-			label: "onChatCreated",
-			details: "event",
 
 			out: {
 				chatId: {
@@ -133,6 +130,134 @@ export default {
 			}
 		}
 	},
+	"Events/OnNotification": {
+		type: "EventNode",
+		data: {
+			displayName: "On Notification",
+			description: "Triggered when a message is recevied, but no interface to display it",
+
+			out: {
+				message: {
+					type: "message",
+					description: "Message",
+					required: false
+				},
+				chatId: {
+					type: "string<ChatID>",
+					description: "Chat ID",
+				}
+			}
+		}
+	},
+
+	"Flow/If": {
+		type: "FunctionNode",
+		data: {
+			displayName: "If",
+
+			in: {
+				condition: {
+					type: "boolean",
+					description: "Condition"
+				},
+			},
+
+			out: {
+				then: {
+					type: "group",
+					flow: true,
+				},
+				else: {
+					type: "group",
+					flow: true,
+				}
+			}
+	},
+	"Flow/While": {
+		type: "FunctionNode",
+		data: {
+			displayName: "While",
+
+			in: {
+				condition: {
+					type: "boolean",
+					description: "Condition"
+				},
+			},
+
+			out: {
+				loop: {
+					type: "group",
+					flow: true,
+				},
+			}
+	},
+	"Flow/For": {
+		type: "FunctionNode",
+		data: {
+			displayName: "For",
+
+			in: {
+				start: {
+					type: "number",
+					description: "Start value"
+				},
+
+				end: {
+					type: "number",
+					description: "End value"
+				},
+
+				step: {
+					type: "number",
+					description: "Step value",
+					required: false
+				}
+			},
+			out: {
+				loop: {
+					type: "group",
+					flow: true,
+
+					out: {
+						index: {
+							type: "number"
+						}
+					}
+				},
+			}
+	},
+
+
+	"Array/ForEach": {
+		type: "FunctionNode",
+		data: {
+			displayName: "For Each",
+			
+			in: {
+				array: {
+					type: "array",
+					description: "Array"
+				},
+			},
+			out: {
+				loop: {
+					type: "group",
+					flow: true,
+
+					out: {
+						item: {
+							type: "any"
+						},
+						index: {
+							type: "number"
+						}
+					}
+				},
+			}
+		},
+	},
+
 	"Array/Combine": {
 		type: "LogicNode",
 		data: {
@@ -799,6 +924,33 @@ export default {
 			}
 		}
 	},
+	"Run/OnMessageEnded": {
+		type: "FunctionNode",
+		data: {
+			displayName: "On Message Ended",
+
+			in: {
+				run: {
+					type: "run",
+				}
+			},
+
+			out: {
+				onMessageEndedEvent: {
+					type: "group",
+					flow: true,
+
+					out: {
+						messageId: {
+							type: "number",
+							description: "Message ID"
+						}
+					}
+				}
+			}
+		}
+	},
+					
 
 	"Assistant/Create": {
 		type: "FunctionNode",
@@ -1022,6 +1174,26 @@ export default {
 					type: "boolean"
 				}
 			}
+		}
+	},
+	"ChromeExtension/IsAvailable": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Is Available",
+			
+			out: {
+				isAvailable: {
+					type: "boolean",
+					description: "Is Chrome Extension available"
+				}
+			}
+		}
+	},
+	"ChromeExtension/PromptInstall": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Prompt Install",
+			description: "Prompt the user to install the chrome extension"
 		}
 	}
 }

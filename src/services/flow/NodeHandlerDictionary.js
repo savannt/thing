@@ -20,16 +20,19 @@ const error = (title, ...messages) => {
 
 
 export default {
-	"StringConstant": function String ({ value }) {
+	"Constant/String": function String ({ value }) {
 		return { value }
 	},
-	"NumberConstant": function Number ({ value }) {
+	"Constanat/Number": function Number ({ value }) {
 		return { value }
 	},
-	"TextareaStringConstant": function TextareaString ({ value }) {
+	"Constant/LongString": function TextareaString ({ value }) {
 		return { value }
 	},
-	"SaveMessage": async function SaveMessage ({ message, chatId }) {
+
+
+
+	"Chat/SaveMessage": async function SaveMessage ({ message, chatId }) {
 		const { db } = await mongo();
         const chats = db.collection("chats");
 
@@ -47,7 +50,7 @@ export default {
         
         return {};
 	},
-	"SaveMessageStream": async function SaveMessageStream ({ message, messageId, chatId }) {
+	"Chat/SaveMessageStream": async function SaveMessageStream ({ message, messageId, chatId }) {
 		const { db } = await mongo();
 		const chats = db.collection("chats");
 
@@ -78,12 +81,20 @@ export default {
 		
 		return {};
 	},
-	"OnUserMessage": function OnUserMessage ({ message, chatId }) {
+
+
+
+	"Events/OnUserMessage": function OnUserMessage ({ message, chatId }) {
 		return { message, chatId };
 	},
-	"OnChatCreated": function OnChatCreated({ chatId }) {
+	"Events/OnChatCreated": function OnChatCreated({ chatId }) {
 		return { chatId };
 	},
+	"Events/OnNotification": function OnNotification({ message, chatId }) {
+		return { message, chatId };
+	},
+
+
 	"Array/Combine": function ArrayCombine ({ arrayA, arrayB }) {
 		return { combined: arrayA.concat(arrayB) };
 	},
@@ -104,6 +115,15 @@ export default {
 	"Array/Map": function ArrayMap ({ array, transformation }) {
 		return { array: array.map(transformation) };
 	},
+	"Array/ForEach": function ArrayForEach ({ array }) {
+		const loop = new Event("forEachLoopEvent");
+		array.forEach((item, index) => {
+			loop.handle({ item, index });
+		});
+		return { loop };
+	},
+
+
 	"Math/Add": function MathAdd ({ a, b }) {
 		return { result: a + b };
 	},
@@ -116,12 +136,15 @@ export default {
 	"Math/Divide": function MathDivide ({ a, b }) {
 		return { result: a / b };
 	},
+
+
 	"JSON/Parse": function JSONParse ({ jsonString }) {
 		return { object: JSON.parse(jsonString) };
 	},
 	"JSON/Stringify": function JSONStringify ({ object }) {
 		return { jsonString: JSON.stringify(object) };
 	},
+
 
 	"Messages/CreateEmpty": function MessagesCreateEmpty () {
 		return Messages.empty();
@@ -176,9 +199,13 @@ export default {
             run: await ChatCompletion.createTools(messages, tools)
         }
 	},
-	"ChatCompletion/CreateFromTemplate": async function ChatCompletionCreateFromTemplate ({ template, input, examples }) {
+	// "ChatCompletion/CreateFromTemplate": async function ChatCompletionCreateFromTemplate ({ template, input, examples }) {
+	// 	return {
+	// 		run: await ChatCompletion.
+	// 	}
+	// },
 
-	},
+
 
 	"Run/OnMessage": async function RunOnMessage ({ run }) {
 		const onMessageEvent = new Event("onMessageEvent");
@@ -197,7 +224,16 @@ export default {
 		});
 		return { onMessageEvent }
 	},
+	"Run/OnMessageStarted": async function RunOnMessageStarted ({ run }) {
+		const onMessageStartedEvent = new Event("onMessageStartedEvent");
+		run.on("start", async ({ index, message }) => {
+			await onMessageStartedEvent.handle({
+				messageId: index // TODO: this is incorrect
+			});
+		});
 
+		return { onMessageStartedEvent }
+	},
 	"Run/OnMessageStream": async function RunOnMessageStream ({ run }) {
 		const onMessageStreamEvent = new Event("onMessageStreamEvent");
 		const messageId = Math.random().toString(36).substring(7);
@@ -212,6 +248,18 @@ export default {
 
 		return { onMessageStreamEvent }
 	},
+	"Run/OnMessageEnded": async function RunOnMessageEnded ({ run }) {
+		const onMessageEndedEvent = new Event("onMessageEndedEvent");
+		run.on("end", async ({ index, message }) => {
+			await onMessageEndedEvent.handle({
+				messageId: index // TODO: this is incorrect
+			});
+		});
+
+		return { onMessageEndedEvent }
+	},
+
+
 
 	"Assistant/Create": async function AssistantCreate ({ name, instructions, tools }) {
         return {
@@ -232,6 +280,8 @@ export default {
         return {};
 	},
 
+
+
 	"Tools/CreateEmpty": function ToolsCreateEmpty () {
         return Tools.empty();
 	},
@@ -241,11 +291,9 @@ export default {
 	},
 
 
-	"Utility/End": function UtilityEnd () {},
 
+	"Utility/End": function UtilityEnd () { return {} },
 	"Utility/PlayNotification": function UtilityPlayNotification ({ title, content }) {
-		console.log("[Utility/PlayNotification] Playing notification", title, content);
-
 		const channel = ably.channels.get("notifications");
 		channel.publish("notification", { title, content });
 
@@ -253,13 +301,54 @@ export default {
 	},
 
 
+
 	"Terminal/SetTerminalColor": function TermianlSetTerminalColor ({ color }) {
+		const channel = ably.channels.get("console");
+		channel.publish("setColor", { color });
+
 		return {};
 	},
 	"Terminal/SetTerminalHasBorder": function TerminalSetTerminalHasBorder ({ hasBorder }) {
+		const channel = ably.channels.get("console");
+		channel.publish("setHasBorder", { hasBorder });
+		
 		return {};
 	},
 	"Terminal/SetTerminalHasGlow": function TerminalSetTerminalHasGlow ({ hasGlow }) {
+		const channel = ably.channels.get("console");
+		channel.publish("setHasGlow", { hasGlow });
+		
 		return {};
-	}
+	},
+
+
+
+	"Flow/If": function FlowIf ({ condition }) {
+		const thenEvent = new Event("ifThenEvent");
+		const elseEvent = new Event("ifElseThenEvent")
+		if(condition) thenEvent.handle();
+		else elseEvent.handle();
+
+
+		return { then: thenEvent, else: elseEvent };
+	},
+	"Flow/While": function FlowWhile ({ condition }) {
+		// TODO: This might require further work to "refresh" the condition
+
+		const loop = new Event("whileLoopEvent");
+		while(condition) {
+			loop.handle();
+		}
+		return { loop };
+	},
+	"Flow/For": function FlowFor ({ start, end, step }) {
+		if(!step) step = 1;
+		const loop = new Event("forLoopEvent");
+
+		for(let index = start; index < end; index += step) {
+			loop.handle({ index });
+		}
+		return { loop };
+	},
+
 }

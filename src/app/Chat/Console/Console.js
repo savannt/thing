@@ -1385,6 +1385,30 @@ export default function Console ({ messages, onBack: _onBack, chat, group, group
     const [showGraph, setShowGraph] = useState(false);
     const [showChat, setShowChat] = useState(true);
     
+    const [showConsoleBorder, setShowBorder] = useState(false);
+    const [consoleColor, setConsoleColor] = useState([25, 25, 25]);
+    const [consoleGlow, setConsoleGlow] = useState(false);
+
+    useChannel(`console`, `setColor`, (msg) => {
+        const { color } = msg.data;
+        if(typeof color === "undefined") return error("Color must be defined");
+        setConsoleColor(color);
+    });
+
+    useChannel(`console`, `setHasBorder`, (msg) => {
+        const { hasBorder } = msg.data;
+        if(typeof hasBorder === "undefined") return error("Border must be defined");
+        setShowBorder(hasBorder);
+    });
+
+    useChannel(`console`, `setHasGlow`, (msg) => {
+        const { hasGlowv } = msg.data;
+        if(typeof hasGlowv === "undefined") return error("Glow must be defined");
+        setConsoleGlow(hasGlowv);
+    });
+
+
+
     const onBack = () => {
         // remove ?terminal= from url
         router.push({
@@ -1399,7 +1423,9 @@ export default function Console ({ messages, onBack: _onBack, chat, group, group
     }
 
     return (
-        <div id="console" className={styles.ConsoleContainer}>
+        <div id="console" className={`${styles.ConsoleContainer} ${showConsoleBorder ? styles.ConsoleContainer__Border : ""}`} style={{
+            "--color": `${consoleColor[0]}, ${consoleColor[1]}, ${consoleColor[2]}`
+        }}>
 
             <div className={styles.Monitor}>
                 <div className={styles.Screen}>

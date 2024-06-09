@@ -137,6 +137,7 @@ export default function App ({ page }) {
 			router.push({
 				pathname: "/",
 				query: {
+					...router.query,
 					terminal: true,
 					chatId: chat.chatId
 				}
@@ -191,11 +192,13 @@ export default function App ({ page }) {
 		}
 
 		// set ?chatId=chatId, silently
+		
+		const query = router.query;
+		if(!chat) delete query.chatId;
+		else query.chatId = chat.chatId;
 		router.push({
 			pathname: "/",
-			query: {
-				chatId: chat.chatId
-			}
+			query
 		}, undefined, { shallow: true });
 
 
@@ -232,6 +235,20 @@ export default function App ({ page }) {
 		}
 	}, [router.query.chatId, groups, enterpriseId]);
 
+	useEffect(() => {
+		if(router.query.extension_downloaded) {
+			notification("Chrome extension downloaded", "Install via Chrome > Extension > Load Unpacked");
+
+			const query = router.query;
+			delete query.extension_downloaded;
+
+			router.push({
+				pathname: "/",
+				query
+			}, undefined, { shallow: true });
+		}
+	}, [router.query.extension_downloaded]);
+
 	useEffect(() => {		
 		if(typeof enterpriseId !== "undefined") {
 			setGroups(false);
@@ -249,7 +266,7 @@ export default function App ({ page }) {
 			document.getElementById("back-chat-graph").click();
 		} else {
 			setGroup(false);
-			// setChat(false);
+			setChat(false);
 		}
 	}
 
@@ -364,7 +381,7 @@ export default function App ({ page }) {
 				/> }
 			</SignedIn>
 			
-			{ !console && <Notifications /> }
+			{ !showConsole && <Notifications /> }
 		</>
 	)
 }

@@ -3,6 +3,7 @@
     /* --padding: 3vmin 5.5vmin 3.5vmin 5.5vmin; */
     --padding-inline: 30px;
     --padding-block: 30px;
+    --padding-bezel: 0px;
 
     --bezel-color: #332d27;
 
@@ -18,13 +19,27 @@
 
     --line-height: 15px;
 
-    
+    --color: 255, 0, 0;
+    --hard-color: rgba(var(--color), 1);
+
 
 
 
     --min-width: 100%;
 
     overflow: hidden;
+}
+
+.ConsoleContainer__Retro {
+  --padding-inline: 30px;
+  --padding-block: 30px;
+
+  --color: 0, 70, 0;
+}
+
+.ConsoleContainer__Border {
+  --padding-inline: 30px;
+  --padding-block: 30px;
 }
 
 @media (max-width: 800px) {
@@ -80,7 +95,7 @@
 
 .Screen {
     position: relative;
-    border: 30px solid transparent;
+    border: var(--padding-bezel) solid transparent;
     border-image-source: url(https://i.ibb.co/8jt98LP/crt-frame.png);
     border-image-slice: 30 fill;
     border-image-outset: 0;
@@ -98,7 +113,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 255, 0, 0.5); /* The color effect */
+    background-color: rgba(var(--color), 0.5);
     mix-blend-mode: multiply; /* Or any other blend mode */
     pointer-events: none; /* Ensures that the pseudo-element does not interfere with interactions */
 }
@@ -148,13 +163,13 @@
 }
 
 .CRT {
-    background: #05321e;
-    background-image: radial-gradient(ellipse, #05321e 0%, #050505 90%);
+    background: var(--hard-color);
+    background-image: radial-gradient(ellipse, var(--hard-color) 0%, #050505 110%);
     animation: txt-shadow 1.6s infinite;
 
-    width: calc(100vw - var(--padding-inline) * 2);
-    height: calc(100vh - (var(--padding-block) * 2));
-    max-height: calc(100vh - (var(--padding-block) * 2));
+    width: calc(100vw - var(--padding-bezel) * 2);
+    height: calc(100vh - (var(--padding-bezel) * 2));
+    max-height: calc(100vh - (var(--padding-bezel) * 2));
 
     display: flex;
     align-items: center;
