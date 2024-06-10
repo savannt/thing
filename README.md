@@ -1,23 +1,14 @@
 # Thing
 This is a Thing.
 
-
-
 ## Roadmap
 
-### Interfaces
-- [ ] Command Line
-- [X] Web
-- [ ] Website
-- [ ] Chrome
-- [-] Desktop
-
 ### Flow
-- [X] Complete Flow Statements (if/else/for/while)
-- [?] Complete Nodes
+- [ ] add function type as first category in context menu
+- [ ] fix hosting flow bugs
 
-- [ ] Functions / Custom Nodes
-      * "OnFunctionCall" (name, inputs) 
+- [ ] add functions
+- [ ] add variables
 
 - [ ] OnUserVisit (isSignedIn)
 - [ ] setGuest
@@ -25,28 +16,20 @@ This is a Thing.
 - [ ] redirectToLogin
 - [ ] redirectToRegister
 
-- [ ] setVariable
-- [ ] getVariable
+- [ ] OnUserVisit event
+- [ ] setGuest/logout/redirectToLogin/redirectToRegister
 
-- [ ] Sparse Functions
+- [ ] demo templates as functions
+- [ ] sparse functions
 
-- [ ] List of Demo Default Templates
-- [ ] List of Demo Default Templates in Context Menu
+### Distributions
+- [ ] move/create console handling class, finish cli tool
+- [ ] desktop app
+- [ ] website iframe scheme
+- [ ] add remote code execution to chrome extension
+- [ ] .. Figure out how to expand here .. 
 
-
-
-### Organization
-- [ ] Stripe Billing
-
-### Miscelaneous
-- [ ] Notifications
-      * Need to find a way to know if someone is listening
-
-
-### Console
-- [ ] Make Universal
-- [ ] ConsoleCLI: Create SpaceBetween for Header
-
-### ChatGraph
-- [ ] Add further categories to context menu
-
+### Miscellaneous
+- [ ] sharability via query parameters
+- [ ] stripe billing
+- [ ] notifications
