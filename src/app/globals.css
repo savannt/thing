@@ -258,6 +258,23 @@ p, h1, h2, h3 {
 	/* padding: 250px; */
 }
 
+#privacy_policy {
+	/* max-height: 100dvh; */
+}
+
+#privacy_policy * {
+	color: var(--primary-text-color);
+}
+
+#privacy_policy p {
+	opacity: 0.85;
+}
+
+/* privacy_policy > h1 or h2 or h3 or h4 or h5 */
+#privacy_policy > h1, #privacy_policy > h2, #privacy_policy > h3, #privacy_policy > h4 {
+	margin-top: var(--margin-inline);
+}
+
 @keyframes shrinkDisappear {
 	0% {
 		/* width:	Start with the current width */

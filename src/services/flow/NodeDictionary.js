@@ -12,9 +12,6 @@ export default {
 					constant: true
 				}
 			}
-		},
-		handler: function String ({ value }) {
-			return { value }
 		}
 	},
 	"Constant/Number": {
@@ -30,9 +27,6 @@ export default {
 					constant: true
 				}
 			}
-		},
-		handler: function Number ({ value }) {
-			return { value }
 		}
 	},
 	"Constant/LongString": {
@@ -48,9 +42,6 @@ export default {
 					constant: true
 				},
 			}
-		},
-		handler: function TextareaString ({ value }) {
-			return { value }
 		}
 	},
 	"Chat/SaveMessage": {
@@ -68,8 +59,8 @@ export default {
 					description: "Chat ID to Save Message To",
 					required: false,
 				}
-			},
-		},
+			}
+		}
 	},
 	"Chat/SaveMessageStream": {
 		type: "FunctionNode",
@@ -115,7 +106,7 @@ export default {
 					required: false
 				}
 			}
-		},
+		}
 	},
 	"Events/OnChatCreated": {
 		type: "EventNode",
@@ -172,6 +163,7 @@ export default {
 					flow: true,
 				}
 			}
+		}
 	},
 	"Flow/While": {
 		type: "FunctionNode",
@@ -191,6 +183,7 @@ export default {
 					flow: true,
 				},
 			}
+		}
 	},
 	"Flow/For": {
 		type: "FunctionNode",
@@ -226,6 +219,7 @@ export default {
 					}
 				},
 			}
+		}
 	},
 
 
@@ -262,10 +256,6 @@ export default {
 		type: "LogicNode",
 		data: {
 			displayName: "Combine",
-			category: "Array",
-
-			label: "Combine",
-			details: "array/combine",
 
 			in: {
 				arrayA: {
@@ -283,19 +273,12 @@ export default {
 					description: "Combined array"
 				}
 			}
-		},
-		handler: function ArrayCombine ({ arrayA, arrayB }) {
-			return { combined: arrayA.concat(arrayB) };
 		}
 	},
 	"Array/Push": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Push",
-			category: "Array",
-
-			label: "Push",
-			details: "array/push",
 
 			in: {
 				array: {
@@ -312,21 +295,13 @@ export default {
 					type: "array",
 					description: "Array after push"
 				}
-			},
-		},
-		handler: function ArrayPush ({ array, value }) {
-			array.push(value);
-			return { array };
+			}
 		}
 	},
 	"Array/Splice": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Splice",
-			category: "Array",
-
-			label: "Splice",
-			details: "array/splice",
 
 			in: {
 				array: {
@@ -353,19 +328,13 @@ export default {
 					description: "Array after splice"
 				}
 			}
-		},
-		handler: function ArraySplice ({ array, start, deleteCount, items }) {
-			array.splice(start, deleteCount, ...items);
-			return { array };
 		}
 	},
 	"Array/Length": {
 		type: "LogicNode",
 		data: {
 			displayName: "Length",
-			category: "Array",
-			label: "Length",
-			details: "array/length",
+
 			in: {
 				array: {
 					type: "array",
@@ -378,18 +347,13 @@ export default {
 					description: "Length of array"
 				}
 			}
-		},
-		handler: function ArrayLength ({ array }) {
-			return { length: array.length };
 		}
 	},
 	"Array/Filter": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Filter",
-			category: "Array",
-			label: "Filter",
-			details: "array/filter",
+
 			in: {
 				array: {
 					type: "array",
@@ -406,18 +370,12 @@ export default {
 					description: "Filtered array"
 				}
 			}
-		},
-		handler: function ArrayFilter ({ array, condition }) {
-			return { array: array.filter(condition) };
 		}
 	},
 	"Array/Map": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Map",
-			category: "Array",
-			label: "Map",
-			details: "array/map",
 
 			in: {
 				array: {
@@ -435,18 +393,13 @@ export default {
 					description: "Transformed array"
 				}
 			}
-		},
-		handler: function ArrayMap ({ array, transformation }) {
-			return { array: array.map(transformation) };
 		}
 	},
 	"Math/Add": {
 		type: "LogicNode",
 		data: {
 			displayName: "Add",
-			category: "Math",
-			label: "Add",
-			details: "math/add",
+
 			in: {
 				a: {
 					type: "number",
@@ -463,18 +416,13 @@ export default {
 					description: "Sum of numbers"
 				}
 			}
-		},
-		handler: function MathAdd ({ a, b }) {
-			return { result: a + b };
 		}
 	},
 	"Math/Subtract": {
 		type: "LogicNode",
 		data: {
 			displayName: "Subtract",
-			category: "Math",
-			label: "Subtract",
-			details: "math/subtract",
+
 			in: {
 				a: {
 					type: "number",
@@ -491,18 +439,13 @@ export default {
 					description: "Difference of numbers"
 				}
 			}
-		},
-		handler: function MathSubtract ({ a, b }) {
-			return { result: a - b };
 		}
 	},
 	"Math/Multiply": {
 		type: "LogicNode",
 		data: {
 			displayName: "Multiply",
-			category: "Math",
-			label: "Multiply",
-			details: "math/multiply",
+
 			in: {
 				a: {
 					type: "number",
@@ -519,18 +462,13 @@ export default {
 					description: "Product of numbers"
 				}
 			}
-		},
-		handler: function MathMultiply ({ a, b }) {
-			return { result: a * b };
 		}
 	},
 	"Math/Divide": {
 		type: "LogicNode",
 		data: {
 			displayName: "Divide",
-			category: "Math",
-			label: "Divide",
-			details: "math/divide",
+			
 			in: {
 				a: {
 					type: "number",
@@ -547,18 +485,13 @@ export default {
 					description: "Quotient of numbers"
 				}
 			}
-		},
-		handler: function MathDivide ({ a, b }) {
-			return { result: a / b };
 		}
 	},
 	"JSON/Parse": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Parse",
-			category: "JSON",
-			label: "Parse",
-			details: "json/parse",
+
 			in: {
 				jsonString: {
 					type: "string",
@@ -571,18 +504,13 @@ export default {
 					description: "Parsed JSON object"
 				}
 			}
-		},
-		handler: function JSONParse ({ jsonString }) {
-			return { object: JSON.parse(jsonString) };
 		}
 	},
 	"JSON/Stringify": {
 		type: "FunctionNode",
 		data: {
 			displayName: "Stringify",
-			category: "JSON",
-			label: "Stringify",
-			details: "json/stringify",
+
 			in: {
 				object: {
 					type: "object",
@@ -595,9 +523,6 @@ export default {
 					description: "Stringified JSON"
 				}
 			}
-		},
-		handler: function JSONStringify ({ object }) {
-			return { jsonString: JSON.stringify(object) };
 		}
 	},
 
@@ -611,8 +536,8 @@ export default {
 					type: "messages",
 					description: "Empty messages array"
 				}
-			},
-		},
+			}
+		}
 	},
 	"Messages/Push": {
 		type: "LogicNode",

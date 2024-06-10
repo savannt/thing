@@ -21,7 +21,8 @@ export default function toggleTheme () {
     let newTheme = THEMES[nextIndex];
 
     document.documentElement.setAttribute("data-theme", newTheme);
-    document.querySelector("meta[name=theme-color]").setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--background-color"));
+    const metaThemeColor = document.querySelector("meta[name=theme-color]");
+    if(metaThemeColor) metaThemeColor.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--background-color"));
 
     // capitalize first letter of newTheme
     let newThemeCapitalized = newTheme.charAt(0).toUpperCase() + newTheme.slice(1);

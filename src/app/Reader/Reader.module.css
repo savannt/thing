@@ -1,0 +1,47 @@
+.Reader {
+    display: flex;
+    flex-direction: column;
+
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+}
+
+
+.Reader__ContentOutside {
+    display: flex;
+    flex-direction: column;
+
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+
+    position: relative;
+}
+
+.Reader__Content {
+    display: flex;
+    flex-direction: column;
+
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.Reader__Content__Overlay::after, .Reader__Content__Overlay::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px; /* Adjust the height for a larger or smaller fade effect */
+    pointer-events: none; /* Allows clicks to pass through */
+    z-index: 10;
+}
+
+
+.Reader__Content__Overlay::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--background-color), transparent); /* Match your container's background color */
+}
+
+.Reader__Content__Overlay::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--background-color), transparent); /* Match your container's background color */
+}
