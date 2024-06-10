@@ -266,13 +266,33 @@ p, h1, h2, h3 {
 	color: var(--primary-text-color);
 }
 
+#support * {
+	color: var(--primary-text-color);
+}
+
 #privacy_policy p {
+	opacity: 0.85;
+}
+
+#support p {
 	opacity: 0.85;
 }
 
 /* privacy_policy > h1 or h2 or h3 or h4 or h5 */
 #privacy_policy > h1, #privacy_policy > h2, #privacy_policy > h3, #privacy_policy > h4 {
 	margin-top: var(--margin-inline);
+}
+
+#support > h1, #support > h2, #support > h3, #support > h4 {
+	margin-top: var(--margin-inline);
+}
+
+#support li {
+	margin-top: var(--margin-block);
+}
+/* li not strong */
+#support li {
+	margin-left: var(--margin-inline);
 }
 
 @keyframes shrinkDisappear {
