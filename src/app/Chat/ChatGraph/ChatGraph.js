@@ -29,6 +29,7 @@ import error from "@/client/error";
 import notification from "@/client/notification";
 
 import NODE_DICTIONARY from "@/services/flow/NodeDictionary";
+import TEMPLATE_DICTIONARY from "@/services/flow/TemplateDictionary";
 
 import MenuContainer from "@/components/Menu/MenuContainer";
 import Menu from "@/components/Menu/Menu";
@@ -86,7 +87,9 @@ export default function ChatGraph({
 	const isMobile = useMobile();
 
 	const [nodeMenuText, setNodeMenuText] = useState("");
+	const [pasteMenuText, setPasteMenuText] = useState("");
 	const [showNodeMenu, setShowNodeMenu] = useState(false);
+	const [showPasteMenu, setShowPasteMenu] = useState(false);
 	const [showChatMenu, setShowChatMenu] = useState(false);
 	const [chatText, setChatText] = useState("");
 	const [chatRows, setChatRows] = useState(1);
@@ -106,23 +109,48 @@ export default function ChatGraph({
 
     const [speed, setSpeed] = useState(5);
 
-	const enableNodeMenu = () => {
-		setShowNodeMenu(true);
-		setNodeMenuText("");
+	const deselectAll = () => {
 		setNodes((nodes) =>
 			nodes.map((node) => ({ ...node, selected: false }))
 		);
 		setEdges((edges) =>
 			edges.map((edge) => ({ ...edge, selected: false }))
 		);
-	};
-    
-    const closeNodeMenu = () => {
-        setShowNodeMenu(false);
-        setNodeMenuText("");
+	}
 
-        setLastContextMenuPosition(null);
-    }
+	const enableNodeMenu = () => {
+		setShowNodeMenu(true);
+		setNodeMenuText("");
+		
+		deselectAll();
+	};
+	
+	const closeNodeMenu = () => {
+		setShowNodeMenu(false);
+		setNodeMenuText("");
+
+		setLastContextMenuPosition(null);
+	}
+	const enablePasteMenu = () => {
+		setShowPasteMenu(true);
+		setPasteMenuText("");
+
+		deselectAll();
+	}
+
+	const closePasteMenu = () => {
+		setShowPasteMenu(false);
+		setPasteMenuText("");
+
+		setLastContextMenuPosition(null);
+	}
+    
+
+	const closeMenus = () => {
+		closeContextMenu();
+		closeNodeMenu();
+		closePasteMenu();
+	}
 
 	const save = () => {
 		groupUpdate(group.groupId, nodes, edges).then((data) => {
@@ -344,6 +372,11 @@ export default function ChatGraph({
 				options: nodeMenu,
 			},
 			{
+				title: "Paste Template",
+				onClick: enablePasteMenu,
+				options: pasteMenu,
+			},
+			{
 				title: "Simulate",
 				onClick: () => setShowChatMenu(true),
 			},
@@ -435,8 +468,7 @@ export default function ChatGraph({
 	);
 
 	const onPaneClick = (...e) => {
-		closeContextMenu();
-		if(e) closeNodeMenu();
+		closeMenus();
 	};
 
 	const onMove = () => closeContextMenu();
@@ -710,6 +742,16 @@ export default function ChatGraph({
 		return acc;
 	}, []);
 
+	const pasteMenu = Object.keys(TEMPLATE_DICTIONARY).reduce((acc, key) => {
+		const value = TEMPLATE_DICTIONARY[key];
+		const displayName = value.displayName || key;
+
+		acc.push({
+			title: displayName,
+			onClick: () => onPasteTemplate(key),
+		});
+	}, []);
+
 	const contextMenuDefaultOptions = showHeader ? [
 		{
 			title: "Add Node",
@@ -861,6 +903,31 @@ export default function ChatGraph({
 			>
 				<Controls />
 				<Background />
+				{showPasteMenu && (
+					<MenuContainer
+						onClick={() => closePasteMenu()}
+					>
+						<SearchMenu
+							placeholder={`Search for templates`}
+							hasResults={hasTemplateResults}
+							inputText={pasteMenuText}
+							setInputText={setPasteMenuText}
+						>
+							{hasTemplateResults &&
+								templateSearchResults.map((key, index) => (
+									<SearchMenuRow
+										key={index}
+										id={key}
+										text={key}
+										onClick={(e) => {
+											onPasteTemplate(e);
+											closePasteMenu();
+										}}
+									/>
+								))}
+						</SearchMenu>
+					</MenuContainer>
+				)}
 				{showNodeMenu && (
 					<MenuContainer
 						onClick={() => closeNodeMenu()}

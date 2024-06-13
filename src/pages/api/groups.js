@@ -4,7 +4,7 @@ import authenticate from "@/services/authenticateRequest";
 
 export default async function handler(req, res) {
     const { userId } = await authenticate(req, res);
-    if(!userId) return;
+    if(!userId) return res.status(401).json({ error: "Unauthorized" });
 
     const limit = parseInt(req.query.limit) || 50;
     const title = req.query.title || null;

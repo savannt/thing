@@ -6,7 +6,7 @@
     "icons": {
         "128": "black_text_logo.png"
     },
-    "permissions": ["activeTab"],
+    "permissions": [],
     "content_scripts": [
       {
         "matches": ["<all_urls>"],

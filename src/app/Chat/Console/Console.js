@@ -28,10 +28,10 @@ import remarkRehype from "remark-rehype";
 import rehypeHighlight from "rehype-highlight";
 import rehypeStringify from "rehype-stringify";
 
+import CommandLine from "@/services/command_line/CommandLine";
 
 export const TEXT_WIDTH = 12.95;
 export const LINE_HEIGHT = 20;
-
 
 function Row ({ className, children, style = {} }) {
     return (
@@ -875,7 +875,7 @@ function ConsoleChat ({ messages, setShowChat, setShowGraph, showGraph, onBack, 
 
     const [showHelp, setShowHelp] = useState(false);
 
-    const [thinking, setThinking] = useState(false);
+    const [thinking, _setThinking] = useState(false);
 
     const [loading, setLoading] = useState(false);
 
@@ -919,7 +919,63 @@ function ConsoleChat ({ messages, setShowChat, setShowGraph, showGraph, onBack, 
         setLoading(false);
     }, [chat]);
 
+
+
+    const prompt = (prefix = "", sensitive = false, boxen = false) => {
+    }
+    const refreshGroups = async () => {
+    }
+    const clear = async () => {
+    }
+    const message = async (groupId, chatId, message) => {
+    }
+    const exit = async () => {
+    }
+    const newChat = async (groupId, name) => {
+    }
+    const error = async (msg, secondary) => {
+    }
+    const setThinking = async (thinking = false) => {
+    }
+    const print = async (...e) => {
+    }
+    const logout = () => {
+    }
+    const anyKey = () => {
+
+    }
+
+
+    // const commandLine = new CommandLine({
+    //     "error": error,
+    //     "newChat": newChat,
+    //     "exit": exit,
+    //     "message": message,
+    //     "clear": clear,
+    //     "refreshGroups": refreshGroups,
+    //     "prompt": prompt,
+    //     "setThinking": setThinking,
+    //     "print": print,
+    //     "logout": logout,
+    //     "anyKey": anyKey,
+    // }, {
+    //     "header": (page = "stage ⋆") => {
+    //         return spaceBetween(
+    //             logoHeader(),
+    //             pageHeader(page)
+    //         );
+    //     }
+    // }, (content) => {
+    //     return marked(content);
+    // });
+
+
+
+
+
     const onSend = (text) => {
+        this.commandLine.send(text);
+
         const lowerCaseText = text.toLowerCase();
 
         if([

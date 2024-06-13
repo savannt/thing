@@ -42,4 +42,4 @@ next-env.d.ts
 desktop/node_modules/
 
 command_line/node_modules/
-command_line/chrome_data/
+chrome_data/

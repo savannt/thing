@@ -140,6 +140,77 @@ export default {
 			}
 		}
 	},
+	"Events/OnUserAuthenticate": {
+		type: "EventNode",
+		data: {
+			displayName: "On User Authenticate",
+			description: "Triggered when a user visits your thing and is unauthenticated",
+
+			out: {
+				user: {
+					type: "user",
+					description: "User ID"
+				}
+			}
+		}
+	},
+
+	"User/setAuthenticated": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Set Authenticated",
+
+			in: {
+				user: {
+					type: "user",
+					description: "User ID"
+				},
+				authenticated: {
+					type: "boolean",
+					description: "Authenticated"
+				}
+			}
+		}
+	},
+	"User/logout": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Logout",
+
+			in: {
+				user: {
+					type: "user",
+					description: "User ID"
+				}
+			}
+		}
+	},
+	"User/redirectToLogin": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Redirect to Login",
+
+			in: {
+				user: {
+					type: "user",
+					description: "User ID"
+				}
+			}
+		}
+	},
+	"User/redirectToRegister": {
+		type: "FunctionNode",
+		data: {
+			displayName: "Redirect to Register",
+
+			in: {
+				user: {
+					type: "user",
+					description: "User ID"
+				}
+			}
+		}
+	},
 
 	"Flow/If": {
 		type: "FunctionNode",
@@ -1120,5 +1191,7 @@ export default {
 			displayName: "Prompt Install",
 			description: "Prompt the user to install the chrome extension"
 		}
-	}
+	},
+
+	
 }

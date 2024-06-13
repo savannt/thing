@@ -1,0 +1,186 @@
+{
+    "client": {
+        "object": "client",
+        "id": "client_2hlTQ9tZa4lZgFjATRtySoQ8Spb",
+        "sessions": [
+            {
+                "object": "session",
+                "id": "sess_2hlTQBnB2PQ1IkOesDShLAcBicl",
+                "status": "active",
+                "expire_at": 1718772445512,
+                "abandon_at": 1720759645512,
+                "last_active_at": 1718167645512,
+                "last_active_organization_id": "org_2gDH01ZQrlrZBnv8pZLrSvIlWb5",
+                "actor": null,
+                "user": {
+                    "id": "user_2gDA9onqAjlpFT1KbSO33cAzRot",
+                    "object": "user",
+                    "username": null,
+                    "first_name": null,
+                    "last_name": null,
+                    "image_url": "https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBelJvdCJ9",
+                    "has_image": false,
+                    "primary_email_address_id": null,
+                    "primary_phone_number_id": "idn_2gDA1eUFLxaFx35GK6eitK0luxd",
+                    "primary_web3_wallet_id": null,
+                    "password_enabled": true,
+                    "two_factor_enabled": false,
+                    "totp_enabled": false,
+                    "backup_code_enabled": false,
+                    "email_addresses": [],
+                    "phone_numbers": [
+                        {
+                            "id": "idn_2gDA1eUFLxaFx35GK6eitK0luxd",
+                            "object": "phone_number",
+                            "phone_number": "+13023730954",
+                            "reserved_for_second_factor": false,
+                            "default_second_factor": false,
+                            "reserved": false,
+                            "verification": {
+                                "status": "verified",
+                                "strategy": "phone_code",
+                                "attempts": 1,
+                                "expire_at": 1715222161074
+                            },
+                            "linked_to": [],
+                            "backup_codes": null,
+                            "created_at": 1715221560274,
+                            "updated_at": 1715221625699
+                        }
+                    ],
+                    "web3_wallets": [],
+                    "passkeys": [],
+                    "external_accounts": [
+                        {
+                            "object": "external_account",
+                            "id": "eac_2gDG25vjph9cbxzHaKL0TLScC83",
+                            "provider": "oauth_apple",
+                            "identification_id": "idn_2gDG28u33iZw2xdzmcUueLlwa3X",
+                            "provider_user_id": "",
+                            "approved_scopes": "",
+                            "email_address": "",
+                            "first_name": "",
+                            "last_name": "",
+                            "avatar_url": "",
+                            "username": null,
+                            "public_metadata": {},
+                            "label": null,
+                            "created_at": 1715224524779,
+                            "updated_at": 1715224524779,
+                            "verification": {
+                                "status": "expired",
+                                "strategy": "oauth_apple",
+                                "attempts": null,
+                                "expire_at": 1715225124774
+                            }
+                        }
+                    ],
+                    "saml_accounts": [],
+                    "public_metadata": {
+                        "stripeCustomerId": "cus_QFP8TXe2gUuXgp"
+                    },
+                    "unsafe_metadata": {},
+                    "external_id": null,
+                    "last_sign_in_at": 1718167645512,
+                    "banned": false,
+                    "locked": false,
+                    "lockout_expires_in_seconds": null,
+                    "verification_attempts_remaining": 100,
+                    "created_at": 1715221625669,
+                    "updated_at": 1718167645533,
+                    "delete_self_enabled": true,
+                    "create_organization_enabled": true,
+                    "last_active_at": 1718127257408,
+                    "mfa_enabled_at": null,
+                    "mfa_disabled_at": null,
+                    "profile_image_url": "https://www.gravatar.com/avatar?d=mp",
+                    "organization_memberships": [
+                        {
+                            "object": "organization_membership",
+                            "id": "orgmem_2hWziMpSBWtleyz10FBS7Cunmgr",
+                            "public_metadata": {},
+                            "role": "org:admin",
+                            "permissions": [
+                                "org:sys_domains:read",
+                                "org:sys_domains:manage",
+                                "org:sys_profile:manage",
+                                "org:sys_profile:delete",
+                                "org:sys_memberships:read",
+                                "org:sys_memberships:manage"
+                            ],
+                            "created_at": 1717724747739,
+                            "updated_at": 1717724747739,
+                            "organization": {
+                                "object": "organization",
+                                "id": "org_2hWziRwe6Xt6SOWuCmk5HGroPBK",
+                                "name": "Mew",
+                                "slug": "mew",
+                                "image_url": "https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJvcmdfMmhXemlSd2U2WHQ2U09XdUNtazVIR3JvUEJLIiwiaW5pdGlhbHMiOiJNIn0",
+                                "has_image": false,
+                                "members_count": 1,
+                                "pending_invitations_count": 0,
+                                "max_allowed_memberships": 5,
+                                "admin_delete_enabled": true,
+                                "public_metadata": {},
+                                "created_at": 1717724747725,
+                                "updated_at": 1717724747725,
+                                "logo_url": null
+                            }
+                        },
+                        {
+                            "object": "organization_membership",
+                            "id": "orgmem_2gDH08d42SMiYw7Uq2zvC3dS5OI",
+                            "public_metadata": {},
+                            "role": "org:admin",
+                            "permissions": [
+                                "org:sys_domains:read",
+                                "org:sys_domains:manage",
+                                "org:sys_profile:manage",
+                                "org:sys_profile:delete",
+                                "org:sys_memberships:read",
+                                "org:sys_memberships:manage"
+                            ],
+                            "created_at": 1715225001459,
+                            "updated_at": 1715225392036,
+                            "organization": {
+                                "object": "organization",
+                                "id": "org_2gDH01ZQrlrZBnv8pZLrSvIlWb5",
+                                "name": "Game Test",
+                                "slug": "game-test",
+                                "image_url": "https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJvcmdfMmdESDAxWlFybHJaQm52OHBaTHJTdklsV2I1IiwiaW5pdGlhbHMiOiJHIn0",
+                                "has_image": false,
+                                "members_count": 1,
+                                "pending_invitations_count": 0,
+                                "max_allowed_memberships": 5,
+                                "admin_delete_enabled": true,
+                                "public_metadata": {},
+                                "created_at": 1715225001443,
+                                "updated_at": 1715225001443,
+                                "logo_url": null
+                            }
+                        }
+                    ]
+                },
+                "public_user_data": {
+                    "first_name": null,
+                    "last_name": null,
+                    "image_url": "https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJyaWQiOiJ1c2VyXzJnREE5b25xQWpscEZUMUtiU08zM2NBelJvdCJ9",
+                    "has_image": false,
+                    "identifier": "+13023730954",
+                    "profile_image_url": "https://www.gravatar.com/avatar?d=mp"
+                },
+                "created_at": 1718167645512,
+                "updated_at": 1718167645541,
+                "last_active_token": {
+                    "object": "token",
+                    "jwt": "eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18yZ0N1ZGJnWXJ6dmJhRWVYaXgzdzF3YjhDdEciLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3MTgxNjc3MDUsImlhdCI6MTcxODE2NzY0NSwiaXNzIjoiaHR0cHM6Ly9wcmVjaXNlLWxpb24tNDYuY2xlcmsuYWNjb3VudHMuZGV2IiwibmJmIjoxNzE4MTY3NjM1LCJvcmdfaWQiOiJvcmdfMmdESDAxWlFybHJaQm52OHBaTHJTdklsV2I1Iiwib3JnX3Blcm1pc3Npb25zIjpbXSwib3JnX3JvbGUiOiJvcmc6YWRtaW4iLCJvcmdfc2x1ZyI6ImdhbWUtdGVzdCIsInNpZCI6InNlc3NfMmhsVFFCbkIyUFExSWtPZXNEU2hMQWNCaWNsIiwic3ViIjoidXNlcl8yZ0RBOW9ucUFqbHBGVDFLYlNPMzNjQXpSb3QifQ.rS41IXL0w9N0JRCwtONg4tGG4AJ71SQfNQb7kwzyuHtmofu2-yESOM98oEzpQ6W_oga0Qwi0JzdPYSPBdeJU3aHinTdN8JIn2Mq2rQfySktvytEski3O_tmUFiTDNJHshwEOOwb7V7Ch7aAyigLHxJ9b_Jc-t8CcokfhE4acBKhPx9kNsBigu-Wvsa3RexpujxJ7UltrGrOYZO_nvJGE8xTs1fW2Ei8omGH3-jM21ih5pE0XwNapL3bIKVLKZYrYIHl9pQcsnGwo_1whcdMk9DBVUUE_HbmOfO41wbr47hof60hy3_BTWYEEmdUdf4GkXWtMVizVwKMQ9FKYWKFfFQ"
+                }
+            }
+        ],
+        "sign_in": null,
+        "sign_up": null,
+        "last_active_session_id": "sess_2hlTQBnB2PQ1IkOesDShLAcBicl",
+        "created_at": 1718167645377,
+        "updated_at": 1718167645538
+    }
+}
