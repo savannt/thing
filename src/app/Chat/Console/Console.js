@@ -1435,7 +1435,7 @@ function ConsoleChat ({ messages, setShowChat, setShowGraph, showGraph, onBack, 
     )
 }
 
-export default function Console ({ messages, onBack: _onBack, chat, group, groups, setGroups, enterpriseId }) {
+export default function Console ({ messages, onBack: _onBack, chat, group, setGroup, groups, setGroups, enterpriseId }) {
     const router = useRouter();
 
     const [showGraph, setShowGraph] = useState(false);
@@ -1444,6 +1444,13 @@ export default function Console ({ messages, onBack: _onBack, chat, group, group
     const [showConsoleBorder, setShowBorder] = useState(false);
     const [consoleColor, setConsoleColor] = useState([25, 25, 25]);
     const [consoleGlow, setConsoleGlow] = useState(false);
+
+    useEffect(() => {
+        if(router.query.edit) {
+            setShowGraph(true);
+            // setShowChat(false);
+        }
+    }, [router.query]);
 
     useChannel(`console`, `setColor`, (msg) => {
         const { color } = msg.data;
@@ -1493,7 +1500,7 @@ export default function Console ({ messages, onBack: _onBack, chat, group, group
                                     // if it already has focus, loose it's focus
                                     document.querySelector("#consoleInput").focus();
                                 }
-                            }} showHeader={false} type="console-graph" chat={chat} group={group} enterpriseId={enterpriseId} /> }
+                            }} showHeader={false} type="console-graph" chat={chat} group={group} setGroup={setGroup} enterpriseId={enterpriseId} /> }
                         </div>
                     </div>
                 </div>

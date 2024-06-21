@@ -26,7 +26,7 @@ import useStandalone from "@/providers/Standalone/useStandalone"
 
 export const SCROLL_TIMEOUT = 1500;
 
-export default function Chat ({ console: showConsole, setConsole, graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, groups, setGroups }) {
+export default function Chat ({ console: showConsole, setConsole, graph: showChatGraph, setGraph: setShowChatGraph, userId, enterpriseId, chat, group, setGroup, groups, setGroups }) {
     const hasChat = !!chat && chat?.chatId;
 
     const isMobile = useMobile();
@@ -201,12 +201,12 @@ export default function Chat ({ console: showConsole, setConsole, graph: showCha
             }}></input>
             { showConsole && <Console onBack={() => {
                 setConsole(false);
-            }} chat={chat} group={group} groups={groups} setGroups={setGroups} enterpriseId={enterpriseId} messages={chatMessages} /> }
+            }} chat={chat} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} enterpriseId={enterpriseId} messages={chatMessages} /> }
 
             <SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
             
             {
-                (showChatGraph || chatGraphAnimation) && <ChatGraph chat={chat} group={group} enterpriseId={enterpriseId} className={`animate__animated ${chatGraphAnimation}`} onAnimationEnd={(e) => {
+                (showChatGraph || chatGraphAnimation) && <ChatGraph chat={chat} group={group} setGroup={setGroup} enterpriseId={enterpriseId} className={`animate__animated ${chatGraphAnimation}`} onAnimationEnd={(e) => {
                     if(e.target.id !== "chat-graph") return;
 
 

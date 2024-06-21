@@ -74,6 +74,8 @@ export default async function handler(req, res) {
         if(!req.body) return res.status(400).json({ message: "Invalid request" });
         const body = JSON.parse(req.body);
         if(typeof body.nodes === "undefined" || typeof body.edges === "undefined") return res.status(400).json({ message: "Invalid request" });
+
+
         const nodes = body.nodes;
         const edges = body.edges;
 
@@ -81,6 +83,8 @@ export default async function handler(req, res) {
         const group = await groups.findOne({ groupId, deleted: false });
         if(!group) return res.status(400).json({ message: "Group not found" });
         if(group.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
+
+        console.log("UPDATING", groupId, nodes.length, edges.length);
 
         await groups.updateOne({ groupId }, { $set: {
             nodes,

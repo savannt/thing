@@ -299,7 +299,7 @@ p, h1, h2, h3 {
 	0% {
 		/* width:	Start with the current width */
 		/* width: unset; */
-		min-width: 0;
+		/* min-width: 0; */
 		/* opacity: 1; */
 	}
 	70% {
@@ -311,9 +311,11 @@ p, h1, h2, h3 {
 		/* opacity: 0; Start fading out */
 	}
 	100% {
-	width: 0px; /* Reduce width to 0 */
-	max-width: 0px;
-	min-width: 0px;
+		width: 0px; /* Reduce width to 0 */
+		min-width: 0px;
+		max-width: 0px;
+	/* max-width: 0px; */
+	/* min-width: 0px; */
 
 		/* display: none; Element completely disappears */
 		/* opacity: 0; */
@@ -552,7 +554,7 @@ div[name="context-menu"]:has(div[name="context-menu"]) div[name="context-menu"] 
 	width: 100dvw;
 	max-width: 100dvw;
 
-	overflow: hidden;
+	overflow: visible;
 }
 
 #login-theme {
@@ -895,6 +897,15 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 .cl-cardBox .cl-signIn-start {
 	border: var(--border);
 }
+.cl-cardBox .cl-signIn-password {
+	border: var(--border);
+}
+
+
+.cl-dividerLine {
+	background-color: var(--hover-color);
+	opacity: 0.5;
+}
 
 .cl-footer {
 	background: var(--secondary-color);
@@ -957,6 +968,10 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 
 .cl-selectOptionsContainer > div:first-child {
 	border-bottom: 1px solid var(--tertiary-text-color);
+
+	padding: var(--margin-block);
+
+	outline: none !important;
 }
 
 .cl-selectSearchInput {
@@ -1292,6 +1307,15 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 	background-color: transparent;
 }
 
+.cl-table * {
+	border-color: var(--hover-color) !important;
+}
+
+.cl-table {
+	border: 1px solid var(--hover-color) !important;
+	box-shadow: none !important;
+}
+
 .cl-tabListContainer {
 	border-bottom: 1px solid var(--hover-color);
 }
@@ -1390,8 +1414,8 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 
 .cl-phoneInputBox {
 	gap: var(--gap);
-	/* box-shadow: none !important; */
-	border: 1px solid var(--hover-color);
+	box-shadow: none !important;
+	border: 2px solid var(--hover-color);
 }
 
 .cl-socialButtons {
@@ -1449,7 +1473,7 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 .cl-phoneInputBox:hover {
-	border: 1px solid var(--hover-active-color);
+	/* border: 1px solid var(--hover-color); */
 }
 
 .cl-formResendCodeLink {
@@ -1458,7 +1482,16 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 .cl-formFieldInput__password {
-	border: 1px solid var(--tertiary-text-color) !important;
+	box-shadow: none !important;
+	border: 2px solid var(--hover-color) !important;
+}
+
+.cl-formFieldInput__password:hover {
+	border: 2px solid var(--hover-active-color) !important;
+}
+
+.cl-formFieldInput__password:focus {
+	border: 2px solid var(--hover-active-color) !important;
 }
 
 .cl-otpCodeFieldInput {
@@ -1467,17 +1500,31 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 .cl-phoneInputBox:has(input:focus) {
-	border: 1px solid var(--action-color);
+	outline: 2px solid var(--action-color);
+	outline-offset: 2px;
 }
 
 .cl-phoneInputBox:has(input[value=""]:focus) {
-	border: 1px solid var(--action-color-hidden);
+	outline: 2px solid var(--action-color-hidden);
+	outline-offset: 2px;
 }
 
+.cl-profilePage > .cl-profileSection {
+	border-top: 1px solid var(--hover-color);
+}
+
+.cl-phoneInputBox:focus-within {
+	box-shadow: none;
+	border: 2px solid var(--hover-color);
+}
 
 
 .cl-phoneInputBox input:focus {
 	outline: none !important;
+}
+
+.cl-phoneInputBox .cl-selectButton {
+	border-radius: 0.375rem;
 }
 
 /* last > div of .cl-footer if its not the only div */

@@ -73,10 +73,17 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
     const [collapsed, setCollapsed] = useState(false);
     const [collapsedFinished, setCollapsedFinished] = useState(true);
+    const [isResizing, setIsResizing] = useState(false)
+    const [sidebarWidth, _setSidebarWidth] = useState(0);
+    
     let isCollapsed = collapsed && collapsedFinished;
     let isCollapsing = collapsed;
 
-    const [isResizing, setIsResizing] = useState(false)
+    const setSidebarWidth = (num) => {
+        _setSidebarWidth(num);
+        localStorage.setItem("sidebar_width", num);
+    }
+
     useEffect(() => {
         function handleMouseMove (e) {
             if(isResizing) {
@@ -90,6 +97,8 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
                 ref.current.dispatchEvent(new Event("resize"));
 
+
+                setSidebarWidth(e.clientX);
                 localStorage.setItem("sidebar_width", e.clientX);
 
                 updateTitleSize();
@@ -125,6 +134,27 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
         }
     }, [isResizing, ref]);
 
+
+    // while isCollapsing is true- use animation frames to update setSidebarWidth with the ref.current.getBoundingClientRect().width- until isCollapsing is false
+    useEffect(() => {
+        if(isCollapsing) {
+            let id = requestAnimationFrame(() => {
+                if(ref && ref.current) {
+                    setSidebarWidth(ref.current.getBoundingClientRect().width);
+                }
+            });
+            return () => {
+                cancelAnimationFrame(id);
+            }
+        }
+    }, [isCollapsing, ref]);
+
+    useEffect(() => {
+        if(!isCollapsed && ref && ref.current) {
+            setSidebarWidth(ref.current.getBoundingClientRect().width);
+        }
+    }, [isCollapsed, ref]);
+
     const { user } = useUser();
 
     const displayName = "Guest" || user.fullName;
@@ -159,7 +189,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
     const chatCollapseSidebarButton = document.getElementById("chat-collapse-sidebar");
     const chatElement = document.getElementById("chat");
-    if(chatCollapseSidebarButton) chatCollapseSidebarButton.style.display = collapsed ? "flex" : "none";
+    // if(chatCollapseSidebarButton) chatCollapseSidebarButton.style.display = collapsed ? "flex" : "none";
     if(chatElement) {
         chatElement.style.position = isCollapsed ? "absolute" : "relative";
         chatElement.style.paddingInline = (collapsed || isMobile) ? "calc(var(--margin-chat) * 3)" : "calc(var(--margin-chat) * 1)";
@@ -279,22 +309,29 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
                 _onToggleSidebar();
             }} readOnly></input>
 
-            {
+            
+            {/* {
                 !isMobile && <h3 id="sidebar-header-title" className={`animate__animate ${titleAnimation}`} style={{
-                    position: "absolute",
-                    left: isCollapsed || isCollapsing ? "calc(max(var(--margin-chat) * 3, 0px))" : "calc(max(100% + var(--margin-chat) * 1, 11vw))",
-                    bottom: "calc(100% + (var(--min-height) / 1.9))",
+                    position: "relative",
+                    left: `calc(${sidebarWidth}px)`,
+                    transform: isCollapsed || isCollapsing ? "translateX(calc(3 * var(--margin-chat)))" : "translate(calc(1 * var(--margin-chat)))",
+                    
+                    // left: isCollapsed || isCollapsing ? `calc(${sidebarWidth}px + (var(--margin-chat) * 3))` : "calc(max(var(--margin-chat) * 3, 0px))",
+                    top: `calc((var(--header-height) * -0.5))`,
                     width: "max-content",
                     opacity: "1",
                     color: "var(--secondary-text-color)",
                     fontWeight: "400",
     
+                    lineHeight: "0px",
+
                     // opacity: "0",
                     // animationDelay: "2s",
                 }} onAnimationEnd={() => {
                     setTitleAnimation("");
                 }} >{chat ? (chat?.title || <DotsText color="var(--secondary-text-color)" ></DotsText>) : ""}</h3>
-            }
+            } */}
+
 
             <div className={`${styles.Sidebar__Sidebar} ${secondaryAnimation} ${isStandalone ? styles.Sidebar__Sidebar___Standalone : ""}`} style={{
                 display: isCollapsed ? "none" : "flex",
@@ -306,10 +343,13 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
             }} onAnimationEnd={() => {
                 setSecondaryAnimation("");
             }} >
-                <div className={styles.Sidebar__Row}>
-                    { !isMobile && <SquareButton image="/images/icons/sidebar.png" onClick={() => {
+                <div className={styles.Sidebar__Row} style={{
+                    position: "relative"
+                }}>
+                    {/* { !isMobile && <SquareButton image="/images/icons/sidebar.png" onClick={() => {
                         toggleSidebar();
-                    }} /> }
+                    }} /> } */}
+                    { <div style={{ minWidth: "var(--min-height)", maxWidth: "var(--min-height)", width: "var(--min-height)" }} /> }
                     { isMobile && group && <SquareButton id="chat-back" image="/images/icons/caret/caret_left.svg" onClick={() => {
                         setGroup(false);
                     } }/> }

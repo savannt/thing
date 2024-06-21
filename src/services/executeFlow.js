@@ -10,14 +10,14 @@ import ably from "@/services/ably";
 
 
 export async function onUserMessage (chatId, message) {
-	return await executeFlowEvent(chatId, { message, chatId }, "OnUserMessage");
+	return await executeFlowEvent(chatId, { message, chatId }, "Events/OnUserMessage");
 }
 
 export async function onChatCreated (chatId) {
-	return await executeFlowEvent(chatId, {}, "OnChatCreated", true);
+	return await executeFlowEvent(chatId, {}, "Events/OnChatCreated", true);
 }
 
-export default async function executeFlowEvent (chatId, values = {}, eventName = "OnUserMessage", silent = false, speed = 5) {
+export default async function executeFlowEvent (chatId, values = {}, eventName = "Events/OnUserMessage", silent = false, speed = 5) {
 	console.log("USING SPEED", speed);
 
 	const { db } = await mongo();

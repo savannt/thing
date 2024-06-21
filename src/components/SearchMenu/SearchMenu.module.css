@@ -8,8 +8,35 @@
 
 @media (max-width: 800px) {
 	.SearchMenu {
-		top: var(--min-height) !important;
-		margin-inline: var(--margin-inline) !important;
+		/* top: calc(0.5 * var(--min-height)) !important; */
+		/* margin-inline: calc(-0.5 * var(--margin-inline)) !important; */
+		/* padding-right: calc(0.8 * var(--margin-inline)) !important; */
+		top: var(--gap) !important;
+		left: calc(-0.5 * var(--margin-inline)) !important;
+		right: calc(-0.5 * var(--margin-inline)) !important;
+		width: calc(100dvw - var(--margin-inline) - var(--gap)) !important;
+
+		max-width: unset !important;
+		margin-inline: 0px !important;
+	}
+
+
+	.SearchMenu__Results {
+		padding-inline: 0px !important;
+		margin-top: 0px !important;
+		margin-bottom: 0px !important;
+	}
+
+	.SearchMenu__Row {
+		padding-left: calc(0.8 * var(--margin-inline)) !important;
+	}
+
+	.SearchMenu__Row h3 {
+		font-size: 100%;
+	}
+
+	.SearchMenu__Header {
+		padding-inline: calc(0.5 * var(--margin-inline)) !important;
 	}
 }
 
@@ -35,6 +62,7 @@
 	margin-block: var(--margin-block);
 
 	overflow: visible;
+	overflow-y: scroll;
 }
 
 

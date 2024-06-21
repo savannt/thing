@@ -21,7 +21,6 @@ import Button from "@/components/Button/Button";
 import SearchMenu, { SearchMenuRow } from "@/components/SearchMenu/SearchMenu";
 import ContextMenu from "@/app/Chat/ChatGraph/ContextMenu/ContextMenu";
 
-import SaveIcon from "@/app/Chat/ChatGraph/SaveIcon/SaveIcon";
 import SliderButton from "@/components/Button/SliderButton";
 import { groupUpdate } from "@/client/group";
 
@@ -42,34 +41,55 @@ import { onUserMessage } from "@/client/event";
 export const SAVE_TIMEOUT = 1000;
 export const ERROR_TIMEOUT = 15000;
 
+import {
+	setSaved,
+	setSaving
+} from "@/client/saving";
+
 export default function ChatGraph({
 	showHeader = true,
 	type = "chat-graph",
 	chat,
 	group,
+	setGroup,
 	enterpriseId,
 	className,
 	onAnimationEnd,
 	onEscape,
 	children,
 }) {
-	const initialNodes = (group.nodes || []).map((node) => {
-		if (NODE_DICTIONARY[node.name]) {
-			return {
-				...node,
-				data: {
-					...node.data,
-					...NODE_DICTIONARY[node.name].data,
-					name: node.name,
-				},
-			};
-		} else {
-			notification("Node not found in dictionary", node.name, "red");
-			return node;
-		}
-	});
+	// const initialNodes = (group.nodes || []).map((node) => {
+	// 	if (NODE_DICTIONARY[node.name]) {
+	// 		return {
+	// 			...node,
+	// 			data: {
+	// 				...node.data,
+	// 				...NODE_DICTIONARY[node.name].data,
+	// 				name: node.name,
+	// 			},
+	// 		};
+	// 	} else {
+	// 		notification("Node not found in dictionary", node.name, "red");
+	// 		return node;
+	// 	}
+	// });
 
+	// const initialEdges = group.edges || [];
+
+	
+	
+	// update initialNodes and initialEdges to use the most up to date node dictionary default values
+	// -> like do the above, but do it correctly as the above caused errors
+
+	const initialNodes = group.nodes || [];
 	const initialEdges = group.edges || [];
+
+	// if any initial nodes are not in the dictionary- throw an error immediately
+	const invalidNodes = initialNodes.filter((node) => !NODE_DICTIONARY[node.name]);
+	if(invalidNodes.length > 0) {
+		notification("Invalid nodes", `The following nodes are not in the dictionary: ${invalidNodes.map((node) => node.name).join(", ")}`, "red");
+	}
+
 
 	useEffect(() => {
 		const headerTitle = document.getElementById("header-title");
@@ -87,7 +107,6 @@ export default function ChatGraph({
 	const isMobile = useMobile();
 
 	const [nodeMenuText, setNodeMenuText] = useState("");
-	const [pasteMenuText, setPasteMenuText] = useState("");
 	const [showNodeMenu, setShowNodeMenu] = useState(false);
 	const [showPasteMenu, setShowPasteMenu] = useState(false);
 	const [showChatMenu, setShowChatMenu] = useState(false);
@@ -104,58 +123,44 @@ export default function ChatGraph({
 	const [clonedScene, setClonedScene] = useState({ nodes: [], edges: [] });
 	const [_saveIteration, setSaveIteration] = useState(0);
 	const [saveTimeout, setSaveTimeout] = useState(null);
-	const [saving, setSaving] = useState(false);
-	const [saved, setSaved] = useState(true);
 
     const [speed, setSpeed] = useState(5);
 
-	const deselectAll = () => {
+	const enableNodeMenu = () => {
+		setShowNodeMenu(true);
+		setNodeMenuText("");
 		setNodes((nodes) =>
 			nodes.map((node) => ({ ...node, selected: false }))
 		);
 		setEdges((edges) =>
 			edges.map((edge) => ({ ...edge, selected: false }))
 		);
-	}
-
-	const enableNodeMenu = () => {
-		setShowNodeMenu(true);
-		setNodeMenuText("");
-		
-		deselectAll();
 	};
-	
-	const closeNodeMenu = () => {
-		setShowNodeMenu(false);
-		setNodeMenuText("");
-
-		setLastContextMenuPosition(null);
-	}
+    
 	const enablePasteMenu = () => {
 		setShowPasteMenu(true);
-		setPasteMenuText("");
-
-		deselectAll();
 	}
 
-	const closePasteMenu = () => {
-		setShowPasteMenu(false);
-		setPasteMenuText("");
+    const closeNodeMenu = () => {
+        setShowNodeMenu(false);
+        setNodeMenuText("");
 
-		setLastContextMenuPosition(null);
-	}
-    
-
-	const closeMenus = () => {
-		closeContextMenu();
-		closeNodeMenu();
-		closePasteMenu();
-	}
+        setLastContextMenuPosition(null);
+    }
 
 	const save = () => {
 		groupUpdate(group.groupId, nodes, edges).then((data) => {
 			if (!data || data.message !== "OK") {
 				notification("Error", "Failed to save graph", "red");
+			} else {
+				// update the group with the new nodes and edges
+				setGroup((group) => {
+					return {
+						...group,
+						nodes,
+						edges,
+					};
+				});
 			}
 			setSaved(true);
 		});
@@ -468,7 +473,8 @@ export default function ChatGraph({
 	);
 
 	const onPaneClick = (...e) => {
-		closeMenus();
+		closeContextMenu();
+		if(e) closeNodeMenu();
 	};
 
 	const onMove = () => closeContextMenu();
@@ -717,6 +723,11 @@ export default function ChatGraph({
 		animateExecutionResponse(nodeId, values);
 	});
 
+	const pasteMenu = Object.keys(TEMPLATE_DICTIONARY).reduce((acc, key) => {
+		const value = TEMPLATE_DICTIONARY[key];
+		const displayName = value.displayName || key;
+	});
+
 	const nodeMenu = Object.keys(NODE_DICTIONARY).reduce((acc, key) => {
 		const value = NODE_DICTIONARY[key];
 		const displayName = value.data.displayName || key;
@@ -740,16 +751,6 @@ export default function ChatGraph({
 			});
 		}
 		return acc;
-	}, []);
-
-	const pasteMenu = Object.keys(TEMPLATE_DICTIONARY).reduce((acc, key) => {
-		const value = TEMPLATE_DICTIONARY[key];
-		const displayName = value.displayName || key;
-
-		acc.push({
-			title: displayName,
-			onClick: () => onPasteTemplate(key),
-		});
 	}, []);
 
 	const contextMenuDefaultOptions = showHeader ? [
@@ -903,31 +904,6 @@ export default function ChatGraph({
 			>
 				<Controls />
 				<Background />
-				{showPasteMenu && (
-					<MenuContainer
-						onClick={() => closePasteMenu()}
-					>
-						<SearchMenu
-							placeholder={`Search for templates`}
-							hasResults={hasTemplateResults}
-							inputText={pasteMenuText}
-							setInputText={setPasteMenuText}
-						>
-							{hasTemplateResults &&
-								templateSearchResults.map((key, index) => (
-									<SearchMenuRow
-										key={index}
-										id={key}
-										text={key}
-										onClick={(e) => {
-											onPasteTemplate(e);
-											closePasteMenu();
-										}}
-									/>
-								))}
-						</SearchMenu>
-					</MenuContainer>
-				)}
 				{showNodeMenu && (
 					<MenuContainer
 						onClick={() => closeNodeMenu()}
@@ -1020,7 +996,6 @@ export default function ChatGraph({
 						</Menu>
 					</MenuContainer>
 				)}
-				<SaveIcon saving={saving} saved={saved} />
 			</ReactFlow>
 
 			<div className={styles.ChatGraph__Header} style={{

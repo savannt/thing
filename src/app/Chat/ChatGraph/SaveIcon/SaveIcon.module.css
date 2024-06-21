@@ -1,7 +1,4 @@
 .SaveIcon {
-    position: absolute;
-    bottom: calc(var(--margin-block) * 4);
-    right: var(--margin-block);
 
     height: 125px;
     width: 125px;

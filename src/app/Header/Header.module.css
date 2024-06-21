@@ -47,8 +47,7 @@
 }
 
 .Header__Title {
-	font-family: '__Source_Code_Pro_ceb1b8';
-
+	/* font-family: '__Source_Code_Pro_ceb1b8'; */
 	font-size: 140%;
 }
 
@@ -71,5 +70,13 @@
 		font-size: 90%;
 
 		white-space: pre;
+	}
+
+	.Header__Title {
+		font-family: '__Figtree_d680cf';
+		position: relative;
+		left: calc(-0.2 * var(--margin-inline));
+		bottom: -1px;
+		/* display: none !important; */
 	}
 }

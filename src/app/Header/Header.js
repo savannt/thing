@@ -41,7 +41,8 @@ export default function Header ({ showBack = false, inlinePadding = false, graph
 				setGroupAnimation("animate__fadeInRight");
 				setPreviousShowActions(showActions);
 			} else {
-				setActionsAnimation("animate__fadeOutLeft");
+				setHideActions(true);
+				// setActionsAnimation("animate__fadeOutLeft");
 				setInvertedActionsAnimation("animate__fadeInRight");
 				setLogoAnimation("animate__fadeOutLeft");
 				setGroupAnimation("animate__fadeInRight");
@@ -63,7 +64,7 @@ export default function Header ({ showBack = false, inlinePadding = false, graph
 
 				{ doShowLogo ? <Logo className={`animate__animate ${logoAnimation}`} onClick={() => onHome()} onAnimationEnd={() => {
 					setLogoAnimation("");
-				}} /> : <h3 id="header-title" className={`animate__animated ${groupAnimation}`} onClick={() => onHome()} onAnimationEnd={() => {
+				}} /> : <h3 id="header-title" className={`${styles.Header__Title} animate__animated ${groupAnimation}`} onClick={() => onHome()} onAnimationEnd={() => {
 					setGroupAnimation("");
 				}} >{isMobile ? chat?.title : group?.title || "Group"}</h3> }
 			</div>
@@ -79,11 +80,11 @@ export default function Header ({ showBack = false, inlinePadding = false, graph
 					display: hideActions ? "none" : "flex"
 				}}>
 					{/* <SquareButton id="logout" image="/images/icons/logout.svg" color="var(--red)" onClick={() => onLogout()}/> */}
-					{ chat && group && <SquareButton id="terminal" image="/images/icons/console.png" onClick={() => {
+					{/* { chat && group && isMobile && <SquareButton id="terminal" image="/images/icons/console.png" onClick={() => {
 						if(document.getElementById("toggle-terminal")) {
 							document.getElementById("toggle-terminal").click();
 						}
-					}} /> }
+					}} /> } */}
 					<SquareButton id="toggle-theme" image="/images/icons/ic_theme.svg" onClick={() => toggleTheme() }/>
 				</div>
 
@@ -93,6 +94,11 @@ export default function Header ({ showBack = false, inlinePadding = false, graph
 					}}>
 						{ chat && (isMobile ? (isSidebarCollapsed || isSidebarCollapsing) : true) && <SquareButton id="chat-delete" image="/images/icons/trash.svg" color="var(--red)" onClick={() => {
 							onChatDelete();
+						}} /> }
+						{ chat && group && isMobile && <SquareButton id="terminal" image="/images/icons/console.png" onClick={() => {
+						if(document.getElementById("toggle-terminal")) {
+							document.getElementById("toggle-terminal").click();
+						}
 						}} /> }
 					</div>
 				}

@@ -5,7 +5,8 @@ export const SidebarCollapsedContext = createContext(0);
 export default function SidebarCollapsedProvider ({ children }) {
 	const [sidebarData, setSidebarData] = useState({
 		collapsed: false,
-		collapsing: false
+		collapsing: false,
+		width: 0
 	});
 
 	useEffect(() => {
@@ -25,6 +26,15 @@ export default function SidebarCollapsedProvider ({ children }) {
 					return {
 						...prev,
 						collapsing: value === "true"
+					}
+				});
+			}
+			if(window.localStorage.getItem("sidebar_width")) {
+				const value = window.localStorage.getItem("sidebar_width");
+				setSidebarData((prev) => {
+					return {
+						...prev,
+						width: parseInt(value)
 					}
 				});
 			}

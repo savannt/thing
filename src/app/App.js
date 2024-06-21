@@ -32,6 +32,8 @@ import tryUntilSuccess from "@/client/tryUntilSuccess"
 import toggleTheme from "@/client/toggleTheme"
 
 import fetchChat from "@/client/chat"
+import fetchGroup from "@/client/group"
+import { DefaultLoadingManager } from "three"
 
 function ThingApp ({ enterpriseId, console, setConsole, graph, setGraph, group, setGroup, groups, setGroups, chat, chats, setChats, setChat, userId, onLogout, onBack, onHome, onChatDelete}) {
 
@@ -83,14 +85,14 @@ function ThingApp ({ enterpriseId, console, setConsole, graph, setGraph, group, 
 			}}>
 				<Sidebar userId={userId} enterpriseId={enterpriseId} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} chats={chats} setChats={setChats} onLogout={onLogout} />
 				<SquareButton id="chat-collapse-sidebar" className={`${styles.Chat__ToggleSidebar}`} image="/images/icons/sidebar.png" onClick={() => toggleSidebar() }/>
-				{ hasChat && <Chat userId={userId} enterpriseId={enterpriseId} console={console} setConsole={setConsole} graph={graph} setGraph={setGraph} group={group} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} /> }
+				{ hasChat && <Chat userId={userId} enterpriseId={enterpriseId} console={console} setConsole={setConsole} graph={graph} setGraph={setGraph} group={group} setGroup={setGroup} groups={groups} setGroups={setGroups} chat={chat} setChat={setChat} /> }
 				{ !hasChat && <NoChat /> }
 			</div>
 		</>
 	)
 }
 
-export default function App ({ page }) {
+export default function App ({ page, defaultGroupId, defaultChatId }) {
 	const FAKE_LOGIN = false;
 	const isMobile = useMobile();
 
@@ -148,6 +150,22 @@ export default function App ({ page }) {
 	const [title, setTitle] = useState(false);
 
 
+	useEffect(() => {
+		if(defaultGroupId && defaultChatId) {
+			fetchGroup(defaultGroupId).then(_group => {
+				if(!_group) return error("Failed to fetch group");
+				setGroup(_group);
+
+				fetchChat(defaultChatId, enterpriseId).then(_chat => {
+					if(!_chat) return error("Failed to fetch chat");
+					setChat(_chat);
+					
+					setConsole(true);
+				});
+			});
+		}
+	}, [defaultGroupId, defaultChatId]);
+
 
 	function onTitleUpdate ({ title }) {
 		notification("Chat title updated", title, "#00FF00");
@@ -185,24 +203,15 @@ export default function App ({ page }) {
 	// }, [chat]);
 
 
-	function setChat (chat) {
-		const value = _setChat(chat);
+	function setChat (_chat) {
+		const value = _setChat(_chat);
+
+		console.log("CHAT SET", _chat);
+
 		if(isMobile) {
 			toggleSidebar();
 		}
-
-		// set ?chatId=chatId, silently
 		
-		const query = router.query;
-		if(!chat) delete query.chatId;
-		else query.chatId = chat.chatId;
-		router.push({
-			pathname: "/",
-			query
-		}, undefined, { shallow: true });
-
-
-		// add "animate__heartBeat" to #chat
 		setTimeout(() => {
 			const chatElement = document.getElementById("chat");
 			if(chatElement) chatElement.classList.add("animate__heartBeat");
@@ -215,25 +224,30 @@ export default function App ({ page }) {
 	useEffect(() => {
 		if(router.query.chatId) {
 			const chatId = router.query.chatId;
+
+			if(chat && chat.chatId === chatId) return;
+			console.log("FETCHING CHAT", chatId, chat?.chatId, chat);
 			
-			if(chats) {
+			// if chat is in current chats, set chat
+			if(chats && Array.isArray(chats)) {
 				const _chat = chats.find(_chat => _chat.chatId === chatId);
 				if(_chat) {
 					setChat(_chat);
+					return;
 				}
 			}
 
-			if(groups) {
-				fetchChat(chatId, enterpriseId).then(_chat => {
-					const _group = groups.find(group => group.groupId === _chat.groupId);
-					if(_group) {
-						setGroup(_group);
-						_setChat(_chat);
-					}
+			// fetch chat directly if we don't already have it cached
+			fetchChat(chatId, enterpriseId).then(_chat => {
+				if(!_chat) return error("Failed to fetch chat");
+				fetchGroup(_chat.groupId).then(_group => {
+					if(!_group) return error("Failed to fetch group");
+					setGroup(_group);
+					setChat(_chat);
 				});
-			}
+			});
 		}
-	}, [router.query.chatId, groups, enterpriseId]);
+	}, [router.query, groups, enterpriseId]);
 
 	useEffect(() => {
 		if(router.query.extension_downloaded) {

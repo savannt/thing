@@ -50,8 +50,8 @@
 .NewChat__Dropdown {
     position: absolute;
     bottom: -3px;
-    left: calc(var(--min-height) + var(--gap) + var(--margin-inline));
-    top: 13px !important;
+    left: calc(var(--min-height) + var(--gap));
+    top: 3px !important;
 
     width: 35vw !important;
     max-width: 60vw;

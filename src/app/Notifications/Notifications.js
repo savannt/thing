@@ -3,6 +3,9 @@ import styles from "@/app/Notifications/Notifications.module.css";
 import NotificationCard from "@/app/Notifications/NotificationCard";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+
+import SavedIcon from "@/app/Chat/ChatGraph/SaveIcon/SaveIcon";
 
 function NotificationsLayer ({ children }) {
 	return (
@@ -13,9 +16,50 @@ function NotificationsLayer ({ children }) {
 }
 
 export default function Notifications({ }) {
+	const router = useRouter();
+
 	const [errors, setErrors] = useState([]);
 	const [notifications, setNotifications] = useState([]);
 	
+	const [saving, setSaving] = useState(false);
+	const [saved, setSaved] = useState(false);
+
+	useEffect(() => {
+		if(router.query.error) {
+			const error = router.query.error;
+			const timeout = 5000;
+			const id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+			let newError = {
+				text: error,
+				color: "red",
+				timeout,
+				id,
+			};
+
+			// Use a functional update to ensure you're working with the most current state
+			setErrors(errors => [...errors, newError]);
+		}
+		if(router.query.notification) {
+			const notificationStr = router.query.notification;
+			const { title, description, color } = JSON.parse(notificationStr);
+			const timeout = 5000;
+			const id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+			
+			let newNotification = {
+				title,
+				description,
+				color,
+				timeout,
+				id,
+				time: Date.now(),
+			};
+
+			// Use a functional update to ensure you're working with the most current state
+			setNotifications(notifications => [...notifications, newNotification]);
+		}
+	}, [router.query]);
+
 	useEffect(() => {
 		const handleStorageChange = () => {
 			if(window.localStorage.getItem("error")) {
@@ -70,6 +114,9 @@ export default function Notifications({ }) {
 				// remove notification from localstorage
 				window.localStorage.removeItem("notification");
 			}
+
+			if(typeof window.localStorage.getItem("saving") !== "undefined") setSaving(window.localStorage.getItem("saving") === "true");
+			if(typeof window.localStorage.getItem("saved") !== "undefined") setSaved(window.localStorage.getItem("saved") === "true");
 		};
 	
 		if(window) window.addEventListener("storage", handleStorageChange);
@@ -105,6 +152,8 @@ export default function Notifications({ }) {
 					</NotificationCard>
 				)
 			}) }
+
+			<SavedIcon saving={saving} saved={saved} />
 		</NotificationsLayer>
 	)
 }

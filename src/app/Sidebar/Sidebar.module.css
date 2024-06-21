@@ -1,6 +1,6 @@
 
 .Sidebar {
-    position: relative;
+    /* position: relative; */
 
     display: flex;
     flex-direction: column;
@@ -68,11 +68,15 @@
 }
 
 .Sidebar__Sidebar {
+    position: relative;
+    
     display: flex;
     flex-direction: column;
     justify-content: stretch;
     align-items: stretch;
-/*  */
+
+    overflow: visible;
+
     padding-inline: var(--margin-inline);
     padding-block: var(--margin-block);
     padding-bottom: 0px !important;

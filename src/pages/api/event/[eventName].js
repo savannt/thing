@@ -7,8 +7,8 @@ import executeFlowEvent from "@/services/executeFlow";
 export default async function handler(req, res) {
     const { userId } = await authenticate(req, res);
     if(!userId) return;
-
-    const eventName = req.query.eventName;
+    
+    const eventName = req.query.eventName.replace(/_/g, "/");
     const chatId = req.query.chatId || false;
     const silent = req.query.silent === "true" || false;
     const speed = parseInt(req.query.speed || "5");

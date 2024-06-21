@@ -13,6 +13,9 @@ export default async function event(chatId = false, eventName, payload = {}, sil
     }
 
     if(!chatId) throw new Error("Chat ID is required");
+
+    // replace all `/` in eventName with _ to prevent path traversal
+    eventName = eventName.replace(/\//g, "_");
     const response = await fetch(`/api/event/${eventName}?chatId=${chatId}&silent=${silent}&speed=${speed}`, {
         method: "POST",
         body: JSON.stringify(payload),
@@ -23,9 +26,9 @@ export default async function event(chatId = false, eventName, payload = {}, sil
 }
 
 export async function onUserMessage (chatId, message, files, speed) {
-    return await event(chatId, "OnUserMessage", { chatId, message, files }, false, speed);
+    return await event(chatId, "Events/OnUserMessage", { chatId, message, files }, false, speed);
 }
 
 export async function onChatCreated (chatId) {
-    return await event(chatId, "OnChatCreated", {}, true);
+    return await event(chatId, "Events/OnChatCreated", {}, true);
 }

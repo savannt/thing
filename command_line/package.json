@@ -22,6 +22,7 @@
     "cli-spinners": "^3.0.0",
     "colors": "^1.4.0",
     "console-clear": "^1.1.1",
+    "daemonize-process": "^4.1.0",
     "enquirer": "^2.4.1",
     "markdown-to-ansi": "^1.0.0",
     "marked": "^12.0.2",

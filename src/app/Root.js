@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import App from "@/app/App";
 
-export default function Root({ page }) {
+export default function Root({ defaultGroupId, defaultChatId, page }) {
 
 	const motd = [
 		`𝗧𝗵𝗶𝗻𝗴-𝗸𝗶𝗻𝗴: The supreme king of things, doing thingy things with other things to make things happen. Get your thing on with Thing-king and let the thing-power revolutionize the thingiverse in your organization today! 🚀`,
@@ -25,7 +25,7 @@ export default function Root({ page }) {
 				<link rel="icon" href="/icon.png" type="image/png" sizes="256x256" />
 				<link rel="apple-touch-icon" href="/icon.png" type="image/png" sizes="256x256" />
 			</Head>
-			<App page={page} />
+			<App page={page} defaultGroupId={defaultGroupId} defaultChatId={defaultChatId} />
 		</>
 	)
 }

@@ -38,7 +38,7 @@ import {
 
 const ERROR_TIMEOUT = 2500;
 const WELCOME_TIMEOUT = 1000;
-
+const EXIT_TIMEOUT = 1000;
 
 const logoHeader = (small = false) => {
     let txt = `${"thing".yellow.bold}${"king ".yellow.italic}\n${"".gray.italic}`;
@@ -247,14 +247,17 @@ const clear = async () => {
     return consoleClear();
 }
 const message = async (groupId, chatId, message) => {
-    return await sendEvent(undefined, "OnUserMessage", {
+    return await sendEvent(undefined, "Events/OnUserMessage", {
         chatId: chatId,
         message: { role: "user", content: message }
     });
 }
 const exit = async () => {
     console.log("Goodbye.".white.italic);
-    process.exit();
+    setTimeout(() => {
+        clear();
+        process.exit();
+    }, EXIT_TIMEOUT);
 }
 const newGroup = async (name) => {
     return await fetchGroups(undefined, "new", name);
@@ -531,7 +534,9 @@ const menu = async (title, description, choices) => {
     });
 }
 const edit = async (groupId, chatId) => {
-    return await editChat(groupId, chatId);
+    if(!groupId) return await error("No thing on stage.");
+    if(!chatId) return await error("No chat on stage.");
+    return await editChat(groupId, chatId, (kill) => anyKey("Editor launched, close it or press any key to continue.").then(kill));
 }
 
 const commandLine = new CommandLine({

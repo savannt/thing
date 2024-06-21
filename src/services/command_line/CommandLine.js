@@ -67,7 +67,9 @@ export default class CommandLine {
             "edit": async (name) => {
                 if(!this.group) return await this.handleCallback("error", "No thing on stage");
                 if(!this.chat) return await this.handleCallback("error", "No chat on stage");
-                return await this.handleCallback("edit", this.group.groupId, this.chat.chatId);
+                const response = await this.handleCallback("edit", this.group.groupId, this.chat.chatId);
+                await this.printScreen();
+                return response;
             },
             "new": async (thing) => {
                 if(!this.group) return await this.handleCallback("error", "no thing on stage");

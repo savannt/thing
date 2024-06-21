@@ -110,6 +110,22 @@ class ThingkingPuppeteer {
         });
     }
 
+    async edit (url = DEFAULT_URL, groupId, chatId, launchCallback) {
+        return await new Promise(async resolve => {            
+            const promise = await this._launch(false, url + `/?groupId=${groupId}&chatId=${chatId}&terminal=true&edit=true`);
+            await promise;
+
+            if(launchCallback) launchCallback(async () => await this.close());
+
+            this.page.once("close", () => {
+                setTimeout(async () => {
+                    await this._startBackground();
+                    resolve(true);
+                }, 250);
+            });
+        });
+    }
+
     async logout (url = DEFAULT_URL) {
         return await new Promise(async resolve => {
             await this.close();
@@ -152,6 +168,9 @@ export async function logout () {
     await pptr.logout();
 }
 
+export async function launchEdit (groupId, chatId, launchCallback) {
+    return await pptr.edit(DEFAULT_URL, groupId, chatId, launchCallback);
+}
 
 export function getUsername () {
     return username;

@@ -126,6 +126,12 @@
     }
 }
 
+@media (max-width: 800px) {
+    .Chat__Bar {
+        gap: calc(0.5 * var(--gap));
+    }
+}
+
 .Chat__Bar__InputRow {
     display: flex;
     flex-direction: row;
@@ -258,6 +264,8 @@
 
     width: var(--min-height);
     height: var(--min-height);
+
+    z-index: 1000000000000000000000000000000000000000000000;
 }
 
 .Chat__Main__NoChat {
