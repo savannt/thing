@@ -7,20 +7,29 @@ This is a Thing.
 - [ ] Fix vercel flow bugs
 - [ ] Fix Context Menu
 
-- [ ] add functions
-- [ ] add variables
+- [ ] add Functions
+- [ ] add Variables
+- [ ] add Sparse Functions
+
+
+#### Privacy
+- [ ] Introduce Default Invisible Events (if not implemented)
+
+- [ ] OnTemplatesFetch
+- [ ] OnTemplateSave
+- [ ] SaveTemplate
 
 - [ ] OnUserVisit (isSignedIn)
 - [ ] setGuest
 - [ ] logout
 - [ ] redirectToLogin
 - [ ] redirectToRegister
-
 - [ ] OnUserVisit event
 - [ ] setGuest/logout/redirectToLogin/redirectToRegister
 
+
+
 - [ ] demo templates as functions
-- [ ] sparse functions
 
 ### Distributions
 - [ ] move/create console handling class, finish cli tool
@@ -30,6 +39,6 @@ This is a Thing.
 - [ ] .. Figure out how to expand here .. 
 
 ### Miscellaneous
-- [ ] sharability via query parameters
+- [X] sharability via query parameters
 - [ ] stripe billing
 - [ ] notifications

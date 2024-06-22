@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 
 export default function Reader ({ inlinePadding = "calc(4 * var(--margin-inline))", blockPadding = "var(--margin-block)", header = false, children }) {
     const router = useRouter();
-    Fixed 
+    
     const style = {
         height: header ? `calc(100dvh - var(--header-height) - (2 * ${blockPadding}))` : "100dvh",
         maxHeight: header ? `calc(100dvh - var(--header-height) - (2 * ${blockPadding}))` : "100dvh",
