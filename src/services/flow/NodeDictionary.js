@@ -679,6 +679,34 @@ export default {
 			}
 		}
 	},
+	"Message/AssistantAuthorValue": {
+		type: "ConstantNode",
+		data: {
+			displayName: "Assistant Author",
+
+			out: {
+				author: {
+					type: "author",
+					description: "Assistant author",
+					constant: true
+				}
+			}
+		}
+	},
+	"Message/UserAuthorValue": {
+		type: "ConstantNode",
+		data: {
+			displayName: "User Author",
+
+			out: {
+				author: {
+					type: "author",
+					description: "User author",
+					constant: true
+				}
+			}
+		}		
+	},
 	"Message/GetText": {
 		type: "LogicNode",
 		data: {

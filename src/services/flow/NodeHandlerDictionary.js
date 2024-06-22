@@ -167,6 +167,12 @@ export default {
 	"Message/Construct": function MessageConstruct ({ text, author }) {
         return { message: Message.from({ content: text, role: author }) }
 	},
+	"MessageAssistantAuthorValue": function MessageAssistantAuthorValue () {
+		return { author: "assistant" }
+	},
+	"Message/UserAuthorValue": function MessageUserAuthorValue () {
+		return { author: "user" }
+	},
 	"Message/GetText": function MessageGetText ({ message }) {
 		console.log("[GetText] message", message);
 		

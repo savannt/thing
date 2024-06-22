@@ -4,8 +4,8 @@ This is a Thing.
 ## Roadmap
 
 ### Flow
-- [ ] add function type as first category in context menu
-- [ ] fix hosting flow bugs
+- [ ] Fix vercel flow bugs
+- [ ] Fix Context Menu
 
 - [ ] add functions
 - [ ] add variables

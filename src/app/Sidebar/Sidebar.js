@@ -86,7 +86,7 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
     useEffect(() => {
         function handleMouseMove (e) {
-            if(isResizing) {
+            if(isResizing && ref && ref.current) {
                 // ref.current.style.width = `${e.clientX}px`;
                 // send resize event
 

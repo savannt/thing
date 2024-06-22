@@ -8,7 +8,6 @@ export default function ContextMenu({
     id,
     relative = false,
     options,
-    defaultOptions,
     position,
     onMouseEnter = () => {},
     onMouseLeave = () => {},
@@ -16,6 +15,8 @@ export default function ContextMenu({
     style,
 }) {
     if (!position) return null;
+
+    const buttonGroups = options;
 
     return (
         <div
@@ -35,17 +36,46 @@ export default function ContextMenu({
                 return
             }}
         >
-            {options && options.length > 0 && (
+            {/* {options && options.length > 0 && (
                 options.map((option, index) => (
                     <Button key={index} option={option} onClose={onClose} />
                 ))
             )}
             {
                 options && options.length > 0 && defaultOptions && defaultOptions.length > 0 && <Seperator />
+            } */}
+
+            {
+                // do the above-- but options is now called buttonGroups- for each item of the aray is another array of buttons- put a seperator at the end of each array
+                buttonGroups && buttonGroups.length > 0 && (
+                    buttonGroups.map((buttonGroup, index) => {
+                        console.log("BUTTNO GROUP", buttonGroup);
+                        
+                        // if buttongroup is another array of buttons
+                        if(Array.isArray(buttonGroup)) {
+                            const isLast = index === buttonGroups.length - 1;
+                            const isEmpty = buttonGroup.length === 0;
+
+                            return (
+                                <>
+                                    {
+                                        buttonGroup.map((option, index) => (
+                                            <Button key={index} option={option} onClose={onClose} />
+                                        ))
+                                    }
+                                    { !isLast && !isEmpty && <Seperator /> }
+                                </>
+                            )
+                        } else {
+                            return (
+                                <>
+                                    <Button key={index} option={buttonGroup} onClose={onClose} />
+                                </>
+                            )
+                        }
+                    })
+                )
             }
-            {defaultOptions.map((option, index) => (
-                <Button key={index} option={option} onClose={onClose} />
-            ))}
         </div>
     );
 }
@@ -116,7 +146,7 @@ function Button({ option, onClose }) {
             {showOptions && (
                 <ContextMenu
                     options={option.options}
-                    defaultOptions={[]}
+
                     position={subMenuPosition}
                     relative={false} // Always position nested menus absolutely
                     onMouseEnter={() => clearTimeout(timeoutId)} // Keep submenu open

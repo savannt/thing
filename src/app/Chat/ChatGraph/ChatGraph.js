@@ -81,14 +81,43 @@ export default function ChatGraph({
 	// update initialNodes and initialEdges to use the most up to date node dictionary default values
 	// -> like do the above, but do it correctly as the above caused errors
 
-	const initialNodes = group.nodes || [];
-	const initialEdges = group.edges || [];
+	let initialNodes = group.nodes || [];
+	let initialEdges = group.edges || [];
 
-	// if any initial nodes are not in the dictionary- throw an error immediately
+	let didChangeInitial = false;
+
+	// if any initial nodes are not in the dictionary- remove them and thorw an error immediately- remove any edges that are associated with them as well
 	const invalidNodes = initialNodes.filter((node) => !NODE_DICTIONARY[node.name]);
 	if(invalidNodes.length > 0) {
-		notification("Invalid nodes", `The following nodes are not in the dictionary: ${invalidNodes.map((node) => node.name).join(", ")}`, "red");
+		didChangeInitial = true;
+		notification("Invalid nodes", "Some nodes in the group are not in the dictionary", "red");
+		invalidNodes.forEach((node) => {
+			initialNodes.splice(initialNodes.indexOf(node), 1);
+			initialEdges = initialEdges.filter((edge) => edge.source !== node.id && edge.target !== node.id);
+		});
 	}
+
+	// if any initial edges are not valid- remove them and throw an error immediately
+	const invalidEdges = initialEdges.filter((edge) => !edge.source || !edge.target);
+	if(invalidEdges.length > 0) {
+		didChangeInitial = true;
+		notification("Invalid edges", "Some edges in the group are invalid", "red");
+		invalidEdges.forEach((edge) => {
+			initialEdges.splice(initialEdges.indexOf(edge), 1);
+		});
+	}
+
+	if(didChangeInitial) {
+		setGroup((group) => {
+			return {
+				...group,
+				nodes: initialNodes,
+				edges: initialEdges
+			};
+		});
+	}
+
+
 
 
 	useEffect(() => {
@@ -113,6 +142,10 @@ export default function ChatGraph({
 	const [chatText, setChatText] = useState("");
 	const [chatRows, setChatRows] = useState(1);
 	const [chatFiles, setChatFiles] = useState([]);
+	
+	const [undoStack, setUndoStack] = useState([]);
+	const [redoStack, setRedoStack] = useState([]);
+
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
@@ -148,6 +181,11 @@ export default function ChatGraph({
         setLastContextMenuPosition(null);
     }
 
+	const saveHistorySnapshot = () => {
+		setUndoStack((stack) => [...stack, { nodes, edges }]);
+		setRedoStack([]);
+	}
+
 	const save = () => {
 		groupUpdate(group.groupId, nodes, edges).then((data) => {
 			if (!data || data.message !== "OK") {
@@ -171,6 +209,10 @@ export default function ChatGraph({
 		setSaved(false);
 		setSaving(false);
 		if (saveTimeout) clearTimeout(saveTimeout);
+
+		setTimeout(() => {
+			saveHistorySnapshot();
+		}, 0);
 
 		setSaveTimeout(
 			setTimeout(() => {
@@ -494,6 +536,38 @@ export default function ChatGraph({
 		);
 	}
 
+	const redo = () => {
+		if (redoStack.length > 0) {
+			setRedoStack((prevRedoStack) => {
+				const nextSnapshot = prevRedoStack.pop();
+				if(!nextSnapshot) {
+					notification("No history", "No history to redo", "red");
+					return prevRedoStack;
+				}
+				setUndoStack((prevUndoStack) => [...prevUndoStack, { nodes, edges }]);
+				setNodes(nextSnapshot.nodes);
+				setEdges(nextSnapshot.edges);
+				return prevRedoStack;
+			});
+		} else {
+			notification("No history", "No history to redo", "red");
+		}
+	}
+
+	const undo = () => {
+		if (undoStack.length > 0) {
+			setUndoStack((prevUndoStack) => {
+				const lastSnapshot = prevUndoStack.pop();
+				setRedoStack((prevRedoStack) => [...prevRedoStack, { nodes, edges }]);
+				setNodes(lastSnapshot.nodes);
+				setEdges(lastSnapshot.edges);
+				return prevUndoStack;
+			});
+		} else {
+			notification("No history", "No history to undo", "red");
+		}
+	}
+
 	useEffect(() => {
 		const handleKeyDown = (e) => {
 			if (e.ctrlKey && e.key === "c") {
@@ -527,6 +601,14 @@ export default function ChatGraph({
 					notification(`Pasted ${clonedScene.nodes.length} nodes`);
 					paste();
 				}
+			}
+
+			if(e.ctrlKey && e.key === "z") {
+				undo();
+			}
+
+			if(e.ctrlKey && e.key === "y") {
+				redo();
 			}
 		};
 
@@ -728,28 +810,43 @@ export default function ChatGraph({
 		const displayName = value.displayName || key;
 	});
 
+	const buildNestedMenu = (keys, value, onNewNode) => {
+		if (keys.length === 0) return { title: value, onClick: (e) => onNewNode(e, value) };
+		
+		const [firstKey, ...restKeys] = keys;
+		return {
+			title: firstKey,
+			options: [buildNestedMenu(restKeys, value, onNewNode)]
+		};
+	};
+	
+	const mergeOptions = (existingOptions, newOption) => {
+		const existingOption = existingOptions.find(opt => opt.title === newOption.title);
+		if (existingOption) {
+			newOption.options.forEach(newSubOption => {
+				const existingSubOption = existingOption.options.find(opt => opt.title === newSubOption.title);
+				if (existingSubOption) {
+					mergeOptions(existingSubOption.options, newSubOption);
+				} else {
+					existingOption.options.push(newSubOption);
+				}
+			});
+		} else {
+			existingOptions.push(newOption);
+		}
+	};
+	
 	const nodeMenu = Object.keys(NODE_DICTIONARY).reduce((acc, key) => {
 		const value = NODE_DICTIONARY[key];
 		const displayName = value.data.displayName || key;
-		const categoryName = value.data.category || key.includes("/") ? key.split("/")[0] : "Uncategorized";
-
-		const category = acc.find((obj) => obj.title === categoryName);
-		if (category) {
-			category.options.push({
-				title: displayName,
-				onClick: (e) => onNewNode(e, key),
-			});
-		} else {
-			acc.push({
-				title: categoryName,
-				options: [
-					{
-						title: displayName,
-						onClick: (e) => onNewNode(e, key),
-					},
-				],
-			});
-		}
+		const type = value.type || "Uncategorized";
+		const categoryKeys = key.split("/");
+		
+		const nestedOption = buildNestedMenu(categoryKeys, displayName, (e) => onNewNode(e, key));
+		const typeOption = { title: type, options: [nestedOption] };
+		
+		mergeOptions(acc, typeOption);
+		
 		return acc;
 	}, []);
 
@@ -790,6 +887,20 @@ export default function ChatGraph({
 			},
 		}
 	]
+	
+	const contextMenuHistoryOptions = [];
+	if(undoStack.length > 0) {
+		contextMenuHistoryOptions.push({
+			title: "Undo",
+			onClick: undo
+		});
+	}
+	if(redoStack.length > 0) {
+		contextMenuHistoryOptions.push({
+			title: "Redo",
+			onClick: redo
+		});
+	}
 
 	const searchResults = nodeMenuText
 		? Object.keys(NODE_DICTIONARY).filter((key) => key.toLowerCase().includes(nodeMenuText.toLowerCase()))
@@ -811,6 +922,11 @@ export default function ChatGraph({
 		}
 	}, []);
 
+	// input has focus returns true if a input element has focus
+	const inputHasFocus = () => {
+		return document.activeElement.tagName === "INPUT";
+	}
+
 	return (
 		<div
 			type={type}
@@ -818,6 +934,7 @@ export default function ChatGraph({
 			className={`${styles.ChatGraph} ${className}`}
 			onAnimationEnd={onAnimationEnd}
 			onKeyDown={(e) => {
+				if(inputHasFocus()) return;
 				if (e.key === "Backspace" || e.key === "Delete") {
 					const selectedNodes = nodes.filter((node) => node.selected);
 					if (selectedNodes.length > 0) {
@@ -834,6 +951,7 @@ export default function ChatGraph({
 				}
 			}}
 			onKeyUp={(e) => {
+				if(inputHasFocus()) return;
 				if (e.key === "Backspace" || e.key === "Delete") {
                     deleteNode();
                     deleteEdge();
@@ -1046,8 +1164,9 @@ export default function ChatGraph({
 
 			<ContextMenu
 				id="context-menu"
-				options={contextMenuOptions}
-				defaultOptions={contextMenuDefaultOptions}
+
+				options={[[...contextMenuOptions], [...contextMenuDefaultOptions], [...contextMenuHistoryOptions]]}
+
 				position={contextMenuPosition}
 				onClose={closeContextMenu}
 				style={{
