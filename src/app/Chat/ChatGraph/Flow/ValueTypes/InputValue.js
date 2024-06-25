@@ -6,13 +6,13 @@ import Input from "@/components/Input/Input"
 
 import { useState, useEffect } from "react"
 
-export default function InputValue ({ data, value, inputType = "text" }) {
-    const [inputValue, setInputValue] = useState(value)
+export default function InputValue ({ onChange, data, inputType = "text" }) {
 
     return (
         <Value data={data}>
-            <Input className={styles.Input} type={inputType} value={inputValue} onChange={(e) => {
-                setInputValue(e.target.value);
+            <Input className={styles.Input} type={inputType} value={data.value || ""} onChange={(e) => {
+                const value = e.target.value;
+                if(onChange) onChange(value);
             }} />
         </Value>
     )

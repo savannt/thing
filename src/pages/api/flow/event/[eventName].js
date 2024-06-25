@@ -2,11 +2,11 @@ import mongo from "@/services/mongodb";
 
 import authenticate from "@/services/authenticateRequest";
 
-import executeFlowEvent from "@/services/executeFlow";
+import executeFlowEvent from "@/services/flow";
 
 export default async function handler(req, res) {
     const { userId } = await authenticate(req, res);
-    if(!userId) return;
+    if(!userId) return res.status(401).json({ message: "Unauthorized" });
     
     const eventName = req.query.eventName.replace(/_/g, "/");
     const chatId = req.query.chatId || false;

@@ -745,6 +745,11 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 	outline-offset: 2px;
 }
 
+.react-flow__node:has(.island) {
+	outline: 2px dashed var(--hover-active-color) !important;
+	outline-offset: 2px;
+}
+
 .react-flow__node:has(.animate) {
 	outline: 2px solid var(--action-color-light) !important;
 	outline-offset: 0px;

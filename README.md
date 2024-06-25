@@ -7,9 +7,26 @@ This is a Thing.
 - [ ] Fix vercel flow bugs
 - [ ] Fix Context Menu
 
-- [ ] add Functions
-- [ ] add Variables
+- [X] add Functions
+- [X] add Variables
 - [ ] add Sparse Functions
+
+
+
+
+#### Flow 2.0
+
+Nodes are defined via a js file and export their properties
+Nodes can be prototypes / abstractions of other nodes
+
+
+
+
+
+
+
+
+
 
 
 #### Privacy

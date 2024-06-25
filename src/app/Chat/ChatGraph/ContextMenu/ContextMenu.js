@@ -123,6 +123,10 @@ function Button({ option, onClose }) {
         }, CLOSE_DELAY); // 300ms delay before hiding the submenu
     }
 
+    let title = option.title;
+    // make first letter of title capitalized
+    if(title) title = title.charAt(0).toUpperCase() + title.slice(1);
+
     return (
         <>
             <div
@@ -140,7 +144,7 @@ function Button({ option, onClose }) {
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
             >
-                <p>{option.title}</p>
+                <p>{title}</p>
                 {hasOptions && <ColorImage image="/images/icons/caret/caret_right.svg" />}
             </div>
             {showOptions && (

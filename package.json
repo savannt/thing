@@ -4,6 +4,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
+		"build-nodes": "babel-node ./src/services/flow/cli/generateFrontend.js",
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
@@ -13,7 +14,13 @@
 		"flow-test": "node ./src/services/flow/test/index.js",
 		"build-extension": "cd chrome_extension/src && zip -r ../releases/thing_king_chrome_extension_latest.zip * && cp ../releases/thing_king_chrome_extension_latest.zip ../../public/extension/releases/"
 	},
+	"_moduleAliases": {
+		"@": "src"
+	},
 	"dependencies": {
+		"@babel/core": "^7.24.7",
+		"@babel/node": "^7.24.7",
+		"@babel/preset-env": "^7.24.7",
 		"@clerk/clerk-js": "^4.0.0",
 		"@clerk/clerk-sdk-node": "^5.0.4",
 		"@clerk/nextjs": "^5.0.7",
@@ -21,6 +28,7 @@
 		"ably": "^1.2.50",
 		"animate.css": "^4.1.1",
 		"axios": "^1.6.8",
+		"babel-plugin-module-resolver": "^5.0.2",
 		"boxen": "^7.1.1",
 		"colors": "^1.4.0",
 		"dotenv": "^16.4.5",
@@ -44,9 +52,11 @@
 		"remark-gfm": "^4.0.0",
 		"remark-parse": "^11.0.0",
 		"remark-rehype": "^11.1.0",
+		"request": "^2.79.0",
 		"string-similarity": "^4.0.4",
 		"stripe": "^15.5.0",
 		"three": "^0.165.0",
+		"tsconfig-paths": "^4.2.0",
 		"unified": "^11.0.4"
 	},
 	"devDependencies": {

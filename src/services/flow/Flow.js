@@ -5,9 +5,17 @@ export const DEFAULT_OUTPUTS_REQUIRED = true;
 
 export const HANDLER_TIMEOUT = 10000;
 
-import Event from "./Event.js";
-import NodeDictionary from "./NodeDictionary.js";
+import Event from "./node/services/Event.js";
+import NodeDictionary from "@/services/flow/node/_modules";
 import NodeHandlerDictionary from "./NodeHandlerDictionary.js";
+
+// import NodeManager from "@/services/flow/node/NodeManager";
+
+import NodeManager from "@/services/flow/node/NodeManager";
+
+const nodeManager = new NodeManager();
+nodeManager.saveNodes();
+console.log("Saving nodes!");
 
 export default class Flow {
 	constructor (nodesObject) {
@@ -29,7 +37,7 @@ export default class Flow {
 		if(type === "EndNode") return { input: true, output: false };
 	
 		return handleError("Unknown node type", type);
-	} 
+	}
 
 	async onLog (callback) {
 		this._onLog = callback;
@@ -276,6 +284,29 @@ export default class Flow {
 		this.globals = globals;
 	}
 
+	async getNodeInputValue (nodeId, inputName) {
+		// get the value of the input edge and return it
+		// only execute up until this node-
+
+	
+		
+
+
+		// TODO: This idea introduces a fundamental issue with how I deal with "ExecutionEdges" va "DataEdges"
+		// TODO: -> Specifically- if a node's input value required execution to craete- this would error-- which would not be an odd use case
+		// TODO: -> Therefore instead the solution here, ideally, is to sepearte FunctionNodes and LogicNodes completely throughout the entire codebase
+
+
+
+		const node = this.nodes.find(node => node.id === nodeId);
+		if(!node) return await this.handleError("Node not found", `Node ${nodeId} not found`);
+		await this.executeNode(nodeId);
+		const inputEdges = this.getInputEdges(node);
+		const inputEdge = inputEdges.find(edge => (edge.data.type.includes(":") ? edge.data.type.split(":")[1] : edge.data.type) === inputName);
+		if(!inputEdge) return await this.handleError("Input edge not found", `Input edge ${inputName} not found for node ${nodeId}`);
+		return this.context[inputEdge.id];
+	}
+
 	async executeNode (id, defaultOutputValues = {}, isBackwards = false) {
 		const node = this.nodes.find(node => node.id === id);
 		if(!node) return await this.handleError("Node not found", `Node ${id} not found`);
@@ -361,6 +392,21 @@ export default class Flow {
 		
 		
 
+		let constantValues = {};
+		if(node.type === "ConstantNode" && node.data && node.data.out) {
+			// for each out key and value- if value has value.value- set constantValues[key] = value.value;
+			for(const key in node.data.out) {
+				const value = node.data.out[key];
+
+				if(value && value.value) {
+					constantValues[key] = value.value;
+				}
+			}
+		}
+
+		console.log("CONSTANT VALUES", constantValues, node.data.out);
+
+
 
 		// const outputValues = await handler(inputValues);
 
@@ -372,6 +418,7 @@ export default class Flow {
 
 			try {
 				const outputValues = await handler({
+					...constantValues,
 					...inputValues,
 					...this.globals
 				});

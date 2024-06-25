@@ -2,7 +2,7 @@ import mongo  from "@/services/mongodb";
 import { generateChatId } from "@/services/generator";
 
 import authenticate from "@/services/authenticateRequest";
-import { onChatCreated } from "@/services/executeFlow";
+import { onChatCreated } from "@/services/flow";
 
 export default async function handler(req, res) {
     const didAuthenticate = await authenticate(req, res);

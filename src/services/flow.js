@@ -7,8 +7,6 @@ import ably from "@/services/ably";
 
 
 
-
-
 export async function onUserMessage (chatId, message) {
 	return await executeFlowEvent(chatId, { message, chatId }, "Events/OnUserMessage");
 }
@@ -16,6 +14,49 @@ export async function onUserMessage (chatId, message) {
 export async function onChatCreated (chatId) {
 	return await executeFlowEvent(chatId, {}, "Events/OnChatCreated", true);
 }
+
+
+
+
+
+
+
+
+
+export async function getInputValue (chatId, nodeId, inputName) {
+	const error = (msg) => { return { error: msg } };
+	
+	const { db } = await mongo();
+	const chats = db.collection("chats");
+
+	const chat = await chats.findOne({
+		chatId
+	});
+	if(!chat) return error("Chat not found");
+
+	const groups = db.collection("groups");
+	const group = await groups.findOne({
+		groupId: chat.groupId
+	});
+
+	const nodes = group.nodes;
+	const edges = group.edges;
+
+
+	// if we have no node with nodeId
+	const node = nodes.find(node => node.id === nodeId);
+	if(!node) return error("Node not found");
+
+	// if node has no input with inputName
+	if(!node.data) return error("No node data");
+	if(!node.data.in) return error("No node inputs");
+	if(!node.data.in[inputName]) return error("#2 Input not found");
+
+	const flow = new Flow({ nodes, edges });
+	// await flow.updateNodesData();
+	return { value: await flow.getNodeInputValue(nodeId, inputName) };
+}
+
 
 export default async function executeFlowEvent (chatId, values = {}, eventName = "Events/OnUserMessage", silent = false, speed = 5) {
 	console.log("USING SPEED", speed);

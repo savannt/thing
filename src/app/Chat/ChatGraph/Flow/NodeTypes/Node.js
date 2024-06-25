@@ -33,7 +33,7 @@ export function NodeGroup ({ data, style }) {
 	)
 }
 
-export default function Node ({ color=[200, 200, 200], left = false, right = false, inputExecution = true, outputExecution = true, className, data, children }) {	
+export default function Node ({ onChanges, color=[200, 200, 200], left = false, right = false, inputExecution = true, outputExecution = true, className, data, children }) {	
 	const semiTransparentColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.15)`
 
 
@@ -62,7 +62,7 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
 	const doAnimateBackwards = data?.animateBackwards || false;
 
 	return (
-		<div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${doAnimate ? "animate" : ""} ${doAnimateBackwards ? "animateBackwards": ""}`} style={{
+		<div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${data.island ? "island" : ""} ${doAnimate ? "animate" : ""} ${doAnimateBackwards ? "animateBackwards": ""}`} style={{
 			border: `2px solid ${semiTransparentColor}`
 		}}>
 			<div className={`${styles.Node__Header} ${!left ? "" : styles.Node__Header__NoLeft}`} style={{
@@ -113,7 +113,10 @@ export default function Node ({ color=[200, 200, 200], left = false, right = fal
 							style.borderRadius = "var(--border-radius-light)";
 						}
 
-						return <MasterValue data={data} style={style} />
+						return <MasterValue onChange={(newValue) => {
+							if(data._onChange) data._onChange(newValue);
+							else error("Unable to handle change for value", name);
+						}} data={data} style={style} />
 					})
 				}
 				

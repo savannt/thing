@@ -245,7 +245,7 @@ export async function chats (url = DEFAULT_URL, groupId) {
 
 export async function event(url = DEFAULT_URL, eventName, eventParameters) {
     try {
-        const response = await axios.get(`${url}/api/event/${eventName}`, {
+        const response = await axios.get(`${url}/api/flow/event/${eventName}`, {
             method: "POST",
             headers: {
                 Cookie: cookies

@@ -1,7 +1,7 @@
 import ably from "@/services/ably";
 import mongo from "@/services/mongodb";
 
-import Event from "@/services/flow/Event";
+import Event from "@/services/flow/node/services/Event";
 
 import { ChatCompletion, Assistant, Messages, Message, Tools, Tool } from "@/services/openai/OpenAI";
 
@@ -123,6 +123,13 @@ export default {
 		return { loop };
 	},
 
+
+	"Arguments/Empty": function ArgumentsEmpty () {
+		return { arguments: [{
+			name: "argument #1",
+			type: "string",
+		}] };
+	},
 
 	"Math/Add": function MathAdd ({ a, b }) {
 		return { result: a + b };

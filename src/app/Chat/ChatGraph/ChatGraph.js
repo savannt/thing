@@ -27,7 +27,7 @@ import { groupUpdate } from "@/client/group";
 import error from "@/client/error";
 import notification from "@/client/notification";
 
-import NODE_DICTIONARY from "@/services/flow/NodeDictionary";
+import NODE_DICTIONARY from "@/services/flow/node/_modules";
 import TEMPLATE_DICTIONARY from "@/services/flow/TemplateDictionary";
 
 import MenuContainer from "@/components/Menu/MenuContainer";
@@ -38,13 +38,14 @@ import { useChannel } from "ably/react";
 import useMobile from "@/providers/Mobile/useMobile";
 import { onUserMessage } from "@/client/event";
 
-export const SAVE_TIMEOUT = 1000;
+export const SAVE_TIMEOUT = 500;
 export const ERROR_TIMEOUT = 15000;
 
 import {
 	setSaved,
 	setSaving
 } from "@/client/saving";
+import nodeInputValue from "@/client/nodeInputValue";
 
 export default function ChatGraph({
 	showHeader = true,
@@ -154,10 +155,40 @@ export default function ChatGraph({
     const [lastContextMenuPosition, setLastContextMenuPosition] = useState(null);
 	const [contextMenuOptions, setContextMenuOptions] = useState([]);
 	const [clonedScene, setClonedScene] = useState({ nodes: [], edges: [] });
-	const [_saveIteration, setSaveIteration] = useState(0);
-	const [saveTimeout, setSaveTimeout] = useState(null);
+	const [_updateIteration, setUpdateIteration] = useState(0);
+	const [_updateTimeout, setUpdateTimeout] = useState(null);
 
     const [speed, setSpeed] = useState(5);
+
+
+
+	const cleanAllNodes = () => {
+		setNodes((nodes) => {
+				const newNodes = nodes.map((node) => {
+					// if node is constant type- loop it's out's and set onChange function
+					if(node.data && node.data.out) {
+						// define all onChange for each out
+						Object.keys(node.data.out).forEach((outName) => {
+
+							// if .constant is true- set _onChange callback
+							if(node.data.out[outName].constant) {
+								node.data.out[outName]._onChange = (newValue) => {
+									node.data.out[outName].value = newValue;
+									
+									callUpdate();
+								}
+							}
+						});
+					}
+
+					return node;
+				});
+				return newNodes;
+			}
+		);
+	}
+
+
 
 	const enableNodeMenu = () => {
 		setShowNodeMenu(true);
@@ -186,41 +217,143 @@ export default function ChatGraph({
 		setRedoStack([]);
 	}
 
-	const save = () => {
-		groupUpdate(group.groupId, nodes, edges).then((data) => {
-			if (!data || data.message !== "OK") {
-				notification("Error", "Failed to save graph", "red");
-			} else {
-				// update the group with the new nodes and edges
-				setGroup((group) => {
-					return {
-						...group,
-						nodes,
-						edges,
-					};
-				});
+
+	// experimental: grabs the value of a node's input- caches
+	const getNodeInputValue = async (nodeId, inputName) => {
+		if(!nodeId) { return error("Node ID is required to fetch a nodes input value"); }
+		if(!inputName) { return error("Input Name is required to fetch a nodes input value"); }
+		
+		// TODO: add caching
+		return await nodeInputValue(chat.chatId, nodeId, inputName);
+	}
+
+	const _onUpdate = async () => {
+		
+		
+		cleanAllNodes();
+		
+
+		const getStartNode = (nodeId) => {
+			// go backwards using edges that are ExecutionEdges until you find a type of EventNode
+			const edge = edges.find((edge) => edge.target === nodeId && edge.type === "ExecutionEdge");
+			if (!edge) return null;
+
+			const sourceNodes = nodes.filter((node) => node.id === edge.source);
+			if (sourceNodes.length === 0) return null;
+
+			for (let i = 0; i < sourceNodes.length; i++) {
+				const sourceNode = sourceNodes[i];
+				if (sourceNode.type === "EventNode") return sourceNode;
+				const startNode = getStartNode(sourceNode.id);
+				if (startNode) return startNode;
 			}
-			setSaved(true);
+
+			return null;
+		}
+
+
+		// find all "EndNodes" and move backwards from them to find their "EventNode"
+
+		const endNodes = nodes.filter((node) => node.type === "EndNode");
+		const processEndNodes = async () => {
+			// for each end node
+			for (const endNode of endNodes) {
+				// if endNode has no "ExecutionEdge" going to it
+				const hasExecutionEdgeInput = edges.some((edge) => edge.target === endNode.id && edge.type === "ExecutionEdge");
+				if(!hasExecutionEdgeInput) {
+					endNode.data.island = true;
+					endNode.data.in = {};
+					continue;
+				} else {
+					endNode.data.island = false;
+				}
+
+			  	const startNode = await getStartNode(endNode.id);
+			  	if (!startNode) {
+					error("Failed to find start node for end node", endNode.id);
+					continue;
+				}
+		  
+				// if start node has a "resolve" object in data - loop each key and value
+				if (startNode.data.resolve) {
+					const resolve = startNode.data.resolve;
+					for (const resolveArgName of Object.keys(resolve)) {
+					  	const resolveArg = resolve[resolveArgName];
+				  		const type = resolveArg.type;
+		  
+					  	if (type === "in") {
+							// make sure this startNode has an 'in' (object) with key: name resolveArgName
+							if (!startNode.data.in || !startNode.data.in[resolveArgName]) {
+					  			error("Start node does not have required in object", startNode.id, resolveArgName);
+					  			continue;
+							}
+		  
+							try {
+					  			const addArguments = await getNodeInputValue(startNode.id, resolveArgName);
+					  			if (addArguments) {
+									// add each key and value to the EndNode's in object
+									if (!endNode.data.in) endNode.data.in = {};
+									Object.keys(addArguments).forEach((key) => {
+						  				endNode.data.in[key] = addArguments[key];
+									});
+					  			} else {
+									error("Failed to get node input value", startNode.id, resolveArgName);
+					  			}
+							} catch (err) {
+					  			error("Error fetching node input value", startNode.id, resolveArgName, err);
+							}
+				  		} else {
+							// this is a normal argument - add this argument to the EndNode's in
+							if (!endNode.data.in) endNode.data.in = {};
+							endNode.data.in[resolveArgName] = resolveArg.value;
+				  		}
+					}
+				}
+			}
+		};
+			
+		await processEndNodes();
+
+		// replace all current EndNodes with our updates EndNodes
+		setNodes((nodes) => {
+			const newNodes = nodes.map((node) => (node.type === "EndNode" ? endNodes.find((n) => n.id === node.id) || node : node));
+
+			groupUpdate(group.groupId, newNodes, edges).then((data) => {
+				if (!data || data.message !== "OK") {
+					notification("Error", "Failed to save graph", "red");
+				} else {
+					// update the group with the new nodes and edges
+					setGroup((group) => {
+						return {
+							...group,
+							nodes,
+							edges,
+						};
+					});
+				}
+				setSaved(true);
+			});
+			return newNodes;
 		});
 	};
 
 	useEffect(() => {
-		if (_saveIteration === 0) return;
+		if (_updateIteration === 0) return;
 		setSaved(false);
 		setSaving(false);
-		if (saveTimeout) clearTimeout(saveTimeout);
+		if (_updateTimeout) clearTimeout(_updateTimeout);
 
 		setTimeout(() => {
 			saveHistorySnapshot();
 		}, 0);
 
-		setSaveTimeout(
+		setUpdateTimeout(
 			setTimeout(() => {
 				setSaving(true);
-				save();
+				_onUpdate();
 			}, SAVE_TIMEOUT)
 		);
-	}, [_saveIteration]);
+	}, [_updateIteration]);
 
 	const closeContextMenu = () => {
 		setContextMenuPosition(null);
@@ -257,8 +390,9 @@ export default function ChatGraph({
 
 		notification("Node spawned", name, "var(--action-color)");
 		setNodes((nodes) => [...nodes, newNode]);
-		setSaveIteration((prev) => prev + 1);
 		closeContextMenu();
+
+		callUpdate();
 	};
 
 	const isValidConnection = (connection) => {
@@ -334,7 +468,9 @@ export default function ChatGraph({
         }
         setNodes((nodes) => nodes.filter((n) => n.id !== node.id));
         setEdges((edges) => edges.filter((e) => e.source !== node.id && e.target !== node.id));
-    }
+    
+		callUpdate();
+	}
 
     const deleteEdge = (edge) => {
         if(!edge) {
@@ -343,6 +479,8 @@ export default function ChatGraph({
             return;
         }
         setEdges((edges) => edges.filter((e) => e.id !== edge.id));
+		
+		callUpdate();
     }
 
 	const paste = (x = false, y = false) => {
@@ -366,6 +504,7 @@ export default function ChatGraph({
 				if (newNode.data) {
 					newNode.copying = false;
 					newNode.deleting = false;
+					newNode.island = false;
 				}
 				return newNode;
 			}),
@@ -394,17 +533,20 @@ export default function ChatGraph({
 		});
 		onNodesChange(filteredChanges);
 		closeContextMenu();
-		setSaveIteration((prev) => prev + 1);
+		
+		callUpdate();
 	};
 
 	const handleEdgesChange = (changes) => {
 		onEdgesChange(changes);
-		setSaveIteration((prev) => prev + 1);
+
+		callUpdate();
 	};
 
-	useEffect(() => {
-		// setSaveIteration((prev) => prev + 1);
-	}, [nodes, edges]);
+
+	const callUpdate = async () => {
+		setUpdateIteration((prev) => prev + 1);
+	}
 
 	const onPaneContextMenu = (event) => {
 		clearCopyOutlines();
@@ -416,7 +558,7 @@ export default function ChatGraph({
 			{
 				title: "Add Node",
 				onClick: enableNodeMenu,
-				options: nodeMenu,
+				// options: nodeMenu,
 			},
 			{
 				title: "Paste Template",
@@ -445,7 +587,7 @@ export default function ChatGraph({
 			{
 				title: "Add Node",
 				onClick: enableNodeMenu,
-				options: nodeMenu,
+				// options: nodeMenu,
 			},
 			{
 				title: "Copy All",
@@ -500,7 +642,7 @@ export default function ChatGraph({
 	};
 
 	const onConnect = useCallback(
-		(params) => {
+		async (params) => {
 			const sourceType = params.sourceHandle;
 			const edgeType = sourceType === "execution" ? "ExecutionEdge" : "DataEdge";
 
@@ -510,6 +652,8 @@ export default function ChatGraph({
 				data: { type: sourceType },
 			};
 			setEdges((eds) => addEdge(newEdge, eds));
+
+			await callUpdate();
 		},
 		[setEdges]
 	);
@@ -838,7 +982,8 @@ export default function ChatGraph({
 	
 	const nodeMenu = Object.keys(NODE_DICTIONARY).reduce((acc, key) => {
 		const value = NODE_DICTIONARY[key];
-		const displayName = value.data.displayName || key;
+
+		const displayName = value.data?.displayName || key;
 		const type = value.type || "Uncategorized";
 		const categoryKeys = key.split("/");
 		
@@ -854,7 +999,7 @@ export default function ChatGraph({
 		{
 			title: "Add Node",
 			onClick: enableNodeMenu,
-			options: nodeMenu,
+			// options: nodeMenu,
 		},
 		{
 			title: "Simulate",
@@ -874,7 +1019,7 @@ export default function ChatGraph({
 		{
 			title: "Add Node",
 			onClick: enableNodeMenu,
-			options: nodeMenu,
+			// options: nodeMenu,
 		},
 		{
 			title: "Copy All",
@@ -947,6 +1092,8 @@ export default function ChatGraph({
 					const selectedEdges = edges.filter((edge) => edge.selected);
 					if (selectedEdges.length > 0) {
 						setEdges((edges) => edges.filter((edge) => !edge.selected));
+						
+						callUpdate();
 					}
 				}
 			}}

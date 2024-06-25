@@ -85,8 +85,8 @@
 	right: -3px !important
 }
 
-/* 
-.Value__Header__Tooltip::after {
+
+.Value__Header__Tooltip::before {
 	content: '';
 	position: absolute;
 	left: 0px;
@@ -95,7 +95,10 @@
 	bottom: 0px;
 	background: var(--secondary-color);
 	border-radius: var(--border-radius-light);
-} */
+
+	backdrop-filter: blur(50px);
+}
+
 
 .Value__Header__Tooltip {
 	position: absolute;
@@ -109,9 +112,6 @@
 
 	padding-inline: calc(var(--margin-inline) * 0.3);
 	padding-block: calc(var(--margin-block) * 0.3);
-
-
-	backdrop-filter: blur(15px);
 
 	z-index: 1000000000000;
 }
