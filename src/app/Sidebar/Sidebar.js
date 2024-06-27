@@ -415,27 +415,22 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
 
                                 return (
                                     <SidebarResult id={`${item.chatId ? `chat-${item.chatId}` : `group-${item.groupId}`}`} active={isActive} disabled={isDisabled} key={index} image={icon} title={title} description={description} prefix={prefix} onClick={() => {
-                                        let time = 0;
-                                        if(document && document.getElementById("back-chat-graph")) {
-                                            time = 650;
-                                            document.getElementById("back-chat-graph").click();
-                                        }
-                                        setTimeout(() => {
-                                            if(isGroup) {
-                                                setGroup(item);
-                                                setChats(false);
-                                            } else {
-                                                // setChat(item);
-                                                // push query ?chatId = item.chatId
+                                        if(document && document.getElementById("back-chat-graph")) document.getElementById("back-chat-graph").click();
+                                        if(isGroup) {
+                                            setGroup(item);
+                                            setChats(false);
+                                        } else {
+                                            // setChat(item);
+                                            // push query ?chatId = item.chatId
+                                            
 
-                                                router.push({
-                                                    pathname: "/",
-                                                    query: {
-                                                        chatId: item.chatId
-                                                    }
-                                                }, undefined, { shallow: true });
-                                            }
-                                        }, time);
+                                            router.push({
+                                                pathname: "/",
+                                                query: {
+                                                    [process.env.NEXT_PUBLIC_CHAT_NAME]: item.chatId,
+                                                }
+                                            }, undefined, { shallow: true });
+                                        }
                                     }} showDelete={true} onDelete={() => {
                                         if(isGroup) {
                                             onDeleteGroup(item);

@@ -1,10 +1,8 @@
 import { parse as parseNodeId } from "@/services/nodeId";
 
-const NodeTypes = {
-    FUNCTION: "function",
-    EVENT: "event",
-    OPERATION: "operation",
-}
+export const DEFAULT_OUTPUT_NAME = "out";
+
+import NodeTypes from "@/services/flow/node/NodeTypes"
 
 class Node {
 
@@ -25,16 +23,20 @@ class Node {
         let inputs      = this.metadata.in          || {};
         let outputs     = this.metadata.out         || {};
         let type        = this.metadata.type        || NodeTypes.FUNCTION;
+        let icon        = this.metadata.icon        || "triangle";
 
-        if(this.name.toLowerCase().startsWith("events/"))   type = NodeTypes.EVENT;
-        else if(this.metadata.operation) type = NodeTypes.OPERATION;
+        if(this.name.toLowerCase().startsWith("events/"))  type = NodeTypes.EVENT;
+        if(this.name.toLowerCase().startsWith("flow/end")) type = NodeTypes.END;
+        else if(this.metadata.operation)                   type = NodeTypes.OPERATION;
 
-        
+        // if has outputs.type && typeof outputs.type === "string"
+        if(outputs.type && typeof outputs.type === "string") outputs = { [DEFAULT_OUTPUT_NAME]: outputs };
         this.description = description;
         this.path = path;
         this.type = type;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.icon = icon;
     }
 
     asJSON () {
@@ -44,7 +46,8 @@ class Node {
             description: this.description,
             path: this.path,
             in: this.inputs,
-            out: this.outputs
+            out: this.outputs,
+            icon: this.icon
         }
     }
 

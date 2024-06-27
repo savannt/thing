@@ -3,7 +3,6 @@ import styles from "@/app/Chat/ChatGraph/ChatGraph.module.css";
 import chatStyles from "@/app/Chat/Chat.module.css";
 
 import { useEffect, useState, useCallback } from "react";
-
 import ReactFlow, {
 	MiniMap,
 	Controls,
@@ -11,11 +10,11 @@ import ReactFlow, {
 	useEdgesState,
 	useNodesState,
 	addEdge,
-    useReactFlow,
+	useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
-import nodeTypes from "@/app/Chat/ChatGraph/Flow/NodeTypes/NodeTypes";
+import NodeTypes, { RawNodeTypes, getRawNodeType, parseSecondaryType } from "@/services/flow/node/NodeTypes";
 import edgeTypes from "@/app/Chat/ChatGraph/Flow/EdgeTypes/EdgeTypes";
 import Button from "@/components/Button/Button";
 import SearchMenu, { SearchMenuRow } from "@/components/SearchMenu/SearchMenu";
@@ -37,6 +36,7 @@ import { chatMessage } from "@/client/chat";
 import { useChannel } from "ably/react";
 import useMobile from "@/providers/Mobile/useMobile";
 import { onUserMessage } from "@/client/event";
+import tryRefresh from "@/client/tryRefresh";
 
 export const SAVE_TIMEOUT = 500;
 export const ERROR_TIMEOUT = 15000;
@@ -59,81 +59,48 @@ export default function ChatGraph({
 	onEscape,
 	children,
 }) {
-	// const initialNodes = (group.nodes || []).map((node) => {
-	// 	if (NODE_DICTIONARY[node.name]) {
-	// 		return {
-	// 			...node,
-	// 			data: {
-	// 				...node.data,
-	// 				...NODE_DICTIONARY[node.name].data,
-	// 				name: node.name,
-	// 			},
-	// 		};
-	// 	} else {
-	// 		notification("Node not found in dictionary", node.name, "red");
-	// 		return node;
-	// 	}
-	// });
-
-	// const initialEdges = group.edges || [];
-
-	
-	
-	// update initialNodes and initialEdges to use the most up to date node dictionary default values
-	// -> like do the above, but do it correctly as the above caused errors
-
 	let initialNodes = group.nodes || [];
 	let initialEdges = group.edges || [];
-
 	let didChangeInitial = false;
 
-	// if any initial nodes are not in the dictionary- remove them and thorw an error immediately- remove any edges that are associated with them as well
+	// Remove invalid nodes and associated edges
 	const invalidNodes = initialNodes.filter((node) => !NODE_DICTIONARY[node.name]);
-	if(invalidNodes.length > 0) {
+	if (invalidNodes.length > 0) {
 		didChangeInitial = true;
-		notification("Invalid nodes", "Some nodes in the group are not in the dictionary", "red");
+		notification("Invalid nodes removed", "Some nodes have been removed due to invalid data.", "red");
 		invalidNodes.forEach((node) => {
 			initialNodes.splice(initialNodes.indexOf(node), 1);
 			initialEdges = initialEdges.filter((edge) => edge.source !== node.id && edge.target !== node.id);
 		});
 	}
 
-	// if any initial edges are not valid- remove them and throw an error immediately
+	// Remove invalid edges
 	const invalidEdges = initialEdges.filter((edge) => !edge.source || !edge.target);
-	if(invalidEdges.length > 0) {
+	if (invalidEdges.length > 0) {
 		didChangeInitial = true;
-		notification("Invalid edges", "Some edges in the group are invalid", "red");
+		notification("Invalid edges removed", "Some edges have been removed due to invalid connections.", "red");
 		invalidEdges.forEach((edge) => {
 			initialEdges.splice(initialEdges.indexOf(edge), 1);
 		});
 	}
 
-	if(didChangeInitial) {
-		setGroup((group) => {
-			return {
-				...group,
-				nodes: initialNodes,
-				edges: initialEdges
-			};
-		});
+	if (didChangeInitial) {
+		setGroup((group) => ({
+			...group,
+			nodes: initialNodes,
+			edges: initialEdges,
+		}));
 	}
-
-
-
 
 	useEffect(() => {
 		const headerTitle = document.getElementById("header-title");
 		const sidebarHeaderTitle = document.getElementById("sidebar-header-title");
 
-		if (headerTitle) {
-			headerTitle.innerText = "Flow Graph";
-		}
-		if (sidebarHeaderTitle) {
-			sidebarHeaderTitle.style.visibility = "hidden";
-		}
+		if (headerTitle) headerTitle.innerText = "Flow Graph";
+		if (sidebarHeaderTitle) sidebarHeaderTitle.style.visibility = "hidden";
 	}, []);
 
-    const reactFlow = useReactFlow();
+	const reactFlow = useReactFlow();
 	const isMobile = useMobile();
 
 	const [nodeMenuText, setNodeMenuText] = useState("");
@@ -143,98 +110,106 @@ export default function ChatGraph({
 	const [chatText, setChatText] = useState("");
 	const [chatRows, setChatRows] = useState(1);
 	const [chatFiles, setChatFiles] = useState([]);
-	
+
 	const [undoStack, setUndoStack] = useState([]);
 	const [redoStack, setRedoStack] = useState([]);
 
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-	const [render, setRender] = useState(false);
 	const [contextMenuPosition, setContextMenuPosition] = useState(null);
-    const [lastContextMenuPosition, setLastContextMenuPosition] = useState(null);
+	const [lastContextMenuPosition, setLastContextMenuPosition] = useState(null);
 	const [contextMenuOptions, setContextMenuOptions] = useState([]);
 	const [clonedScene, setClonedScene] = useState({ nodes: [], edges: [] });
 	const [_updateIteration, setUpdateIteration] = useState(0);
 	const [_updateTimeout, setUpdateTimeout] = useState(null);
 
-    const [speed, setSpeed] = useState(5);
+	const [speed, setSpeed] = useState(5);
 
-
+	const getHistoryContextMenuOptions = () => {
+		const menuOptions = [];
+		if (undoStack.length > 0) {
+			menuOptions.push({
+				icon: "/images/icons/undo.svg",
+				title: "Undo",
+				onClick: undo,
+			});
+		}
+	
+		if (redoStack.length > 0) {
+			menuOptions.push({
+				icon: "/images/icons/redo.svg",
+				title: "Redo",
+				onClick: redo,
+			});
+		}
+	
+		return [menuOptions];
+	};
 
 	const cleanAllNodes = () => {
-		setNodes((nodes) => {
-				const newNodes = nodes.map((node) => {
-					// if node is constant type- loop it's out's and set onChange function
-					if(node.data && node.data.out) {
-						// define all onChange for each out
-						Object.keys(node.data.out).forEach((outName) => {
+		setNodes((nodes) =>
+			nodes.map((node) => {
+				if (node.data && node.data.in) {
+					Object.keys(node.data.in).forEach((inName) => {
+						node.data.in[inName]._onChange = (newValue) => {
+							node.data.in[inName].value = newValue;
+							callUpdate();
+						};
+					});
+				}
 
-							// if .constant is true- set _onChange callback
-							if(node.data.out[outName].constant) {
-								node.data.out[outName]._onChange = (newValue) => {
-									node.data.out[outName].value = newValue;
-									
-									callUpdate();
-								}
-							}
-						});
-					}
+				if (node.data && node.data.out) {
+					Object.keys(node.data.out).forEach((outName) => {
+						node.data.out[outName]._onChange = (newValue) => {
+							node.data.out[outName].value = newValue;
+							callUpdate();
+						};
+					});
+				}
 
-					return node;
-				});
-				return newNodes;
-			}
+				return node;
+			})
 		);
-	}
-
-
+	};
 
 	const enableNodeMenu = () => {
 		setShowNodeMenu(true);
 		setNodeMenuText("");
-		setNodes((nodes) =>
-			nodes.map((node) => ({ ...node, selected: false }))
-		);
-		setEdges((edges) =>
-			edges.map((edge) => ({ ...edge, selected: false }))
-		);
+		setNodes((nodes) => nodes.map((node) => ({ ...node, selected: false })));
+		setEdges((edges) => edges.map((edge) => ({ ...edge, selected: false })));
 	};
-    
+
 	const enablePasteMenu = () => {
 		setShowPasteMenu(true);
-	}
+	};
 
-    const closeNodeMenu = () => {
-        setShowNodeMenu(false);
-        setNodeMenuText("");
-
-        setLastContextMenuPosition(null);
-    }
+	const closeNodeMenu = () => {
+		setShowNodeMenu(false);
+		setNodeMenuText("");
+		setLastContextMenuPosition(null);
+	};
 
 	const saveHistorySnapshot = () => {
 		setUndoStack((stack) => [...stack, { nodes, edges }]);
 		setRedoStack([]);
-	}
+	};
 
-
-	// experimental: grabs the value of a node's input- caches
 	const getNodeInputValue = async (nodeId, inputName) => {
-		if(!nodeId) { return error("Node ID is required to fetch a nodes input value"); }
-		if(!inputName) { return error("Input Name is required to fetch a nodes input value"); }
-		
-		// TODO: add caching
+		if (!nodeId) {
+			return error("Node ID is required to fetch a node's input value");
+		}
+		if (!inputName) {
+			return error("Input Name is required to fetch a node's input value");
+		}
+
 		return await nodeInputValue(chat.chatId, nodeId, inputName);
-	}
+	};
 
 	const _onUpdate = async () => {
-		
-		
 		cleanAllNodes();
-		
 
 		const getStartNode = (nodeId) => {
-			// go backwards using edges that are ExecutionEdges until you find a type of EventNode
 			const edge = edges.find((edge) => edge.target === nodeId && edge.type === "ExecutionEdge");
 			if (!edge) return null;
 
@@ -249,18 +224,13 @@ export default function ChatGraph({
 			}
 
 			return null;
-		}
-
-
-		// find all "EndNodes" and move backwards from them to find their "EventNode"
+		};
 
 		const endNodes = nodes.filter((node) => node.type === "EndNode");
 		const processEndNodes = async () => {
-			// for each end node
 			for (const endNode of endNodes) {
-				// if endNode has no "ExecutionEdge" going to it
 				const hasExecutionEdgeInput = edges.some((edge) => edge.target === endNode.id && edge.type === "ExecutionEdge");
-				if(!hasExecutionEdgeInput) {
+				if (!hasExecutionEdgeInput) {
 					endNode.data.island = true;
 					endNode.data.in = {};
 					continue;
@@ -268,68 +238,62 @@ export default function ChatGraph({
 					endNode.data.island = false;
 				}
 
-			  	const startNode = await getStartNode(endNode.id);
-			  	if (!startNode) {
+				const startNode = await getStartNode(endNode.id);
+				if (!startNode) {
 					error("Failed to find start node for end node", endNode.id);
 					continue;
 				}
-		  
-				// if start node has a "resolve" object in data - loop each key and value
+
 				if (startNode.data.resolve) {
 					const resolve = startNode.data.resolve;
 					for (const resolveArgName of Object.keys(resolve)) {
-					  	const resolveArg = resolve[resolveArgName];
-				  		const type = resolveArg.type;
-		  
-					  	if (type === "in") {
-							// make sure this startNode has an 'in' (object) with key: name resolveArgName
+						const resolveArg = resolve[resolveArgName];
+						const type = resolveArg.type;
+
+						if (type === "in") {
 							if (!startNode.data.in || !startNode.data.in[resolveArgName]) {
-					  			error("Start node does not have required in object", startNode.id, resolveArgName);
-					  			continue;
+								error("Start node does not have required input", startNode.id, resolveArgName);
+								continue;
 							}
-		  
+
 							try {
-					  			const addArguments = await getNodeInputValue(startNode.id, resolveArgName);
-					  			if (addArguments) {
-									// add each key and value to the EndNode's in object
+								const addArguments = await getNodeInputValue(startNode.id, resolveArgName);
+								if (addArguments) {
 									if (!endNode.data.in) endNode.data.in = {};
 									Object.keys(addArguments).forEach((key) => {
-						  				endNode.data.in[key] = addArguments[key];
+										endNode.data.in[key] = addArguments[key];
 									});
-					  			} else {
+								} else {
 									error("Failed to get node input value", startNode.id, resolveArgName);
-					  			}
+								}
 							} catch (err) {
-					  			error("Error fetching node input value", startNode.id, resolveArgName, err);
+								error("Error fetching node input value", startNode.id, resolveArgName, err);
 							}
-				  		} else {
-							// this is a normal argument - add this argument to the EndNode's in
+						} else {
 							if (!endNode.data.in) endNode.data.in = {};
 							endNode.data.in[resolveArgName] = resolveArg.value;
-				  		}
+						}
 					}
 				}
 			}
 		};
-			
+
 		await processEndNodes();
 
-		// replace all current EndNodes with our updates EndNodes
 		setNodes((nodes) => {
-			const newNodes = nodes.map((node) => (node.type === "EndNode" ? endNodes.find((n) => n.id === node.id) || node : node));
+			const newNodes = nodes.map((node) =>
+				node.type === "EndNode" ? endNodes.find((n) => n.id === node.id) || node : node
+			);
 
 			groupUpdate(group.groupId, newNodes, edges).then((data) => {
 				if (!data || data.message !== "OK") {
 					notification("Error", "Failed to save graph", "red");
 				} else {
-					// update the group with the new nodes and edges
-					setGroup((group) => {
-						return {
-							...group,
-							nodes,
-							edges,
-						};
-					});
+					setGroup((group) => ({
+						...group,
+						nodes,
+						edges,
+					}));
 				}
 				setSaved(true);
 			});
@@ -362,36 +326,40 @@ export default function ChatGraph({
 
 	const onNewNode = (e, name) => {
 		if (!NODE_DICTIONARY[name]) {
-			console.error("Node not found:", name);
-			error("Node not found:", name);
+			error("Node not found", name);
 			return;
 		}
 
-		const newNode = JSON.parse(JSON.stringify(NODE_DICTIONARY[name]));
-		newNode.draggable = true;
+		const newNodeTemplate = JSON.parse(JSON.stringify(NODE_DICTIONARY[name]));
+		if (!newNodeTemplate) return error("Failed to find node template", name);
+		if (!newNodeTemplate.name) return error("Failed to find node template name", name);
 
-        // get current position
+		const type = getRawNodeType(newNodeTemplate.type);
+		if (!type) return error("Failed to find node template type", name);
 
-		// newNode.position = {
-        //     x: e.clientX,
-        //     y: e.clientY
-        // };
-        // use reactFlow to get the position of the node- if lastContextMenuPosition, use that- otherwise use event
-        newNode.position = {
-            x: lastContextMenuPosition ? lastContextMenuPosition.x : e.clientX,
-            y: lastContextMenuPosition ? lastContextMenuPosition.y : e.clientY
-        };
-        newNode.position = reactFlow.project({ x: newNode.position.x, y: newNode.position.y });
+		const newNode = {
+			name: newNodeTemplate.name,
+			type,
+			data: newNodeTemplate,
+			draggable: true,
+			position: reactFlow.project({
+				x: lastContextMenuPosition ? lastContextMenuPosition.x : e.clientX,
+				y: lastContextMenuPosition ? lastContextMenuPosition.y : e.clientY,
+			}),
+			id: name + Math.random().toString(36).substring(7),
+		};
 
-
-		newNode.name = name;
-		newNode.data.name = name;
-		newNode.id = name + Math.random().toString(36).substring(7);
+		// Initialize _connected for all inputs and outputs
+		Object.keys(newNode.data.in || {}).forEach((key) => {
+			newNode.data.in[key]._connected = false;
+		});
+		Object.keys(newNode.data.out || {}).forEach((key) => {
+			newNode.data.out[key]._connected = false;
+		});
 
 		notification("Node spawned", name, "var(--action-color)");
 		setNodes((nodes) => [...nodes, newNode]);
 		closeContextMenu();
-
 		callUpdate();
 	};
 
@@ -413,10 +381,20 @@ export default function ChatGraph({
 		if (sourceHandleName) sourceHandleType = sourceHandleType.split(":")[0];
 		if (targetHandleName) targetHandleType = targetHandleType.split(":")[0];
 
-		if (
-			sourceHandleType.startsWith("execution") &&
-			targetHandleType.startsWith("execution")
-		)
+		const targetNode = nodes.find((node) => node.id === targetNodeId);
+		if (targetNode.data && targetNode.data.in && targetNode.data.in[targetHandleName] && targetNode.data.in[targetHandleName].expandable) {
+			const targetHandleSecondaryType = parseSecondaryType(targetHandleType);
+			if (!targetHandleSecondaryType) {
+				error(`Expandable not allowed with this node type`, `${targetNode.data.name} ${targetHandleType}`);
+				return false;
+			}
+
+			if (sourceHandleType === targetHandleSecondaryType) {
+				return true;
+			}
+		}
+
+		if (sourceHandleType.startsWith("execution") && targetHandleType.startsWith("execution"))
 			return true;
 
 		return sourceHandleType === targetHandleType;
@@ -425,63 +403,106 @@ export default function ChatGraph({
 	const onNodeContextMenu = useCallback((event, node) => {
 		event.preventDefault();
 		setContextMenuPosition({ x: event.clientX, y: event.clientY });
-        setLastContextMenuPosition({ x: event.clientX, y: event.clientY });
-		setContextMenuOptions([
-			{
-				title: "Delete",
-				onClick: () => {
-					deleteNode();
-                    deleteEdge();
-				},
-			},
-			{
-				title: "Duplicate",
-				onClick: () => {
-					const newNode = JSON.parse(JSON.stringify(node));
-					newNode.id = node.id + Math.random().toString(36).substring(7);
-					newNode.position.x += 50;
-					newNode.position.y += 50;
-					setNodes((nodes) => [...nodes, newNode]);
-				},
-			},
-			{
-				title: "Copy",
-				onClick: () => {
-					setClonedScene({
-						nodes: [node, ...nodes.filter((n) => n.selected)],
-						edges: edges.filter((e) => e.selected),
-					});
-				},
-			},
-		]);
-
+		setLastContextMenuPosition({ x: event.clientX, y: event.clientY });
+		setContextMenuOptions(getNodeContextMenuOptions(node));
 		setNodes((nodes) =>
 			nodes.map((n) => (n.id === node.id ? { ...n, data: { ...n.data, copying: true } } : n))
 		);
-	});
+	}, [nodes, edges]);
 
-    const deleteNode = (node) => {
-        if(!node) {
-            // call deleteNode for one of each selected node
-            nodes.filter((n) => n.selected).forEach((n) => deleteNode(n));
-            return;
-        }
-        setNodes((nodes) => nodes.filter((n) => n.id !== node.id));
-        setEdges((edges) => edges.filter((e) => e.source !== node.id && e.target !== node.id));
-    
-		callUpdate();
-	}
+	const deleteEdge = (edge) => {
+		setEdges((edges) => {
+			const newEdges = edges.filter((e) => e.id !== edge.id);
+			reactFlow.setEdges(newEdges);
+			return newEdges;
+		});
 
-    const deleteEdge = (edge) => {
-        if(!edge) {
-            // call deleteEdge for one of each selected edge
-            edges.filter((e) => e.selected).forEach((e) => deleteEdge(e));
-            return;
-        }
-        setEdges((edges) => edges.filter((e) => e.id !== edge.id));
-		
+		setNodes((nodes) => {
+			const sourceNode = nodes.find((node) => node.id === edge.source);
+			const targetNode = nodes.find((node) => node.id === edge.target);
+
+			if (sourceNode && targetNode) {
+				const sourceHandleName = edge.sourceHandle.split(":")[1];
+				const targetHandleName = edge.targetHandle.split(":")[1];
+
+				if (sourceNode.data.out[sourceHandleName]) {
+					sourceNode.data.out[sourceHandleName]._connected = false;
+				}
+				if (targetNode.data.in[targetHandleName]) {
+					targetNode.data.in[targetHandleName]._connected = false;
+				}
+			}
+
+			// replace sourceNode in nodes and targetNode in nodes
+
+
+			return nodes.map((node) => {
+				if(node.id === sourceNode.id) {
+					return sourceNode;
+				}
+				if(node.id === targetNode.id) {
+					return targetNode;
+				}
+				return node;
+			});
+		});
+
 		callUpdate();
-    }
+	};
+
+	const deleteNode = (node) => {
+		setNodes((nodes) => {
+			// Find all edges connected to the node being deleted
+			const edgesToDelete = edges.filter((e) => e.source === node.id || e.target === node.id);
+	
+			// Update the _connected property for each edge
+			edgesToDelete.forEach((edge) => {
+				const sourceNode = nodes.find((n) => n.id === edge.source);
+				const targetNode = nodes.find((n) => n.id === edge.target);
+	
+				if (sourceNode && targetNode) {
+					const sourceHandleName = edge.sourceHandle.split(":")[1];
+					const targetHandleName = edge.targetHandle.split(":")[1];
+	
+					if (sourceNode.data.out[sourceHandleName]) {
+						sourceNode.data.out[sourceHandleName]._connected = false;
+					}
+					if (targetNode.data.in[targetHandleName]) {
+						targetNode.data.in[targetHandleName]._connected = false;
+					}
+				}
+			});
+	
+			// Filter out the node being deleted
+			const newNodes = nodes.filter((n) => n.id !== node.id);
+	
+			// Replace updated source and target nodes in newNodes
+			edgesToDelete.forEach((edge) => {
+				const sourceNode = nodes.find((n) => n.id === edge.source);
+				const targetNode = nodes.find((n) => n.id === edge.target);
+	
+				if (sourceNode) {
+					const index = newNodes.findIndex((n) => n.id === sourceNode.id);
+					if (index !== -1) {
+						newNodes[index] = sourceNode;
+					}
+				}
+	
+				if (targetNode) {
+					const index = newNodes.findIndex((n) => n.id === targetNode.id);
+					if (index !== -1) {
+						newNodes[index] = targetNode;
+					}
+				}
+			});
+	
+			return newNodes;
+		});
+	
+		setEdges((edges) => edges.filter((e) => e.source !== node.id && e.target !== node.id));
+		callUpdate();
+	};
+	
 
 	const paste = (x = false, y = false) => {
 		const POSITION_OFFSET = 50;
@@ -506,6 +527,13 @@ export default function ChatGraph({
 					newNode.deleting = false;
 					newNode.island = false;
 				}
+				// Initialize _connected for all inputs and outputs
+				Object.keys(newNode.data.in || {}).forEach((key) => {
+					newNode.data.in[key]._connected = false;
+				});
+				Object.keys(newNode.data.out || {}).forEach((key) => {
+					newNode.data.out[key]._connected = false;
+				});
 				return newNode;
 			}),
 		]);
@@ -533,82 +561,65 @@ export default function ChatGraph({
 		});
 		onNodesChange(filteredChanges);
 		closeContextMenu();
-		
 		callUpdate();
 	};
 
 	const handleEdgesChange = (changes) => {
 		onEdgesChange(changes);
-
 		callUpdate();
 	};
 
-
 	const callUpdate = async () => {
 		setUpdateIteration((prev) => prev + 1);
-	}
+	};
 
 	const onPaneContextMenu = (event) => {
 		clearCopyOutlines();
 		event.preventDefault();
 		setContextMenuPosition({ x: event.clientX, y: event.clientY });
+		setContextMenuOptions(getDefaultContextMenuOptions());
+	};
 
-
-		setContextMenuOptions(showHeader ? [
-			{
-				title: "Add Node",
-				onClick: enableNodeMenu,
-				// options: nodeMenu,
-			},
-			{
-				title: "Paste Template",
-				onClick: enablePasteMenu,
-				options: pasteMenu,
-			},
-			{
-				title: "Simulate",
-				onClick: () => setShowChatMenu(true),
-			},
-			{
-				title: "Copy All",
-				onClick: () => {
-					clearAllEffects();
-					const newClonedScene = {
-						nodes,
-						edges,
-					};
-
-					setClonedScene(newClonedScene);
-					navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
-					notification("Copied", "Graph copied to clipboard", "var(--active-color)");
-				},
-			},
-		] : [
-			{
-				title: "Add Node",
-				onClick: enableNodeMenu,
-				// options: nodeMenu,
-			},
-			{
-				title: "Copy All",
-				onClick: () => {
-					clearAllEffects();
-					const newClonedScene = {
-						nodes,
-						edges,
-					};
-
-					setClonedScene(newClonedScene);
-					navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
-					notification("Copied", "Graph copied to clipboard", "var(--active-color)");
-				},
-			}
-		]);
-
-		let menuOptions = [];
-		if (nodes.some((node) => node.selected)) {
-			menuOptions.push(
+	const getDefaultContextMenuOptions = () => {
+		const menuOptions = [
+			[
 				{
+					icon: "/images/icons/magic.svg",
+					title: "𝑡ℎ𝑖𝑛𝑔𝑠",
+					onClick: enableNodeMenu,
+				},
+				{
+					icon: "/images/icons/nodes.svg",
+					title: "Prefabs",
+					onClick: enablePasteMenu,
+				},
+			],
+			[
+				{
+					icon: "/images/icons/simulate.svg",
+					title: "Simulate",
+					onClick: () => setShowChatMenu(true),
+				},
+			],
+			[
+				{
+					icon: "/images/icons/copyAll.svg",
+					title: "Copy All",
+					onClick: () => {
+						clearAllEffects();
+						const newClonedScene = { nodes, edges };
+						setClonedScene(newClonedScene);
+						navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
+						notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+					},
+				}
+			]
+		];
+	
+		if (nodes.some((node) => node.selected)) {
+			menuOptions.push([
+				{
+					icon: "/images/icons/copy.svg",
 					title: "Copy",
 					onClick: () => {
 						setClonedScene({
@@ -618,31 +629,67 @@ export default function ChatGraph({
 					},
 				},
 				{
+					icon: "/images/icons/trash.svg",
 					title: "Delete",
 					onClick: () => {
-						deleteNode();
-                        deleteEdge();
+						nodes.filter((n) => n.selected).forEach((n) => deleteNode(n));
 					},
-				}
-			);
+				},
+			]);
 		}
+	
 		if (clonedScene.nodes.length > 0) {
-			menuOptions.push(
+			menuOptions.push([
 				{
+					icon: "/images/icons/clear.svg",
 					title: "Clear",
 					onClick: () => setClonedScene({ nodes: [], edges: [] }),
 				},
 				{
+					icon: "/images/icons/paste.svg",
 					title: "Paste",
-					onClick: () => paste(event.clientX, event.clientY),
-				}
-			);
+					onClick: () => paste(contextMenuPosition.x, contextMenuPosition.y),
+				},
+			]);
 		}
-		setContextMenuOptions(menuOptions);
+	
+		return menuOptions;
 	};
+	
+	
+
+	const getNodeContextMenuOptions = (node) => [
+		{
+			title: "Delete",
+			onClick: () => {
+				deleteNode(node);
+			},
+		},
+		{
+			title: "Duplicate",
+			onClick: () => {
+				const newNode = JSON.parse(JSON.stringify(node));
+				newNode.id = node.id + Math.random().toString(36).substring(7);
+				newNode.position.x += 50;
+				newNode.position.y += 50;
+				setNodes((nodes) => [...nodes, newNode]);
+				closeContextMenu();
+			},
+		},
+		{
+			title: "Copy",
+			onClick: () => {
+				setClonedScene({
+					nodes: [node, ...nodes.filter((n) => n.selected)],
+					edges: edges.filter((e) => e.selected),
+				});
+				closeContextMenu();
+			},
+		},
+	];
 
 	const onConnect = useCallback(
-		async (params) => {
+		(params) => {
 			const sourceType = params.sourceHandle;
 			const edgeType = sourceType === "execution" ? "ExecutionEdge" : "DataEdge";
 
@@ -651,16 +698,35 @@ export default function ChatGraph({
 				type: edgeType,
 				data: { type: sourceType },
 			};
-			setEdges((eds) => addEdge(newEdge, eds));
 
-			await callUpdate();
+			setNodes((nodes) => {
+				const sourceNode = nodes.find((node) => node.id === params.source);
+				const targetNode = nodes.find((node) => node.id === params.target);
+
+				if (sourceNode && targetNode) {
+					const sourceHandleName = params.sourceHandle.split(":")[1];
+					const targetHandleName = params.targetHandle.split(":")[1];
+
+					if (sourceNode.data.out[sourceHandleName]) {
+						sourceNode.data.out[sourceHandleName]._connected = true;
+					}
+					if (targetNode.data.in[targetHandleName]) {
+						targetNode.data.in[targetHandleName]._connected = true;
+					}
+				}
+
+				return nodes;
+			});
+
+			setEdges((eds) => addEdge(newEdge, eds));
+			callUpdate();
 		},
 		[setEdges]
 	);
 
-	const onPaneClick = (...e) => {
+	const onPaneClick = (e) => {
 		closeContextMenu();
-		if(e) closeNodeMenu();
+		closeNodeMenu();
 	};
 
 	const onMove = () => closeContextMenu();
@@ -675,16 +741,23 @@ export default function ChatGraph({
 		setNodes((nodes) =>
 			nodes.map((node) => ({
 				...node,
-				data: { ...node.data, animate: false, animateBackwards: false, error: false, copying: false, selected: false },
+				data: {
+					...node.data,
+					animate: false,
+					animateBackwards: false,
+					error: false,
+					copying: false,
+					selected: false,
+				},
 			}))
 		);
-	}
+	};
 
 	const redo = () => {
 		if (redoStack.length > 0) {
 			setRedoStack((prevRedoStack) => {
 				const nextSnapshot = prevRedoStack.pop();
-				if(!nextSnapshot) {
+				if (!nextSnapshot) {
 					notification("No history", "No history to redo", "red");
 					return prevRedoStack;
 				}
@@ -696,7 +769,7 @@ export default function ChatGraph({
 		} else {
 			notification("No history", "No history to redo", "red");
 		}
-	}
+	};
 
 	const undo = () => {
 		if (undoStack.length > 0) {
@@ -710,7 +783,7 @@ export default function ChatGraph({
 		} else {
 			notification("No history", "No history to undo", "red");
 		}
-	}
+	};
 
 	useEffect(() => {
 		const handleKeyDown = (e) => {
@@ -747,12 +820,31 @@ export default function ChatGraph({
 				}
 			}
 
-			if(e.ctrlKey && e.key === "z") {
+			if (e.ctrlKey && e.key === "z") {
 				undo();
 			}
 
-			if(e.ctrlKey && e.key === "y") {
+			if (e.ctrlKey && e.key === "y") {
 				redo();
+			}
+
+			if (e.ctrlKey && e.key === ".") {
+				enableNodeMenu();
+			}
+			if (e.ctrlKey && e.key === ",") {
+				closeNodeMenu();
+			}
+
+			if (e.key === "Escape") {
+				if (showNodeMenu) {
+					closeNodeMenu();
+				}
+				if (showPasteMenu) {
+					setShowPasteMenu(false);
+				}
+				if (showChatMenu) {
+					setShowChatMenu(false);
+				}
 			}
 		};
 
@@ -869,18 +961,15 @@ export default function ChatGraph({
 			edges.map((edge) => ({ ...edge, data: { ...edge.data, animate: false, animateBackwards: false } }))
 		);
 	};
-	
+
 	useChannel("notifications", "notification", (msg) => {
 		const { title, content } = msg.data;
 		notification(title, content, "purple");
 	});
-	
+
 	useChannel(`flow-${chat.chatId}`, "error", (msg) => {
 		const data = msg.data;
 
-		// Handled in <Chat />
-		// notification(data.title, data.message, "red");
-	
 		if (data.options) {
 			if (data.options.nodeId) animateError(data.options.nodeId, data.options.valueName);
 			if (data.options.edgeId) animateError(data.options.edgeId, data.options.valueName);
@@ -889,12 +978,11 @@ export default function ChatGraph({
 
 	useChannel(`flow-${chat.chatId}`, "log", (msg) => {
 		const { messages } = msg.data;
-
 		const formattedMessages = messages.map((message) => (typeof message !== "string" ? JSON.stringify(message) : message));
 		console.log("[ChatGraph] [Flow Log]", formattedMessages.join("\n"));
 	});
 
-	useChannel(`flow-${chat.chatId}`, "start", (msg) => {
+	useChannel(`flow-${chat.chatId}`, "start", () => {
 		clearAllEffects();
 	});
 
@@ -936,8 +1024,8 @@ export default function ChatGraph({
 	useChannel(`flow-${chat.chatId}`, "finish", (msg) => {
 		const { success } = msg.data;
 
-		if(success) {
-			notification("", "Flow execution ended", "var(--active-color)");
+		if (success) {
+			notification("", "Flow execution ended successfully", "var(--active-color)");
 		} else {
 			notification("Flow execution failed", "Flow contained errors", "red");
 		}
@@ -949,128 +1037,98 @@ export default function ChatGraph({
 		animateExecutionResponse(nodeId, values);
 	});
 
-	const pasteMenu = Object.keys(TEMPLATE_DICTIONARY).reduce((acc, key) => {
-		const value = TEMPLATE_DICTIONARY[key];
-		const displayName = value.displayName || key;
-	});
-
-	const buildNestedMenu = (keys, value, onNewNode) => {
-		if (keys.length === 0) return { title: value, onClick: (e) => onNewNode(e, value) };
-		
-		const [firstKey, ...restKeys] = keys;
-		return {
-			title: firstKey,
-			options: [buildNestedMenu(restKeys, value, onNewNode)]
-		};
-	};
+	const searchCommands = [
+		{
+			title: "Refresh",
+			onClick: async () => {
+				await tryRefresh();
+				setNodes((prevNodes) => {
+					return prevNodes.map((node) => {
+						const nodeData = NODE_DICTIONARY[node.name];
+						if (!nodeData) {
+							error("Node not found", `Node ${node.name} not found after refresh`);
+							return node;
+						}
 	
-	const mergeOptions = (existingOptions, newOption) => {
-		const existingOption = existingOptions.find(opt => opt.title === newOption.title);
-		if (existingOption) {
-			newOption.options.forEach(newSubOption => {
-				const existingSubOption = existingOption.options.find(opt => opt.title === newSubOption.title);
-				if (existingSubOption) {
-					mergeOptions(existingSubOption.options, newSubOption);
-				} else {
-					existingOption.options.push(newSubOption);
-				}
-			});
-		} else {
-			existingOptions.push(newOption);
-		}
-	};
+						if (nodeData.type) node.type = getRawNodeType(nodeData.type);
+						if (!node.data) node.data = {};
+						const newData = {
+							type: node.type,
+							name: node.name,
+							...node.data,
+						};
 	
-	const nodeMenu = Object.keys(NODE_DICTIONARY).reduce((acc, key) => {
-		const value = NODE_DICTIONARY[key];
-
-		const displayName = value.data?.displayName || key;
-		const type = value.type || "Uncategorized";
-		const categoryKeys = key.split("/");
-		
-		const nestedOption = buildNestedMenu(categoryKeys, displayName, (e) => onNewNode(e, key));
-		const typeOption = { title: type, options: [nestedOption] };
-		
-		mergeOptions(acc, typeOption);
-		
-		return acc;
-	}, []);
-
-	const contextMenuDefaultOptions = showHeader ? [
-		{
-			title: "Add Node",
-			onClick: enableNodeMenu,
-			// options: nodeMenu,
-		},
-		{
-			title: "Simulate",
-			onClick: () => setShowChatMenu(true),
-		},
-		{
-			title: "Copy All",
-			onClick: () => {
-				clearAllEffects();
-				const newClonedScene = { nodes, edges };
-				setClonedScene(newClonedScene);
-				navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
-				notification("Copied", "Graph copied to clipboard", "var(--active-color)");
+						for (const key in nodeData) {
+							if (key === "type") continue;
+							if (!newData[key]) {
+								newData[key] = nodeData[key];
+							} else if (typeof newData[key] === "object") {
+								newData[key] = {
+									...newData[key],
+									...nodeData[key],
+								};
+							} else {
+								newData[key] = nodeData[key];
+							}
+						}
+	
+						// Preserve existing _connected values
+						const preserveConnections = (source, target) => {
+							Object.keys(source).forEach((key) => {
+								if (target[key] && target[key]._connected !== undefined) {
+									source[key]._connected = target[key]._connected;
+								}
+							});
+						};
+	
+						// Initialize or preserve _connected for inputs
+						newData.in = newData.in || {};
+						node.data.in = node.data.in || {};
+						preserveConnections(newData.in, node.data.in);
+	
+						// Initialize or preserve _connected for outputs
+						newData.out = newData.out || {};
+						node.data.out = node.data.out || {};
+						preserveConnections(newData.out, node.data.out);
+	
+						return {
+							...node,
+							data: newData,
+						};
+					});
+				});
 			},
 		},
-	] : [
-		{
-			title: "Add Node",
-			onClick: enableNodeMenu,
-			// options: nodeMenu,
-		},
-		{
-			title: "Copy All",
-			onClick: () => {
-				clearAllEffects();
-				const newClonedScene = { nodes, edges };
-				setClonedScene(newClonedScene);
-				navigator.clipboard.writeText(JSON.stringify(newClonedScene, null, 2));
-				notification("Copied", "Graph copied to clipboard", "var(--active-color)");
-			},
-		}
-	]
+	];
 	
-	const contextMenuHistoryOptions = [];
-	if(undoStack.length > 0) {
-		contextMenuHistoryOptions.push({
-			title: "Undo",
-			onClick: undo
-		});
-	}
-	if(redoStack.length > 0) {
-		contextMenuHistoryOptions.push({
-			title: "Redo",
-			onClick: redo
-		});
-	}
 
-	const searchResults = nodeMenuText
+	const nodeSearchResults = nodeMenuText
 		? Object.keys(NODE_DICTIONARY).filter((key) => key.toLowerCase().includes(nodeMenuText.toLowerCase()))
 		: [];
+	const searchCommandResults = nodeMenuText
+		? searchCommands.filter((command) => command.title.toLowerCase().includes(nodeMenuText.toLowerCase()))
+		: [];
+	const searchResults = [...nodeSearchResults, ...searchCommandResults];
+
 	const hasResults = searchResults.length > 0;
 
 	useEffect(() => {
-			// on key down if escape call onEscape
 		const handleKeyDown = (e) => {
-			if(document.activeElement.tagName === "BODY") {
+			if (document.activeElement.tagName === "BODY") {
 				if (onEscape) onEscape();
 			}
-		}
+		};
 
 		document.addEventListener("keydown", handleKeyDown);
 
 		return () => {
 			document.removeEventListener("keydown", handleKeyDown);
-		}
+		};
 	}, []);
 
-	// input has focus returns true if a input element has focus
 	const inputHasFocus = () => {
 		return document.activeElement.tagName === "INPUT";
-	}
+	};
 
 	return (
 		<div
@@ -1079,7 +1137,7 @@ export default function ChatGraph({
 			className={`${styles.ChatGraph} ${className}`}
 			onAnimationEnd={onAnimationEnd}
 			onKeyDown={(e) => {
-				if(inputHasFocus()) return;
+				if (inputHasFocus()) return;
 				if (e.key === "Backspace" || e.key === "Delete") {
 					const selectedNodes = nodes.filter((node) => node.selected);
 					if (selectedNodes.length > 0) {
@@ -1089,19 +1147,13 @@ export default function ChatGraph({
 							)
 						);
 					}
-					const selectedEdges = edges.filter((edge) => edge.selected);
-					if (selectedEdges.length > 0) {
-						setEdges((edges) => edges.filter((edge) => !edge.selected));
-						
-						callUpdate();
-					}
 				}
 			}}
 			onKeyUp={(e) => {
-				if(inputHasFocus()) return;
+				if (inputHasFocus()) return;
 				if (e.key === "Backspace" || e.key === "Delete") {
-                    deleteNode();
-                    deleteEdge();
+					nodes.filter((n) => n.selected).forEach((n) => deleteNode(n));
+					edges.filter((e) => e.selected).forEach((e) => deleteEdge(e));
 				}
 			}}
 		>
@@ -1117,89 +1169,70 @@ export default function ChatGraph({
 				onNodeContextMenu={onNodeContextMenu}
 				isValidConnection={isValidConnection}
 				fitView
-				nodeTypes={nodeTypes}
+				nodeTypes={RawNodeTypes}
 				edgeTypes={edgeTypes}
 				selectionMode={true}
 				panOnDrag={[0, 1]}
-				onConnectEnd={(...e) => {
-					console.log("connect end", e);
-				}}
+				onConnectEnd={(...e) => {}}
 				snapToGrid={true}
 				zoomOnDoubleClick={false}
 				onDoubleClick={(e) => {
-					if(isMobile) {
+					if (isMobile) {
 						setContextMenuPosition({ x: e.clientX, y: e.clientY });
-						setContextMenuOptions(contextMenuDefaultOptions);
+						setContextMenuOptions(getDefaultContextMenuOptions());
 					}
 				}}
 				onNodeDoubleClick={(e, node) => {
-					// open context menu at that position if on mobile
-					if(isMobile) {
+					if (isMobile) {
 						setContextMenuPosition({ x: e.clientX, y: e.clientY });
-						setContextMenuOptions([
-							{
-								title: "Delete",
-								onClick: () => {
-									deleteNode(node);
-									deleteEdge();
-								}
-							},
-							{
-								title: "Duplicate",
-								onClick: () => {
-									const newNode = JSON.parse(JSON.stringify(node));
-									newNode.id = node.id + Math.random().toString(36).substring(7);
-									newNode.position.x += 50;
-									newNode.position.y += 50;
-									setNodes((nodes) => [...nodes, newNode]);
-								}
-							},
-							{
-								title: "Copy",
-								onClick: () => {
-									setClonedScene({
-										nodes: [node, ...nodes.filter((n) => n.selected)],
-										edges: edges.filter((e) => e.selected)
-									});
-								}
-							}
-						]);
+						setContextMenuOptions(getNodeContextMenuOptions(node));
 					}
 				}}
 			>
 				<Controls />
 				<Background />
 				{showNodeMenu && (
-					<MenuContainer
-						onClick={() => closeNodeMenu()}
-					>
+					<MenuContainer onClick={() => closeNodeMenu()}>
 						<SearchMenu
-							placeholder={`Search for nodes`}
+							placeholder={`Search for stuff`}
 							hasResults={hasResults}
 							inputText={nodeMenuText}
 							setInputText={setNodeMenuText}
 						>
 							{hasResults &&
-								searchResults.map((key, index) => (
-									<SearchMenuRow
-										key={index}
-										id={key}
-										text={key}
-										onClick={(e) => {
-											onNewNode(e, key);
-											closeNodeMenu();
-										}}
-									/>
-								))}
+								searchResults.map((result, index) => {
+									if (result.title) {
+										return (
+											<SearchMenuRow
+												key={index}
+												id={result.title}
+												text={`> ${result.title}`}
+												subtext={`Command`}
+												onClick={(e) => {
+													result.onClick(e);
+													closeNodeMenu();
+												}}
+											/>
+										);
+									}
+									return (
+										<SearchMenuRow
+											key={index}
+											id={result}
+											text={result}
+											subtext={`Node`}
+											onClick={(e) => {
+												onNewNode(e, result);
+												closeNodeMenu();
+											}}
+										/>
+									);
+								})}
 						</SearchMenu>
 					</MenuContainer>
 				)}
 				{showChatMenu && (
-					<MenuContainer
-						onClick={() => {
-							setShowChatMenu(false);
-						}}
-					>
+					<MenuContainer onClick={() => setShowChatMenu(false)}>
 						<Menu className={`${styles.ChatMenu} animate__animated animate__fadeInDown`}>
 							<ChatInput
 								allowSend={chatText.length > 0 || chatFiles.length > 0}
@@ -1233,19 +1266,12 @@ export default function ChatGraph({
 									}
 									onUserMessage(chat.chatId, {
 										role: "user",
-										content: chatText
+										content: chatText,
 									}, chatFiles).then((data) => {
-										if(!data) {
+										if (!data) {
 											notification("Error", "Failed to send message", "red");
 										}
-									})
-									// chatMessage(chat.chatId, enterpriseId, chatText, chatFiles).then((data) => {
-									// 	if (!data) {
-									// 		notification("Error", "Failed to send message", "red");
-									// 	} else {
-									// 		notification("", "Message Sent", "var(--action-color)");
-									// 	}
-									// });
+									});
 
 									setChatText("");
 									setChatRows(1);
@@ -1263,28 +1289,17 @@ export default function ChatGraph({
 				)}
 			</ReactFlow>
 
-			<div className={styles.ChatGraph__Header} style={{
-				display: showHeader ? "flex" : "none"
-			}}>
+			<div
+				className={styles.ChatGraph__Header}
+				style={{ display: showHeader ? "flex" : "none" }}
+			>
 				<Button
-					text="Node"
-					image={"/images/icons/plus.svg"}
+					text="𝑡ℎ𝑖𝑛𝑔𝑠"
+					image={"/images/icons/magic.svg"}
 					className={styles.NewNode}
 					onClick={() => {
 						enableNodeMenu();
 						setShowChatMenu(false);
-						setChatText("");
-						setChatRows(1);
-						setChatFiles([]);
-					}}
-				/>
-				<Button
-					text="Simulate"
-					image={"/images/icons/chat.png"}
-					className={styles.SimulateChat}
-					onClick={() => {
-						closeNodeMenu();
-						setShowChatMenu(true);
 						setChatText("");
 						setChatRows(1);
 						setChatFiles([]);
@@ -1301,24 +1316,30 @@ export default function ChatGraph({
 					max={5}
 					value={speed}
 					onChange={(e) => {
-						// set cookie THING_KING_PLAYBACK_SPEED
 						document.cookie = `THING_KING_PLAYBACK_SPEED=${e.target.value}; path=/; max-age=31536000`;
-						setSpeed(e.target.value)
+						setSpeed(e.target.value);
+					}}
+				/>
+				<Button
+					text="Simulate"
+					image={"/images/icons/chat.png"}
+					className={styles.SimulateChat}
+					onClick={() => {
+						closeNodeMenu();
+						setShowChatMenu(true);
+						setChatText("");
+						setChatRows(1);
+						setChatFiles([]);
 					}}
 				/>
 			</div>
 
-
 			<ContextMenu
 				id="context-menu"
-
-				options={[[...contextMenuOptions], [...contextMenuDefaultOptions], [...contextMenuHistoryOptions]]}
-
+				options={[...getDefaultContextMenuOptions(), ...getHistoryContextMenuOptions()]}
 				position={contextMenuPosition}
 				onClose={closeContextMenu}
-				style={{
-					position: "fixed"
-				}}
+				style={{ position: "fixed" }}
 			/>
 
 			{children}

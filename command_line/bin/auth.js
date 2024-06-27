@@ -112,7 +112,7 @@ class ThingkingPuppeteer {
 
     async edit (url = DEFAULT_URL, groupId, chatId, launchCallback) {
         return await new Promise(async resolve => {            
-            const promise = await this._launch(false, url + `/?groupId=${groupId}&chatId=${chatId}&terminal=true&edit=true`);
+            const promise = await this._launch(false, url + `/?${process.env.NEXT_PUBLIC_GROUP_NAME}=${groupId}&${process.env.NEXT_PUBLIC_CHAT_NAME}=${chatId}&terminal=true&edit=true`);
             await promise;
 
             if(launchCallback) launchCallback(async () => await this.close());
@@ -178,7 +178,7 @@ export function getUsername () {
 
 export async function chat (url = DEFAULT_URL, chatId, groupId) {
     try {
-        const response = await axios.get(`${url}/api/chat/${chatId}?groupId=${groupId}`, {
+        const response = await axios.get(`${url}/api/chat/${chatId}?${process.env.NEXT_PUBLIC_GROUP_NAME}=${groupId}`, {
             headers: {
                 Cookie: cookies
             }
@@ -231,7 +231,7 @@ export async function groups (url = DEFAULT_URL) {
 
 export async function chats (url = DEFAULT_URL, groupId) {
     try {
-        const response = await axios.get(`${url}/api/chats?groupId=${groupId}`, {
+        const response = await axios.get(`${url}/api/chats?${process.env.NEXT_PUBLIC_GROUP_NAME}=${groupId}`, {
             headers: {
                 Cookie: cookies
             }

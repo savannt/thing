@@ -7,6 +7,8 @@ import InputValue from "@/app/Chat/ChatGraph/Flow/ValueTypes/InputValue";
 import MasterValue from "../ValueTypes/MasterValue";
 import ColorImage from "@/components/ColorImage/ColorImage";
 
+import error from "@/client/error";
+
 export function NodeGroup ({ data, style }) {
 	let {
 		displayName,
@@ -36,7 +38,6 @@ export function NodeGroup ({ data, style }) {
 export default function Node ({ onChanges, color=[200, 200, 200], left = false, right = false, inputExecution = true, outputExecution = true, className, data, children }) {	
 	const semiTransparentColor = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.15)`
 
-
 	// convert both data.in and data.out to array of objects where key is a name property
 	const inValues = data.in ? Object.entries(data.in).map(([name, data]) => ({ name, ...data, input: true, output: false })) : [];
 	const outValues = data.out ? Object.entries(data.out).map(([name, data]) => ({ name, ...data, input: false, output: true })) : [];
@@ -61,6 +62,16 @@ export default function Node ({ onChanges, color=[200, 200, 200], left = false, 
 	const doAnimate = data?.animate || false;
 	const doAnimateBackwards = data?.animateBackwards || false;
 
+	// last split of "/" - uppercase first characater
+	let displayName = data.name ? data.name.split("/").pop().charAt(0).toUpperCase() + data.name.split("/").pop().slice(1) : "No Name";
+	// remove last split of "/"
+	const displayDescription = data.name ? data.name.split("/").slice(0, -1).join("/") : "No Name";
+
+	let image = `/images/icons/dot.png`;
+	if(data.icon) image = `/images/icons/flow/${data.icon}.svg`;
+
+	console.log("NODE DATAT", data);
+
 	return (
 		<div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${data.island ? "island" : ""} ${doAnimate ? "animate" : ""} ${doAnimateBackwards ? "animateBackwards": ""}`} style={{
 			border: `2px solid ${semiTransparentColor}`
@@ -69,10 +80,10 @@ export default function Node ({ onChanges, color=[200, 200, 200], left = false, 
 				background: semiTransparentColor
 			}}>
 				{ inputExecution && <Handle type="target" position="left" id="execution" />}
-				<h1>{data.displayName || data.name || "error"}</h1>
+				<h1>{displayName}</h1>
 				<div className={styles.Node__Header__Description} style={{}}>
-					<ColorImage className={styles.Node__Header__Dot} image="/images/icons/dot.png" />
-					<h2>{data.name ? replaceUppercaseChangeWithUnderline(data.name).toLowerCase() : "no name"}</h2>
+					<ColorImage className={styles.Node__Header__Dot} image={image} />
+					<h2>{displayDescription}</h2>
 				</div>
 				{ outputExecution && <Handle type="source" position="right" id="execution" />}
 			</div>
@@ -91,7 +102,7 @@ export default function Node ({ onChanges, color=[200, 200, 200], left = false, 
 						} = data;
 
 						const style = {
-							float: "unset",
+							float: input ? "left" : "right",
 						};
 
 						// if input, and next value is output, float left

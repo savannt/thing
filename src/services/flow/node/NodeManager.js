@@ -52,7 +52,7 @@ class NodeManager {
             const metadata = module.metadata;
             const fn = module.default;
 
-            if (typeof fn !== "function") throw new Error("Default export must be a function");
+            if (typeof fn !== "function") throw new Error("Default export must be a function, it currently is: " + typeof fn + "  , at " + path, fn);
             if (typeof metadata !== "object") throw new Error("Metadata must be an object");
 
             metadata.path = path;

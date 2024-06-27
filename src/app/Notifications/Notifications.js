@@ -137,7 +137,8 @@ export default function Notifications({ }) {
 					<NotificationCard color={error.color} timeout={error.timeout} key={index} onTimeout={() => {
 						setErrors(errors.filter((e) => e.id !== error.id));
 					}}>
-						<p>There was an error. <i>({error.text})</i></p>
+						<h3>An error occured</h3>
+						<p><i>{ error.text }</i></p>
 					</NotificationCard>
 				)
 			}) }

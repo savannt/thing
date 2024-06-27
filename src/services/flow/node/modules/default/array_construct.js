@@ -17,9 +17,12 @@ export const metadata = {
     "out": {
         "type": "array<T>",
         "description": "Array constructed from arguments of type T",
-    }
+    },
+    "operation": true
 }
 
+import Array from "@/services/flow/node/services/types/Array"
+
 export default function Array_construct ({ values, type = "string" }) {
-    return values || [];
+    return new Array(values || [], type);
 }

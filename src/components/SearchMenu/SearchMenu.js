@@ -10,7 +10,7 @@ import ColorImage from "@/components/ColorImage/ColorImage"
 
 import { createRef } from "react"
 
-export function SearchMenuRow ({ disabled = false, id, image, text, onClick, showDelete = false, onDelete }) {
+export function SearchMenuRow ({ disabled = false, id, image, text, subtext, onClick, showDelete = false, onDelete }) {
 	return (
 		<div id={id} className={styles.SearchMenu__Row} onClick={(...e) => {
 			if(disabled) return;

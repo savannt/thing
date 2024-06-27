@@ -59,10 +59,12 @@
 
 .SearchMenu__Results {
 	padding-inline: var(--margin-inline);
-	margin-block: var(--margin-block);
+	/* margin-block: var(--margin-block); */
 
 	overflow: visible;
 	overflow-y: scroll;
+
+	padding-block: var(--margin-block);
 }
 
 

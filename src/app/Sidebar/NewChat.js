@@ -86,7 +86,7 @@ export default function NewChat ({ disabled = false, enterpriseId, chat, setChat
             }
 
             
-            <Button disabled={lockoutDropdown || disabled} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/new_chat.svg"} text={group ? `${group?.title}` : "New 𝑡ℎ𝑖𝑛𝑔"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
+            <Button disabled={lockoutDropdown || disabled} id="newChat" overflow="visible" aria={true} className={styles.NewChat} image={group ? "/images/icons/plus.svg" : "/images/icons/is-not-set.svg"} text={group ? `${group?.title}` : "Acts"} background="var(--active-color-hidden)" color="var(--active-color)" width="-webkit-fill-available" paddingRight={showDropdown ? "var(--min-height)" : "0"} onClick={(e) => {
                 // if we are not in the dropdown
                 if(e.target.id !== "newChatDropdownMenu" && e.target.closest("#newChatDropdownMenu") === null) {
                     if(group) {

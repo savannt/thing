@@ -7,7 +7,7 @@ export default async function nodeInputValue(chatId, nodeId, inputName) {
     if(!nodeId) throw new Error("Node ID is required");
     if(!inputName) throw new Error("Input Name is required");
 
-    const response = await fetch(`/api/flow/node/${stringifyNodeId(nodeId)}/input/${inputName}?chatId=${chatId}`);
+    const response = await fetch(`/api/flow/node/${stringifyNodeId(nodeId)}/input/${inputName}?${process.env.NEXT_PUBLIC_CHAT_NAME}=${chatId}`);
     if(response.status !== 200) return false;
     const data = await response.json();
     if(!data.value) return false;

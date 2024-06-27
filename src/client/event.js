@@ -16,7 +16,7 @@ export default async function event(chatId = false, eventName, payload = {}, sil
 
     // replace all `/` in eventName with _ to prevent path traversal
     eventName = eventName.replace(/\//g, "_");
-    const response = await fetch(`/api/flow/event/${eventName}?chatId=${chatId}&silent=${silent}&speed=${speed}`, {
+    const response = await fetch(`/api/flow/event/${eventName}?${process.env.NEXT_PUBLIC_CHAT_NAME}=${chatId}&silent=${silent}&speed=${speed}`, {
         method: "POST",
         body: JSON.stringify(payload),
     });

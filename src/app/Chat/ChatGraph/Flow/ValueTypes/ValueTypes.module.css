@@ -117,6 +117,7 @@
 }
 
 .Value__Header__Tooltip p:first-child {
+	position: relative;
 	font-size: 65%;
 	width: 100%;
 	/* disable text wrapping */
@@ -147,4 +148,9 @@
 
 .Value .Value__Content {
 	width: -webkit-fill-available;
+}
+
+
+.InputValue {
+	margin-bottom: var(--halfGap);
 }

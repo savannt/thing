@@ -1,9 +1,12 @@
 
-import Flow, { DEFAULT_OUTPUTS_REQUIRED } from "@/services/flow/Flow";
+import Flow from "@/services/flow/Flow";
 
 import mongo from "@/services/mongodb";
 import ably from "@/services/ably";
 
+import {
+	DEFAULT_OUTPUTS_REQUIRED
+} from "@/services/flow/client/ValueConstants"
 
 
 

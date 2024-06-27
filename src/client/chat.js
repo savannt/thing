@@ -2,8 +2,8 @@ export default async function chat(chatId, enterpriseId = false, operation = fal
 	let url = "/api/chat/" + chatId + (operation ? "/" + operation : "");
 	if(enterpriseId && url.indexOf("?") === -1) url += "?enterpriseId=" + enterpriseId;
 	else if(enterpriseId) url += "&enterpriseId=" + enterpriseId;
-	if(url.indexOf("?") === -1 && groupId) url += "?groupId=" + groupId;
-	else if(groupId) url += "&groupId=" + groupId;
+	if(url.indexOf("?") === -1 && groupId) url += `?${process.env.NEXT_PUBLIC_GROUP_NAME}=` + groupId;
+	else if(groupId) url += `&${process.env.NEXT_PUBLIC_GROUP_NAME}=` + groupId;
 	
 	const response = await fetch(url, options);
 	const data = await response.json();
@@ -16,8 +16,8 @@ export async function chatNew (enterpriseId = false, groupId = false) {
 
 export async function getChat (chatId, enterpriseId, groupId) {
 	let url = chatId;
-	if(enterpriseId && groupId) enterpriseId = enterpriseId + "&groupId=" + groupId;
-	else if(groupId) url += "?groupId=" + groupId;
+	if(enterpriseId && groupId) enterpriseId = enterpriseId + `&${process.env.NEXT_PUBLIC_GROUP_NAME}=` + groupId;
+	else if(groupId) url += `?${process.env.NEXT_PUBLIC_GROUP_NAME}=` + groupId;
 	return await chat(url, enterpriseId);
 }
 

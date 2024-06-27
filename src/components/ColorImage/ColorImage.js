@@ -16,6 +16,6 @@ export default function ColorImage ({ show = true, visible = true, size = false,
 
 			width: size ? size : "",
 			height: size ? size : ""
-		}}></div>
+		}} name="color-image"></div>
 	)
 }

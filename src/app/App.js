@@ -20,6 +20,8 @@ import getUserId from "@/client/userId"
 import fetchChats from "@/client/chats"
 import fetchGroups from "@/client/groups"
 
+import error from "@/client/error"
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import { SignedIn, SignedOut, SignIn, SignUp, useUser, useOrganization, useClerk } from "@clerk/nextjs"
@@ -222,8 +224,8 @@ export default function App ({ page, defaultGroupId, defaultChatId }) {
 
 	// if chatId in query, set chat
 	useEffect(() => {
-		if(router.query.chatId) {
-			const chatId = router.query.chatId;
+		if(router.query[process.env.NEXT_PUBLIC_CHAT_NAME]) {
+			const chatId = router.query[process.env.NEXT_PUBLIC_CHAT_NAME]
 
 			if(chat && chat.chatId === chatId) return;
 			console.log("FETCHING CHAT", chatId, chat?.chatId, chat);

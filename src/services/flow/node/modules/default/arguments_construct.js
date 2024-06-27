@@ -1,5 +1,5 @@
 export const metadata = {
-    "description": "Constructs an array ",
+    "description": "Constructs an array of arguments",
     "in": {
         "args": {
             "type": "array<argument>",
@@ -9,9 +9,11 @@ export const metadata = {
         }
     },
     "out": {
-        "type": "array",
+        "type": "array<argument>",
         "description": "Array constructed from arguments",
-    }
+    },
+    "operation": true,
+    "icon": "join",
 }
 
 import Call from "@/services/flow/node/services/Call"

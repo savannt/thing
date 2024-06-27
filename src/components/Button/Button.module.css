@@ -10,7 +10,7 @@
 	height: 100%;
 	border-radius: var(--border-radius);
 
-	gap: calc(var(--gap) / 2);
+	gap: var(--gap);
 	
 	overflow: hidden;
 

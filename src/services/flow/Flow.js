@@ -1,8 +1,5 @@
 import "colors";
 
-export const DEFAULT_INPUTS_REQUIRED = true;
-export const DEFAULT_OUTPUTS_REQUIRED = true;
-
 export const HANDLER_TIMEOUT = 10000;
 
 import Event from "./node/services/Event.js";
@@ -10,6 +7,11 @@ import NodeDictionary from "@/services/flow/node/_modules";
 import NodeHandlerDictionary from "./NodeHandlerDictionary.js";
 
 // import NodeManager from "@/services/flow/node/NodeManager";
+
+import {
+    DEFAULT_INPUTS_REQUIRED,
+    DEFAULT_OUTPUTS_REQUIRED
+} from "@/services/flow/client/ValueConstants"
 
 import NodeManager from "@/services/flow/node/NodeManager";
 

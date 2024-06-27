@@ -97,6 +97,7 @@
 	--body-height: calc(100dvh - var(--header-height) - 2px + 12px);
 
 	--gap: 12px;
+	--halfGap: calc(var(--gap) * 0.5);
 
 	--border: 2px solid var(--hover-color);
 	--border-radius: 9px;

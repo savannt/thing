@@ -49,7 +49,7 @@ export default function ContextMenu({
                 // do the above-- but options is now called buttonGroups- for each item of the aray is another array of buttons- put a seperator at the end of each array
                 buttonGroups && buttonGroups.length > 0 && (
                     buttonGroups.map((buttonGroup, index) => {
-                        console.log("BUTTNO GROUP", buttonGroup);
+                        // console.log("BUTTON GROUP", buttonGroup);
                         
                         // if buttongroup is another array of buttons
                         if(Array.isArray(buttonGroup)) {
@@ -144,6 +144,7 @@ function Button({ option, onClose }) {
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
             >
+                {option.icon && <ColorImage image={option.icon} />}
                 <p>{title}</p>
                 {hasOptions && <ColorImage image="/images/icons/caret/caret_right.svg" />}
             </div>

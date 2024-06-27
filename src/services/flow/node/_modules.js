@@ -1,8 +1,51 @@
 export default {
+    "Argument/construct": {
+        "name": "Argument/construct",
+        "type": "operation",
+        "description": "Constructs an argument",
+        "path": "default/argument_construct",
+        "in": {
+            "name": {
+                "type": "string",
+                "description": "Argument name",
+                "required": true
+            },
+            "type": {
+                "type": "type",
+                "description": "Argument type",
+                "required": true
+            },
+            "required": {
+                "type": "boolean",
+                "description": "Argument required",
+                "required": false,
+                "default": false
+            },
+            "description": {
+                "type": "string",
+                "description": "Argument description",
+                "required": false,
+                "default": ""
+            },
+            "value": {
+                "type": "any",
+                "description": "Argument value",
+                "required": false,
+                "default": null
+            }
+        },
+        "out": {
+            "out": {
+                "type": "argument",
+                "description": "Array constructed from arguments"
+            }
+        },
+        "icon": "join"
+    },
     "Arguments/construct": {
         "name": "Arguments/construct",
-        "type": "function",
-        "description": "Constructs an array ",
+        "type": "operation",
+        "description": "Constructs an array of arguments",
         "path": "default/arguments_construct",
         "in": {
             "args": {
@@ -13,9 +56,12 @@ export default {
             }
         },
         "out": {
-            "type": "array",
-            "description": "Array constructed from arguments"
-        }
+            "out": {
+                "type": "array<argument>",
+                "description": "Array constructed from arguments"
+            }
+        },
+        "icon": "join"
     },
     "Arguments/forEach": {
         "name": "Arguments/forEach",
@@ -30,13 +76,16 @@ export default {
             }
         },
         "out": {
-            "type": "branch",
-            "description": "Output for each argument"
-        }
+            "out": {
+                "type": "branch",
+                "description": "Output for each argument"
+            }
+        },
+        "icon": "triangle"
     },
     "Array/construct": {
         "name": "Array/construct",
-        "type": "function",
+        "type": "operation",
         "description": "Constructs an array ",
         "path": "default/array_construct",
         "in": {
@@ -54,9 +103,12 @@ export default {
             }
         },
         "out": {
-            "type": "array<T>",
-            "description": "Array constructed from arguments of type T"
-        }
+            "out": {
+                "type": "array<T>",
+                "description": "Array constructed from arguments of type T"
+            }
+        },
+        "icon": "triangle"
     },
     "Array/forEach": {
         "name": "Array/forEach",
@@ -71,9 +123,27 @@ export default {
             }
         },
         "out": {
-            "type": "branch",
-            "description": "Output for each element in the array"
-        }
+            "out": {
+                "type": "branch",
+                "description": "Output for each element in the array"
+            }
+        },
+        "icon": "triangle"
+    },
+    "Constant/string": {
+        "name": "Constant/string",
+        "type": "operation",
+        "description": "A string constant",
+        "path": "default/constant_string",
+        "in": {},
+        "out": {
+            "out": {
+                "type": "string",
+                "description": "The constant string value",
+                "constant": true
+            }
+        },
+        "icon": "triangle"
     },
     "Events/chatCreated": {
         "name": "Events/chatCreated",
@@ -93,7 +163,34 @@ export default {
                 "type": "string",
                 "description": "Chat ID"
             }
-        }
+        },
+        "icon": "triangle"
+    },
+    "Events/function": {
+        "name": "Events/function",
+        "type": "event",
+        "path": "default/events_function",
+        "in": {
+            "name": {
+                "type": "string",
+                "description": "Function name",
+                "required": true
+            },
+            "arguments": {
+                "type": "array<argument>",
+                "description": "Function arguments",
+                "required": true
+            }
+        },
+        "out": {
+            "thing": {
+                "type": "thing",
+                "description": "Thing runtime",
+                "required": false
+            },
+            "chatId": {}
+        },
+        "icon": "process"
     },
     "Events/userMessage": {
         "name": "Events/userMessage",
@@ -123,7 +220,28 @@ export default {
                 "type": "string",
                 "description": "Chat ID"
             }
-        }
+        },
+        "icon": "triangle"
+    },
+    "Flow/end": {
+        "name": "Flow/end",
+        "type": "end",
+        "description": "Ends a flow",
+        "path": "default/flow_end",
+        "in": {
+            "a": {
+                "type": "number",
+                "description": "First number",
+                "required": true
+            },
+            "b": {
+                "type": "number",
+                "description": "Second number",
+                "required": true
+            }
+        },
+        "out": {},
+        "icon": "end"
     },
     "Add": {
         "name": "Add",
@@ -143,8 +261,11 @@ export default {
             }
         },
         "out": {
-            "type": "number",
-            "description": "Sum of a and b"
-        }
+            "out": {
+                "type": "number",
+                "description": "Sum of a and b"
+            }
+        },
+        "icon": "triangle"
     }
 }

@@ -82,7 +82,7 @@
     color: var(--secondary-text-color);
 
     text-align: left;
-    padding-inline: var(--margin-block);
+    padding-left: var(--halfGap);
 
     opacity: 0.5;
 }
@@ -115,14 +115,15 @@
 }
 
 .Node__Header__Dot {
-    position: absolute;
-    left: 4px;
-    top: 4px;
+    /* position: relative; */
+    /* left: 4px; */
+    /* top: 4px; */
     /* left: calc(var(--margin-inline) * 0.65); */
     /* bottom: calc(var(--margin-block) * 0.7); */
     aspect-ratio: 1/1 !important;
-    width: 4px;
-    height: 4px;
+    /* width: 4px; */
+    height: 10px;
+    /* width: 12px; */
     background-color: var(--secondary-text-color) !important;
     opacity: 0.5;
 

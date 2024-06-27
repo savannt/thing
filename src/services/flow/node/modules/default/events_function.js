@@ -19,7 +19,8 @@ export const metadata = {
             "required": false,
         },
         "chatId": {}
-    }
+    },
+    "icon": "process"
 }
 
 export default function events_function ({ chatId }) {

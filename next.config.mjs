@@ -6,6 +6,8 @@ const nextConfig = {
 		// Perform customizations to webpack config
 		config.module.exprContextCritical = false;
 	
+
+		
 		// Important: return the modified config
 		return config;
 	},
