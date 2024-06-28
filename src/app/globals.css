@@ -1479,7 +1479,7 @@ div:first-child > div > .react-flow__handle-right[data-handleid="execution"] {
 }
 
 .cl-phoneInputBox:hover {
-	/* border: 1px solid var(--hover-color); */
+	border: 2px solid var(--hover-active-color) !important;
 }
 
 .cl-formResendCodeLink {

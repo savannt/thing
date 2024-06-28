@@ -6,7 +6,7 @@
 
 	min-height: calc(var(--min-height) * 0.75);
 
-	min-width: 49%;
+	min-width: 30%;
 	
 	width: -webkit-fill-available;
 	max-width: -webkit-fill-available;

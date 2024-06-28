@@ -1,15 +1,17 @@
-import Types from "@/services/flow/node/services/types/Types"
+import Type from "@/services/flow/node/services/Type"
 
-export default class Argument extends Types {
+export default class Argument extends Type {
 
     constructor ({ name, type, required = false, description = "", value = null }) {
         super("argument");
 
-        this.name = name;
-        this.type = type;
-        this.required = required;
-        this.description = description;
-        this.value = value;
+        this.setValue({
+            name,
+            type,
+            required,
+            description,
+            value,
+        })
     }
 
 }

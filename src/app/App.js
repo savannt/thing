@@ -105,7 +105,7 @@ export default function App ({ page, defaultGroupId, defaultChatId }) {
 
 
 	const [userId, setUserId] = useState(false);
-	const enterpriseId = organization?.id || false;
+	const enterpriseId = organization?.id || undefined;
 
 	const [authLoaded, setAuthLoaded] = useState(false);
 	const [authSignedIn, setAuthSignedIn] = useState(false);
@@ -133,7 +133,39 @@ export default function App ({ page, defaultGroupId, defaultChatId }) {
 	const [chats, setChats] = useState(false);
 	const [group, setGroup] = useState(false);
 	const [groups, setGroups] = useState(false);
-	const [graph, setGraph] = useState(false);
+	
+	const [graph, _setGraph] = useState(false);
+	const setGraph = (graph) => {
+		// const value = _setGraph(graph);
+		if(graph) {
+			router.push({
+				pathname: "/",
+				query: {
+					...router.query,
+					[process.env.NEXT_PUBLIC_GRAPH_NAME]: true,
+				}
+			}, undefined, { shallow: true });
+		} else {
+			router.push({
+				pathname: "/",
+				query: {
+					...router.query,
+					[process.env.NEXT_PUBLIC_GRAPH_NAME]: false,
+				}
+			}, undefined, { shallow: true });
+		}
+		// return value;
+	}
+	useEffect(() => {
+		if(router.query && router.query[process.env.NEXT_PUBLIC_GRAPH_NAME]) {
+			if(router.query[process.env.NEXT_PUBLIC_GRAPH_NAME] === "true") {
+				_setGraph(true);
+			} else if(router.query[process.env.NEXT_PUBLIC_GRAPH_NAME] === "false") {
+				_setGraph(false);
+			}
+		}
+	}, [router.query]);
+
 	const [showConsole, _setConsole] = useState(false);
 	const setConsole = (console) => {
 		const value = _setConsole(console);
@@ -219,6 +251,16 @@ export default function App ({ page, defaultGroupId, defaultChatId }) {
 			if(chatElement) chatElement.classList.add("animate__heartBeat");
 		}, 50);
 
+		if(_chat === false) {
+			// reomve chatId from query
+			const query = router.query;
+			delete query[process.env.NEXT_PUBLIC_CHAT_NAME];
+			router.push({
+				pathname: "/",
+				query
+			}, undefined, { shallow: true });
+		}
+
 		return value;
 	}
 
@@ -265,7 +307,7 @@ export default function App ({ page, defaultGroupId, defaultChatId }) {
 		}
 	}, [router.query.extension_downloaded]);
 
-	useEffect(() => {		
+	useEffect(() => {	
 		if(typeof enterpriseId !== "undefined") {
 			setGroups(false);
 			setGroup(false);

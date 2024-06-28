@@ -40,6 +40,7 @@ export default {
                 "description": "Array constructed from arguments"
             }
         },
+        "resolve": false,
         "icon": "join"
     },
     "Arguments/construct": {
@@ -61,6 +62,7 @@ export default {
                 "description": "Array constructed from arguments"
             }
         },
+        "resolve": false,
         "icon": "join"
     },
     "Arguments/forEach": {
@@ -81,6 +83,7 @@ export default {
                 "description": "Output for each argument"
             }
         },
+        "resolve": false,
         "icon": "triangle"
     },
     "Array/construct": {
@@ -108,6 +111,7 @@ export default {
                 "description": "Array constructed from arguments of type T"
             }
         },
+        "resolve": false,
         "icon": "triangle"
     },
     "Array/forEach": {
@@ -128,6 +132,7 @@ export default {
                 "description": "Output for each element in the array"
             }
         },
+        "resolve": false,
         "icon": "triangle"
     },
     "Constant/string": {
@@ -143,6 +148,29 @@ export default {
                 "constant": true
             }
         },
+        "resolve": false,
+        "icon": "triangle"
+    },
+    "Constant/type": {
+        "name": "Constant/type",
+        "type": "operation",
+        "description": "A type constant",
+        "path": "default/constant_type",
+        "in": {},
+        "out": {
+            "out": {
+                "type": "type",
+                "description": "The constant type value",
+                "constant": true,
+                "values": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "array"
+                ]
+            }
+        },
+        "resolve": false,
         "icon": "triangle"
     },
     "Events/chatCreated": {
@@ -164,6 +192,7 @@ export default {
                 "description": "Chat ID"
             }
         },
+        "resolve": false,
         "icon": "triangle"
     },
     "Events/function": {
@@ -188,7 +217,16 @@ export default {
                 "description": "Thing runtime",
                 "required": false
             },
-            "chatId": {}
+            "chatId": {
+                "type": "chatId",
+                "description": "Chat ID",
+                "required": false
+            }
+        },
+        "resolve": {
+            "arguments": {
+                "type": "in"
+            }
         },
         "icon": "process"
     },
@@ -221,6 +259,7 @@ export default {
                 "description": "Chat ID"
             }
         },
+        "resolve": false,
         "icon": "triangle"
     },
     "Flow/end": {
@@ -241,6 +280,7 @@ export default {
             }
         },
         "out": {},
+        "resolve": false,
         "icon": "end"
     },
     "Add": {
@@ -266,6 +306,7 @@ export default {
                 "description": "Sum of a and b"
             }
         },
+        "resolve": false,
         "icon": "triangle"
     }
 }

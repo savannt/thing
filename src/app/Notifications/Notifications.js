@@ -22,7 +22,7 @@ export default function Notifications({ }) {
 	const [notifications, setNotifications] = useState([]);
 	
 	const [saving, setSaving] = useState(false);
-	const [saved, setSaved] = useState(false);
+	const [saved, setSaved] = useState(true);
 
 	useEffect(() => {
 		if(router.query.error) {

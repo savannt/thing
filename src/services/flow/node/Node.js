@@ -22,8 +22,10 @@ class Node {
         let path        = this.metadata.path        || "";
         let inputs      = this.metadata.in          || {};
         let outputs     = this.metadata.out         || {};
+        let resolve     = this.metadata.resolve     || false;
         let type        = this.metadata.type        || NodeTypes.FUNCTION;
         let icon        = this.metadata.icon        || "triangle";
+
 
         if(this.name.toLowerCase().startsWith("events/"))  type = NodeTypes.EVENT;
         if(this.name.toLowerCase().startsWith("flow/end")) type = NodeTypes.END;
@@ -36,6 +38,7 @@ class Node {
         this.type = type;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.resolve = resolve;
         this.icon = icon;
     }
 
@@ -47,6 +50,7 @@ class Node {
             path: this.path,
             in: this.inputs,
             out: this.outputs,
+            resolve: this.resolve,
             icon: this.icon
         }
     }

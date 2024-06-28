@@ -18,7 +18,16 @@ export const metadata = {
             "description": "Thing runtime",
             "required": false,
         },
-        "chatId": {}
+        "chatId": {
+            "type": "chatId",
+            "description": "Chat ID",
+            "required": false,
+        }
+    },
+    "resolve": {
+        "arguments": {
+            "type": "in",
+        }
     },
     "icon": "process"
 }

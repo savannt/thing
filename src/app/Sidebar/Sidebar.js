@@ -71,8 +71,43 @@ export default function Sidebar ({ userId, enterpriseId, groups, setGroups, grou
     const [disabledGroups, setDisabledGroups] = useState([]); // [groupId, groupId, groupId]
     const [disabledChats, setDisabledChats] = useState([]); // [chatId, chatId, chatId]
 
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, _setCollapsed] = useState(false);
     const [collapsedFinished, setCollapsedFinished] = useState(true);
+    const setCollapsed = (value) => {
+        return _setCollapsed((prev) => {
+            if(typeof value === "function") value = value(prev);
+
+            if(value) {
+                router.push({
+                    pathname: "/",
+                    query: {
+                        ...router.query,
+                        [process.env.NEXT_PUBLIC_COLLAPSE_SIDEBAR_NAME]: true
+                    }
+                }, undefined, { shallow: true });
+            } else {
+                router.push({
+                    pathname: "/",
+                    query: {
+                        ...router.query,
+                        [process.env.NEXT_PUBLIC_COLLAPSE_SIDEBAR_NAME]: false
+                    }
+                }, undefined, { shallow: true });
+            }
+
+            return value;
+        });
+
+    }
+    useEffect(() => {
+        if(router.query[process.env.NEXT_PUBLIC_COLLAPSE_SIDEBAR_NAME] === "true") {
+            _setCollapsed(true);
+        } else if(router.query[process.env.NEXT_PUBLIC_COLLAPSE_SIDEBAR_NAME] === "false") {
+            _setCollapsed(false);
+        }
+    }, [router.query]);
+
+
     const [isResizing, setIsResizing] = useState(false)
     const [sidebarWidth, _setSidebarWidth] = useState(0);
     

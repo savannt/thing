@@ -3,6 +3,7 @@ import styles from "@/app/Chat/ChatGraph/ChatGraph.module.css";
 import chatStyles from "@/app/Chat/Chat.module.css";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/router";
 import ReactFlow, {
 	MiniMap,
 	Controls,
@@ -13,6 +14,7 @@ import ReactFlow, {
 	useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
+
 
 import NodeTypes, { RawNodeTypes, getRawNodeType, parseSecondaryType } from "@/services/flow/node/NodeTypes";
 import edgeTypes from "@/app/Chat/ChatGraph/Flow/EdgeTypes/EdgeTypes";
@@ -101,6 +103,7 @@ export default function ChatGraph({
 	}, []);
 
 	const reactFlow = useReactFlow();
+	const router = useRouter();
 	const isMobile = useMobile();
 
 	const [nodeMenuText, setNodeMenuText] = useState("");
@@ -154,6 +157,7 @@ export default function ChatGraph({
 					Object.keys(node.data.in).forEach((inName) => {
 						node.data.in[inName]._onChange = (newValue) => {
 							node.data.in[inName].value = newValue;
+							console.log("NEW VALUE", newValue);
 							callUpdate();
 						};
 					});
@@ -244,8 +248,11 @@ export default function ChatGraph({
 					continue;
 				}
 
+				console.log("START NODE", startNode);
+
 				if (startNode.data.resolve) {
 					const resolve = startNode.data.resolve;
+
 					for (const resolveArgName of Object.keys(resolve)) {
 						const resolveArg = resolve[resolveArgName];
 						const type = resolveArg.type;
@@ -1037,69 +1044,80 @@ export default function ChatGraph({
 		animateExecutionResponse(nodeId, values);
 	});
 
+
+	const refresh = async () => {
+		await tryRefresh();
+		setNodes((prevNodes) => {
+			return prevNodes.map((node) => {
+				const nodeData = NODE_DICTIONARY[node.name];
+				if (!nodeData) {
+					error("Node not found", `Node ${node.name} not found after refresh`);
+					return node;
+				}
+
+				if (nodeData.type) node.type = getRawNodeType(nodeData.type);
+				if (!node.data) node.data = {};
+				const newData = {
+					type: node.type,
+					name: node.name,
+					...node.data,
+				};
+
+				for (const key in nodeData) {
+					if (key === "type") continue;
+					if (!newData[key]) {
+						newData[key] = nodeData[key];
+					} else if (typeof newData[key] === "object") {
+						newData[key] = {
+							...newData[key],
+							...nodeData[key],
+						};
+					} else {
+						newData[key] = nodeData[key];
+					}
+				}
+
+				// Preserve existing _connected and value properties
+				const preserveProperties = (source, target) => {
+					Object.keys(source).forEach((key) => {
+						if (target[key]) {
+							if (target[key]._connected !== undefined) {
+								source[key]._connected = target[key]._connected;
+							}
+							if (target[key].value !== undefined) {
+								source[key].value = target[key].value;
+							}
+						}
+					});
+				};
+
+				// Initialize or preserve properties for inputs
+				newData.in = newData.in || {};
+				node.data.in = node.data.in || {};
+				preserveProperties(newData.in, node.data.in);
+
+				// Initialize or preserve properties for outputs
+				newData.out = newData.out || {};
+				node.data.out = node.data.out || {};
+				preserveProperties(newData.out, node.data.out);
+
+				return {
+					...node,
+					data: newData,
+				};
+			});
+		});
+	}
+
 	const searchCommands = [
 		{
 			title: "Refresh",
 			onClick: async () => {
-				await tryRefresh();
-				setNodes((prevNodes) => {
-					return prevNodes.map((node) => {
-						const nodeData = NODE_DICTIONARY[node.name];
-						if (!nodeData) {
-							error("Node not found", `Node ${node.name} not found after refresh`);
-							return node;
-						}
-	
-						if (nodeData.type) node.type = getRawNodeType(nodeData.type);
-						if (!node.data) node.data = {};
-						const newData = {
-							type: node.type,
-							name: node.name,
-							...node.data,
-						};
-	
-						for (const key in nodeData) {
-							if (key === "type") continue;
-							if (!newData[key]) {
-								newData[key] = nodeData[key];
-							} else if (typeof newData[key] === "object") {
-								newData[key] = {
-									...newData[key],
-									...nodeData[key],
-								};
-							} else {
-								newData[key] = nodeData[key];
-							}
-						}
-	
-						// Preserve existing _connected values
-						const preserveConnections = (source, target) => {
-							Object.keys(source).forEach((key) => {
-								if (target[key] && target[key]._connected !== undefined) {
-									source[key]._connected = target[key]._connected;
-								}
-							});
-						};
-	
-						// Initialize or preserve _connected for inputs
-						newData.in = newData.in || {};
-						node.data.in = node.data.in || {};
-						preserveConnections(newData.in, node.data.in);
-	
-						// Initialize or preserve _connected for outputs
-						newData.out = newData.out || {};
-						node.data.out = node.data.out || {};
-						preserveConnections(newData.out, node.data.out);
-	
-						return {
-							...node,
-							data: newData,
-						};
-					});
-				});
+				await refresh();
 			},
 		},
 	];
+	
 	
 
 	const nodeSearchResults = nodeMenuText

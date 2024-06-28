@@ -195,6 +195,7 @@ export default class Flow {
 
 		for(const key in inputs) {
 			const required = typeof inputs[key].required !== "undefined" ? inputs[key].required : DEFAULT_INPUTS_REQUIRED;
+			const hasValue = !!inputs[key].value;
 			const type = inputs[key].type;
 			const edge = inputEdges.find(edge => {
 				if(!edge.data.type.includes(":")) return edge.data.type === type;	
@@ -206,7 +207,7 @@ export default class Flow {
 				}
 			});
 			if(!edge) {
-				if(required) {
+				if(required && !hasValue) {
 					return await this.handleError("Missing required input", `${key}`, {
 						nodeId: node.id,
 					});

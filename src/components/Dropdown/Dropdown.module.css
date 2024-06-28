@@ -1,0 +1,86 @@
+.Dropdown {
+	position: relative;
+
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+
+
+	background: transparent;
+	color: var(--secondary-text-color);
+	/* border: 1px solid var(--tertiary-text-color); */
+	border: 1px solid var(--hover-color);
+
+	width: 100%;
+	height: 100%;
+
+	border-radius: var(--border-radius);
+}
+/* input has child focus */
+.Dropdown:has(select:focus) {
+	border: 1px solid var(--hover-active-color) !important;
+	outline: 2px solid var(--action-color);
+	outline-offset: 2px;
+}
+
+.Dropdown select {
+	position: absolute;
+
+	width: -webkit-fill-available;
+	height: 100%;
+
+	padding-block: 1px;
+	margin-inline: -1px;
+	
+	background: transparent;
+	color: var(--secondary-text-color);
+
+	border-radius: var(--border-radius);
+
+	padding-inline: var(--halfGap);
+	margin-right: var(--halfGap);
+
+	font-size: 93%;
+	/* font-size: 150% !important; */
+	/* font-size: 110%; */
+}
+
+.Dropdown select option {
+	background: var(--background-color) !important;
+	border-radius: var(--border-radius) !important;
+	color: var(--primary-text-color);
+	padding-inline: var(--gap);
+	padding-block: var(--gap);
+}
+
+.Dropdown select:focus {
+	outline: none !important;
+}
+
+/* if .Input has > textarea set */
+.Dropdown:has(select) {
+	height: fit-content;
+}
+
+.Dropdown img {
+	height: 100%;
+}
+
+.Dropdown > input {
+	padding-inline: var(--gap);
+}
+.Dropdown > div + input {
+	padding-inline: var(--min-height);
+}
+/* .Input has no div child, make .Input > input padding */
+
+.Dropdown > div {
+	height: 50%;
+	padding-left: var(--margin-inline)
+}
+
+.Dropdown__HiddenFocus:focus {
+	outline: 2px solid var(--action-color-hidden);
+	outline-offset: 2px;
+}

@@ -14,7 +14,7 @@ export function NodeGroup ({ data, style }) {
 		displayName,
 		name,
 		flow = false,
-
+		
 		out
 	} = data;
 
@@ -43,6 +43,11 @@ export default function Node ({ onChanges, color=[200, 200, 200], left = false, 
 	const outValues = data.out ? Object.entries(data.out).map(([name, data]) => ({ name, ...data, input: false, output: true })) : [];
 	
 	// combine the two arrays by starting with the first in, then the first out, then the second in, etc
+	
+	
+
+	
+	
 	let values = [];
 	for (let i = 0; i < Math.max(inValues.length, outValues.length); i++) {
 		if (inValues[i]) values.push(inValues[i]);
@@ -69,8 +74,6 @@ export default function Node ({ onChanges, color=[200, 200, 200], left = false, 
 
 	let image = `/images/icons/dot.png`;
 	if(data.icon) image = `/images/icons/flow/${data.icon}.svg`;
-
-	console.log("NODE DATAT", data);
 
 	return (
 		<div className={`${styles.Node} ${className} ${data.deleting ? "deleting" : ""} ${data.copying ? "copying" : ""} ${data.error ? "error" : ""} ${data.island ? "island" : ""} ${doAnimate ? "animate" : ""} ${doAnimateBackwards ? "animateBackwards": ""}`} style={{
